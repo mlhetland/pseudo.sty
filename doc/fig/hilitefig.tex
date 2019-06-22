@@ -1,0 +1,48 @@
+\documentclass[beamer,preview,multi]{standalone}
+% \documentclass{beamer}
+% \usepackage{mlh}
+\usepackage{pseudo}
+% \pseudoset{kw, hpad, kwfont=\bfseries}
+% \pseudoset{kw, hpad, kwfont=\bfseries}
+\pseudoset{hpad}
+
+\standaloneenv{myenv}
+
+% XXX My \== gets ruined by the standalone preview option for some reason.
+
+\begin{document}
+
+% \begin{standaloneframe}
+% \begin{myenv}
+% \begin{pseudo}[hpad]           <1-3>
+%     if $x < y$          \\+    <2>      [bol=\onslide<2->]
+%     $\id{foo} = 2$      \\-    [hl<3>,   bol=\onslide<3->]
+%     howdy
+% \end{pseudo}
+% \end{myenv}
+% \end{standaloneframe}
+
+% \begin{standaloneframe}
+% \begin{myenv}
+% \begin{pseudo}                      <1,4>
+%     while $a \neq b$        \\+     <2>
+%         if $a > b$          \\+
+%             $a = a - b$     \\-     <3>
+%         else $b = b - a$    \\-     <5>
+%     return $a$
+% \end{pseudo}
+% \end{myenv}
+% \end{standaloneframe}
+
+\begin{standaloneframe}
+\begin{myenv}
+\begin{pseudo}
+    <1>  Go to line 3  \\
+    <3>  Go to line 4  \\
+    <2>  Go to line 2  \\
+    <4>  Go to line 1  \\
+\end{pseudo}
+\end{myenv}
+\end{standaloneframe}
+
+\end{document}
