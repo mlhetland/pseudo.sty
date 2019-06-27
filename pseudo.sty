@@ -21,7 +21,7 @@
 % SOFTWARE.
 %
 \def \pseudoversion {1.0}
-\def \pseudodate    {2019-06-22}
+\def \pseudodate    {2019-06-27}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -314,8 +314,8 @@
     dim-color       .tl_set:N       = \pseudodimcolor,
     dim-color       .initial:n      = \pseudohlcolor,
     dim             .meta:n         = {
-        bol-append   = \color{\pseudohlcolor},
-        setup-append = \color{\pseudohlcolor}
+        bol-append   = \color{\pseudodimcolor},
+        setup-append = \color{\pseudodimcolor}
     },
     line-height     .fp_set:N       = \l__pseudo_line_height_fp,
     line-height     .initial:n      = 1,

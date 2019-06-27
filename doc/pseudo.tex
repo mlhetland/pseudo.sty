@@ -1195,14 +1195,14 @@ $x = y$ \qquad \Imp
     Dims the following line. Equivalent to:
 \begin{texexp}[listing only]
 \pseudodefinestyle{dim}{
-    bol-append   = \color{\pseudohlcolor},
-    setup-append = \color{\pseudohlcolor}
+    bol-append   = \color{\pseudodimcolor},
+    setup-append = \color{\pseudodimcolor}
 }
 \end{texexp}
 May be used to dim out inactive or currently less relevant lines (possibly
 using overlays; see~\cpageref{p:overlays}).
 \begin{texexp}
-\begin{pseudo}[kw]*
+\begin{pseudo}[kw, dim-color=black!25]*
 \hd{Gnome-Sort}(A)                              \\
 [dim]  $i = 1$                                  \\
 [dim]  while $i \leq \fn{length}[A]$            \\+
@@ -2978,8 +2978,8 @@ typesetting the pseudocode.
     dim-color       .initial:n      = \pseudohlcolor,
 
     dim             .meta:n         = {
-        bol-append   = \color{\pseudohlcolor},
-        setup-append = \color{\pseudohlcolor}
+        bol-append   = \color{\pseudodimcolor},
+        setup-append = \color{\pseudodimcolor}
     },
 
     line-height     .fp_set:N       = \l_@@_line_height_fp,
