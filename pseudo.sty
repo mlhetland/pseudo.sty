@@ -21,7 +21,7 @@
 % SOFTWARE.
 %
 \def \pseudoversion {1.0.1}
-\def \pseudodate    {2019-06-27}
+\def \pseudodate    {2019-06-30}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -255,6 +255,8 @@
     hpad            .default:n      = 0.3em,
     hsep            .tl_set:N       = \l__pseudo_hsep_tl,
     hsep            .initial:n      = .75em,
+    left-margin     .tl_set:N       = \l__pseudo_left_margin_tl,
+    left-margin     .initial:n      = 0pt,
     label           .tl_set:N       = \l__pseudo_label_tl,
     label           .initial:n      = \arabic*,
     label-align     .code:n         =
@@ -353,6 +355,19 @@
     begin-tabular   .initial:n      = \begin{tabular}{\pseudopreamble},
     end-tabular     .tl_set:N       = \l__pseudo_end_tabular_tl,
     end-tabular     .initial:n      = \end{tabular},
+    topsep          .tl_set:N       = \l__pseudo_topsep_tl,
+    topsep          .initial:n      = { \topsep },
+    parskip         .tl_set:N       = \l__pseudo_parskip_tl,
+    parskip         .initial:n      = { \parskip },
+    partopsep       .tl_set:N       = \l__pseudo_partopsep_tl,
+    partopsep       .initial:n      = { \partopsep },
+    compact         .meta:n         = {
+        compact-val = #1,
+        compact-def = true,
+    },
+    compact         .default:n      = true,
+    compact-val     .bool_set:N     = \l__pseudo_compact_bool,
+    compact-def     .bool_set:N     = \l__pseudo_compact_def_bool,
     eqs-scale       .fp_set:N       = \l__pseudo_eqs_scale_fp,
     eqs-scale       .initial:n      = 0.6785,
     eqs-sep         .tl_set:N       = \l__pseudo_eqs_sep_tl,
@@ -470,6 +485,24 @@
         \pseudoset { #1 }
     }
     \__pseudo_set_indent_length:
+    \bool_if:NF \l__pseudo_compact_def_bool {
+        \bool_set:Nn \l__pseudo_compact_bool {
+            \mode_if_horizontal_p: && \mode_if_inner_p:
+        }
+    }
+    \bool_if:nF { \l__pseudo_compact_bool } {
+        \skip_set:Nn \l_tmpa_skip {
+            \l__pseudo_topsep_tl + \l__pseudo_parskip_tl
+        }
+        \mode_if_vertical:TF {
+            \skip_add:Nn \l_tmpa_skip { \l__pseudo_partopsep_tl }
+        } {
+            \unskip \par
+        }
+        \addvspace { \l_tmpa_skip }
+        \noindent
+        \skip_horizontal:n{ \dim_eval:n { \l__pseudo_left_margin_tl } }
+    }
     \dim_set:Nn \tabcolsep    { \l__pseudo_hsep_tl / 2 }
     \tl_set:Nn  \arraystretch
         { \fp_to_decimal:n { \l__pseudo_line_height_fp } }
@@ -486,6 +519,12 @@
     \__pseudo_bol:
 } {
     \tl_use:N \l__pseudo_end_tabular_tl
+    \bool_if:nF { \l__pseudo_compact_bool } {
+        \mode_if_vertical:F {
+            \unskip \par
+        }
+        \addvspace{ \l_tmpa_skip }
+    }
     \group_end:
 }
 \pseudodefinestyle{starred}{

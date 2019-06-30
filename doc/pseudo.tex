@@ -438,6 +438,15 @@ repeat the following while $a\neq b$            \\+
 \end{texexp}
 
 \noindent
+Spacing is handled similarly to in \LaTeX\ lists, with \cs{topsep} and
+\cs{parskip} added before and after, as well as \cs{partopsep} whenever the
+environment starts a new paragraph. The left margin (how much the pseudocode
+is indented wrt.\ the surrounding text) is set by the \refk{left-margin} key
+(initially \code{0pt}).\footnote{If \refe{pseudo} occurs in a box such as
+\code{fbox}, or a \pkg[https://ctan.org/pkg/pgf]{tikz} node, this spacing is
+dropped.}
+
+\medskip\noindent
 There are also some styling commands for special elements of the pseudocode:
 
 \begin{texexp}
@@ -1044,6 +1053,45 @@ alphabetical order), you'll find definitions of a couple of counters here
     \fontcmd{cn}
 \end{docCommand}
 
+\begin{docKey}{compact}{\,=\,\meta{boolean}}{default \code{true}, initially
+    \code{false}}
+
+    \parindent1.5em
+    \noindent
+    The \refe{pseudo} environment emulates the built-in \LaTeX\ lists when it
+    comes to spacing above and below, in normal text. If the environment is
+    part of an ongoing paragraph, paragraphs will be inserted above and below,
+    along with whitespace specified by \refk{topsep} and \refk{parskip}. If
+    the environment begins a paragraph of its own, additional whitespace is
+    added, as specified by \refk{partopsep}. It is also possible to specify
+    space to insert to the left of the environment, using \refk{left-margin}.
+
+    However, these spacing commands don't work well inside \cs{mbox},
+    \cs{fbox}, etc. To avoid getting into trouble, \pkg{pseudo} determines
+    that the environment should be \emph{compact}, and drop this surrounding
+    space, if we're in inner horizontal mode at the beginning of the
+    environment.
+
+\begin{texexp}
+% In preamble:
+% \usepackage{tikz}
+\begin{tikzpicture}
+    \draw (0,0) node [draw] {%
+        \begin{pseudo}
+            if we're in a node \\+
+                there's no added space
+        \end{pseudo}};
+\end{tikzpicture}
+\end{texexp}
+
+    This may not be enough, however. For example, if you're using
+    \pkg[https://ctan.org/pkg/standalone]{standalone} to produce individual
+    pseudocode images, this compactness will \emph{not} be triggered
+    automatically. In such cases, you can override the behavior using the
+    \refk{compact} trigger, manually specifying whether you want the
+    pseudocode to be compact or not.
+\end{docKey}
+
 \begin{docCommand}{ct}{\marg{text}}
     Indicates that \meta{text} is a comment, \ct{typeset like this}. You can
     customize the comment appearance using \refk{ctfont}, \refk{ct-left} and
@@ -1551,6 +1599,40 @@ goto \tn{\ref{li:label}}
     get the results you want by specifying your own \refk{preamble} in full.
 \end{docKey}
 
+\begin{docKey}{left-margin}{\,=\,\meta{length}}{\initialkeyvalue{\code{0pt}}}
+    Sets the left margin of the \code{pseudo} environment, i.e., how far it is
+    indented wrt.\ the surrounding text:
+\begin{texexp}
+Lorem ipsum dolor sit amet:
+
+\begin{pseudo}[left-margin=1.25em]
+consetetur sadipscing elitr \\
+sed diam nonumy eirmod tempor
+\end{pseudo}
+
+Invidunt ut labore et dolore magna.
+\end{texexp}
+
+To have the environment indented as (the beginning of) any normal paragraph,
+you could use \code*{left-margin = \cs{parindent}}. Note that
+\refk{left-margin}, as well as the spacing above and below the \refe{pseudo}
+environment, is turned off inside \cs{mbox} and the like:
+\begin{texexp}
+\pseudoset{left-margin=1cm} % Won't affect box contents
+\fbox{\begin{pseudo*}
+I'm a livin' in a box \\
+I'm a livin' in a cardboard box
+\end{pseudo*}}
+\end{texexp}
+Note that as opposed to \refk{topsep}, \refk{parskip} and \refk{partopsep}, we
+are \emph{not} working with one of the built-in list spacing commands;
+\cs{leftmargin} has no effect on this key (which is why the hyphenated naming
+style of other keys such as \refk{label-align} or \refk{indent-text} is also
+adopted for \refk{left-margin}).
+%
+See also \refk{compact}.
+\end{docKey}
+
 \begin{docKey}{line-height}{\,=\,\meta{factor}}{\initialkeyvalue{\code{1}}}
     The \meta{factor} with which to multiply the ordinary line height. For
     simple, sparse pseudocode, the oridnary line height works well, but if
@@ -1568,6 +1650,16 @@ goto \tn{\ref{li:label}}
     \shortcutted{nf}{normalfont}
     See also \refc{tn}.
 \end{docCommand}
+
+\begin{docKey}{parskip}{\,=\,\meta{length}}{\initialkeyvalue{\cs{parskip}}}
+    Sets a \pkg{pseudo}-local copy of \cs{parskip} for use in vertical spacing
+    above and below the \refe{pseudo} environment. See also \refk{compact}.
+\end{docKey}
+
+\begin{docKey}{partopsep}{\,=\,\meta{length}}{\initialkeyvalue{\cs{partopsep}}}
+    Sets a \pkg{pseudo}-local copy of \cs{partopsep} for use in vertical
+    spacing above and below the \refe{pseudo} environment. See also \refk{compact}.
+\end{docKey}
 
 \begin{docKey}{pause}{}{\novaluekey}
     Equivalent to \code*{\refk{eol-append} = \cs{pause}} (see \cref{p:pause}).
@@ -1855,6 +1947,11 @@ See also \refk{indent-level}.
     This is equivalent to using \code*{\cs{textnormal}\braces{every node}}.
     \shortcutted{tn}{textnormal}
 \end{docCommand}
+
+\begin{docKey}{topsep}{\,=\,\meta{length}}{\initialkeyvalue{\cs{topsep}}}
+    Sets a \pkg{pseudo}-local copy of \cs{topsep} for use in vertical spacing
+    above and below the \refe{pseudo} environment. See also \refk{compact}.
+\end{docKey}
 
 \begin{docKey}{unknown}{}{}
     Unknown keys are checked for \pkg[https://ctan.org/pkg/beamer]{beamer}
@@ -2894,6 +2991,9 @@ typesetting the pseudocode.
     hsep            .tl_set:N       = \l_@@_hsep_tl,
     hsep            .initial:n      = .75em,
 
+    left-margin     .tl_set:N       = \l_@@_left_margin_tl,
+    left-margin     .initial:n      = 0pt,
+
     label           .tl_set:N       = \l_@@_label_tl,
     label           .initial:n      = \arabic*,
 
@@ -3042,6 +3142,32 @@ The prefix is inserted by the row separator command.
     end-tabular     .tl_set:N       = \l_@@_end_tabular_tl,
     end-tabular     .initial:n      = \end{tabular},
 \end{source}
+\paragraph{List-like spacing.} Space above and below is handled similarly to
+in the built-in \LaTeX\ lists, with the option of locally overriding
+\cs{topsep}, \cs{parskip} and \cs{partopsep}, with \refk{compact} used to
+control the presence of this spacing (overriding the ordinary automatic choice
+based on the current mode).
+\begin{source}
+    topsep          .tl_set:N       = \l_@@_topsep_tl,
+    topsep          .initial:n      = { \topsep },
+
+    parskip         .tl_set:N       = \l_@@_parskip_tl,
+    parskip         .initial:n      = { \parskip },
+
+    partopsep       .tl_set:N       = \l_@@_partopsep_tl,
+    partopsep       .initial:n      = { \partopsep },
+
+    compact         .meta:n         = {
+        compact-val = #1,
+        compact-def = true,
+    },
+    compact         .default:n      = true,
+
+    % For internal use:
+    compact-val     .bool_set:N     = \l_@@_compact_bool,
+    compact-def     .bool_set:N     = \l_@@_compact_def_bool,
+\end{source}
+
 \paragraph{Details.} Finally, some tweakable parameters.
 \begin{source}
     eqs-scale       .fp_set:N       = \l_@@_eqs_scale_fp,
@@ -3052,6 +3178,7 @@ The prefix is inserted by the row separator command.
 
     eqs-pad         .tl_set:N       = \l_@@_eqs_pad_tl,
     eqs-pad         .initial:n      = 0.28mu,
+
 
 }
 \end{source}
@@ -3290,6 +3417,7 @@ various macros already described.
 \NewDocumentEnvironment { pseudo } { !+o !s d<> +O{ } } {
 
     \group_begin:
+
     \@@_gsave_as:NN \\ \c_@@_saved_cr_cs
     \@@_gsave_as:NN \= \c_@@_saved_eq_cs
 
@@ -3303,6 +3431,32 @@ various macros already described.
         \pseudoset { #1 }
     }
     \@@_set_indent_length:
+
+    % If not manually set as compact/noncompact, set automatically:
+    \bool_if:NF \l_@@_compact_def_bool {
+        \bool_set:Nn \l_@@_compact_bool {
+            \mode_if_horizontal_p: && \mode_if_inner_p:
+        }
+    }
+
+    \bool_if:nF { \l_@@_compact_bool } {
+
+        \skip_set:Nn \l_tmpa_skip {
+            \l_@@_topsep_tl + \l_@@_parskip_tl
+        }
+        \mode_if_vertical:TF {
+            \skip_add:Nn \l_tmpa_skip { \l_@@_partopsep_tl }
+        } {
+            \unskip \par
+        }
+
+        \addvspace { \l_tmpa_skip }
+
+        \noindent
+        \skip_horizontal:n{ \dim_eval:n { \l_@@_left_margin_tl } }
+
+    }
+
 
     \dim_set:Nn \tabcolsep    { \l_@@_hsep_tl / 2 }
     \tl_set:Nn  \arraystretch
@@ -3355,6 +3509,17 @@ the line:
 } {
 
     \tl_use:N \l_@@_end_tabular_tl
+
+
+    \bool_if:nF { \l_@@_compact_bool } {
+
+        \mode_if_vertical:F {
+            \unskip \par
+        }
+
+        \addvspace{ \l_tmpa_skip }
+
+    }
 
     \group_end:
 

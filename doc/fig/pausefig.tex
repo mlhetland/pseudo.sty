@@ -1,48 +1,14 @@
 \documentclass[beamer,preview,multi]{standalone}
-% \documentclass{beamer}
-
-% \usepackage[notmath]{sansmathfonts}
-% \usepackage{mlh}
 \usepackage{pseudo}
-% \pseudoset{kw, hpad, kwfont=\bfseries, prfont=\sffamily}
-
-% \usepackage{expl3,xparse}
-%
-% \makeatletter
-% \ExplSyntaxOn
-%
-% \int_new:N \g_@@_row_num_int
-%
-% \cs_new:Nn \@@_onslide: {
-%     \int_gincr:N \g_@@_row_num_int
-%     \onslide<\g_@@_row_num_int->
-% }
-%
-% \NewDocumentCommand \pseudostartslide {} {
-%     \int_zero:N \g_@@_row_num_int
-% }
-%
-% \cs_set_eq:NN \pseudoonslide \@@_onslide:
-% % \cs_set_eq:NN \oldctrcmd \__pseudo_old_counter_cmds:
-%
-% \ExplSyntaxOff
-% \makeatother
+\pseudoset{compact}
 
 \setbeamercovered{transparent}
 \standaloneenv{myenv}
 
 \begin{document}
 
-
-% \begin{frame}
 \begin{standaloneframe}
 \begin{myenv}
-% XXX Begins on line 2, as it hasn't been incremented yet. And several
-% solutions (like \onslide<+-> or \pause) just break down.
-% XXX Working on an "uncover" option. Should probably have a similar thing
-% that dims out the previous ones -- or maybe even a "dim" key...
-%
-% XXX Use the suffix package to get the starred versions
 \begin{pseudo}[pause]
     Eeny  \\
     Meeny \\
@@ -51,6 +17,5 @@
 \end{pseudo}
 \end{myenv}
 \end{standaloneframe}
-% \end{frame}
 
 \end{document}
