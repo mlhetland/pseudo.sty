@@ -46,6 +46,9 @@
     listingsutf8, documentation]{tcolorbox}
 
 \usepackage{pseudo}
+
+\usepackage{noindentafter}
+
 \usepackage{url}
 \usepackage{amsopn} % For \newmcodes@ example
 
@@ -1995,8 +1998,48 @@ See also \refk{indent-level}.
 
 \section{But how do I\,\dots}
 
+
 Some functionality is not built in, but is still fairly easy to achieve. Some
 streamlining may be added in future versions.
+
+\subsection{\dots\,prevent paragraph indentation after \code{pseudo}?}
+
+If you want to keep the pseudocode as part of a surrounding paragraph, you
+could have it not start its own, i.e., not have an empty line before it. This
+will reduce the amount of spacing as well; if you'd rather have that reduced,
+you could simply drop the empty line \emph{after} the environment:
+
+\begin{texexp}[listing only]
+Text before
+
+\begin{pseudo}
+    pseudocode
+\end{pseudo}
+%
+Text after
+\end{texexp}
+
+\noindent
+The effect would then be the following:
+
+\begin{pseudo}
+    pseudocode
+\end{pseudo}
+%
+No indentation here, and normal spacing. If, however, you wish to suppress
+indentation after \emph{all} instances of \refe{pseudo}, you could use the
+\pkg[https://ctan.org/pkg/noindentafter]{noindentafter} package, as follows:
+
+\medskip
+
+\begin{texexp}[listing only]
+\usepackage{noindentafter}
+\NoIndentAfterEnv{pseudo}
+\end{texexp}
+
+\noindent
+If you wish to override this, and indent a given paragraph after all, you can
+simply use the \cs{indent} command.
 
 \subsection{\dots\,get log-like functions?}
 
@@ -3513,11 +3556,21 @@ the line:
 
     \bool_if:nF { \l_@@_compact_bool } {
 
+        \bool_set_false:N \l_tmpa_bool
+
         \mode_if_vertical:F {
+            \bool_set_true:N \l_tmpa_bool
             \unskip \par
         }
 
         \addvspace{ \l_tmpa_skip }
+
+        \bool_if:NT \l_tmpa_bool {
+
+            \noindent
+            \ignorespacesafterend
+
+        }
 
     }
 
