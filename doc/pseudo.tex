@@ -3556,21 +3556,12 @@ the line:
 
     \bool_if:nF { \l_@@_compact_bool } {
 
-        \bool_set_false:N \l_tmpa_bool
-
         \mode_if_vertical:F {
-            \bool_set_true:N \l_tmpa_bool
             \unskip \par
+            \group_insert_after:N \@endparenv
         }
 
         \addvspace{ \l_tmpa_skip }
-
-        \bool_if:NT \l_tmpa_bool {
-
-            \noindent
-            \ignorespacesafterend
-
-        }
 
     }
 
