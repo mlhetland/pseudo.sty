@@ -4,7 +4,7 @@ FIGS=build/hilitefig.pdf build/pausefig.pdf
 doc/pseudo.pdf: build/pseudo.pdf
 	cp $< $@
 
-build/pseudo.pdf: doc/pseudo.tex build/pseudo.bib $(FIGS)
+build/pseudo.pdf: doc/pseudo.tex build/pseudo.bib $(FIGS) README.md
 	$(LATEX) $<
 
 build/pseudo.bib: doc/pseudo.bib

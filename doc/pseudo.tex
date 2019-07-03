@@ -290,17 +290,14 @@
 
     \ior_map_inline:Nn \g_tmpa_ior {
 
-        \tl_gput_right:Nn \g_tmpa_tl { ##1 }
+        % Just using the first paragraph
+        \regex_match:nnTF { ##1 } { \c{par} } {
+            \ior_map_break:
+        } {
+            \tl_gput_right:Nn \g_tmpa_tl { ##1 }
+        }
 
     }
-
-    \regex_replace_all:nnN
-        { \# .* \n }
-        { } \g_tmpa_tl
-
-    \regex_replace_all:nnN
-        { \n }
-        { XYZZY } \g_tmpa_tl
 
     \regex_replace_all:nnN
         {\*\* ( \w+ ) \*\*}
