@@ -66,7 +66,7 @@ I'd be able to use `\While` rather than `\kw{while}` later. Several such
 formatting and declaration commands exist:
 
 | Type of text | Command             | Declaration                                     |
-| ------------------------------------------------------------------------------------ |
+| ------------ | ------------------- | ----------------------------------------------- |
 | Keywords     | `\kw{while}`        | `\DeclarePseudoKeyword \While {while}`          |
 | Constants    | `\cn{false}`        | `\DeclarePseudoConstant \False {false}`         |
 | Identifiers  | `\id{rank}`         | `\DeclarePseudoIdentifier \Rank {rank}`         |
