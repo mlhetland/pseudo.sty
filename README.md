@@ -27,7 +27,7 @@ numbering of the following line using a star (i.e., either `\\*`, or—for the
 first line—`\begin{pseudo}*`), and can typeset a procedure header using
 `\hd{Name}(...)`. For [example](https://mipmip.org/tidbits/pasa.pdf):
 
-```pseudo
+```tex
 \begin{pseudo}*
 
     \hd{Backward}(V, E, v, i)              \\

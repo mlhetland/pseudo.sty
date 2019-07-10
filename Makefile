@@ -36,7 +36,10 @@ pseudo.sty:	VERSION LICENSE doc/pseudo.tex
 		-e "p" \
 		-e "}" >> pseudo.sty
 
-build/readmecode.pdf: doc/fig/readmefig.tex doc/fig/readmecode.tex
+build/readmecode.tex: doc/fig/readmecode.tex
+	cp $< $@
+
+build/readmefig.pdf: doc/fig/readmefig.tex build/readmecode.tex
 	$(LATEX) $<
 
 doc/fig/readmefig.svg: build/readmefig.pdf
