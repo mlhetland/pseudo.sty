@@ -13,6 +13,14 @@ released under the [MIT license](LICENSE).
 
 You can find more detailed instructions in [the
 documentation](doc/pseudo.pdf), but it's really quite simple to get started.
+The package is [available via CTAN](https://ctan.org/pkg/pseudo), and so is
+part of several TeX distributions. If the newest version isn't in yours, try
+to run an update. In TeX Live, for example, you could run use the [TeX Live
+Utility](http://amaxwell.github.io/tlutility/) (part of distributions such as
+[MacTeX](https://tug.org/mactex/)). Alternatively, you can just download the
+[pseudo.sty](pseudo.sty) file and drop it where your `latex` can find it
+(possibly just in the same directory as your document).
+
 Assuming you want numbered lines (the default) and have most text set as
 keywords (set by the `kw` switch), you simply import **pseudo** using
 
@@ -23,9 +31,9 @@ keywords (set by the `kw` switch), you simply import **pseudo** using
 and then set your pseudocode in a `pseudo` environment. Lines are terminated
 by the normal `\\` command, which may be extended with one or more pluses or
 minuses to indicate a change in indentation level. You suppress the automatic
-numbering of the following line using a star (i.e., either `\\*`, or—for the
-first line—`\begin{pseudo}*`), and can typeset a procedure header using
-`\hd{Name}(...)`. For [example](https://mipmip.org/tidbits/pasa.pdf):
+numbering of the following line using a star (i.e., either `\\*`, or
+`\begin{pseudo}*`), and can typeset a procedure header using `\hd{Name}(...)`.
+For [example](https://mipmip.org/tidbits/pasa.pdf):
 
 ```tex
 \begin{pseudo}*
