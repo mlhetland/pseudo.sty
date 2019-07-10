@@ -290,7 +290,16 @@
 
     \ior_map_inline:Nn \g_tmpa_ior {
 
-        % Just using the first paragraph
+        % Skip the first paragraph
+        \regex_match:nnT { ##1 } { \c{par} } {
+            \ior_map_break:
+        }
+
+    }
+
+    \ior_map_inline:Nn \g_tmpa_ior {
+
+        % Just using the next paragraph
         \regex_match:nnTF { ##1 } { \c{par} } {
             \ior_map_break:
         } {

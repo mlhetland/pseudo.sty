@@ -1,5 +1,9 @@
+TARGETS=doc/pseudo.pdf doc/fig/readmefig.svg
+
 LATEX=latexmk -norc -pdf -auxdir=build -outdir=build
 FIGS=build/hilitefig.pdf build/pausefig.pdf
+
+all: $(TARGETS)
 
 doc/pseudo.pdf: build/pseudo.pdf
 	cp $< $@
@@ -31,3 +35,12 @@ pseudo.sty:	VERSION LICENSE doc/pseudo.tex
 		-e "/^\$$/d" \
 		-e "p" \
 		-e "}" >> pseudo.sty
+
+build/readmecode.pdf: doc/fig/readmefig.tex doc/fig/readmecode.tex
+	$(LATEX) $<
+
+doc/fig/readmefig.svg: build/readmefig.pdf
+	pdf2svg $< $@
+
+doc/fig/readmecode.tex: README.md
+	cat $< | sed -n -e "/\\begin{pseudo}\\*$$/,/\\end{pseudo}/p" > $@

@@ -1,0 +1,16 @@
+\documentclass[preview,multi,12pt]{standalone}
+\usepackage{adjustbox}
+\usepackage[kw]{pseudo}
+\pseudoset{compact}
+
+\standaloneenv{myenv}
+
+\begin{document}
+
+\begin{myenv}
+\begin{adjustbox}{scale=1.25}
+\input{readmecode}
+\end{adjustbox}
+\end{myenv}
+
+\end{document}
