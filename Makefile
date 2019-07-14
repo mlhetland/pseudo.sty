@@ -1,7 +1,7 @@
 TARGETS=doc/pseudo.pdf doc/fig/readmefig.svg
 
 LATEX=latexmk -norc -pdf -auxdir=build -outdir=build
-FIGS=build/hilitefig.pdf build/pausefig.pdf
+FIGS=build/hilitefig.pdf build/pausefig.pdf build/kwfig.pdf
 
 all: $(TARGETS)
 
@@ -18,6 +18,9 @@ build/hilitefig.pdf: doc/fig/hilitefig.tex pseudo.sty
 	$(LATEX) $<
 
 build/pausefig.pdf: doc/fig/pausefig.tex pseudo.sty
+	$(LATEX) $<
+
+build/kwfig.pdf: doc/fig/kwfig.tex pseudo.sty
 	$(LATEX) $<
 
 pseudo.sty:	VERSION LICENSE doc/pseudo.tex

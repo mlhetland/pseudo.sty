@@ -21,7 +21,7 @@
 % SOFTWARE.
 %
 \def \pseudoversion {1.1.1}
-\def \pseudodate    {2019-07-04}
+\def \pseudodate    {2019-07-14}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -43,7 +43,9 @@
 \int_new:N  \g__pseudo_indent_level_int
 \int_new:N  \l__pseudo_initial_indent_level_int
 \cs_generate_variant:Nn \tl_if_novalue:nTF        { VTF   }
+\cs_generate_variant:Nn \tl_set:Nn                { Ne    }
 \cs_generate_variant:Nn \regex_extract_once:nnNTF { nVNTF }
+\cs_generate_variant:Nn \regex_match:nnF          { neF   }
 \cs_new:Nn \__pseudo_undef_col:n {
     \tl_set_eq:cN { NC@find@ \token_to_str:N #1 } \scan_stop:
 }
@@ -140,6 +142,20 @@
 \__pseudo_new_cmd:Nnn \kw { m } { \textnormal {\kwfont { #1 } } }
 \__pseudo_new_cmd:Nnn \cn { m } { \textnormal {\cnfont { #1 } } }
 \__pseudo_new_cmd:Nnn \id { m } { \textnormal {\idfont { #1 } } }
+\cs_new:Nn \__pseudo_b_or_bx: {
+    \group_begin:
+    \cs_if_exist:NT \@defaultsubs {
+        \__pseudo_gsave_as:NN \@defaultsubs \__pseudo_defaultsubs
+        \cs_gset_eq:NN \@defaultsubs \relax
+    }
+    \cs_gset:Nn \__pseudo_b_or_bx: { \fontseries{b}\selectfont }
+    \__pseudo_b_or_bx:
+    \cs_if_exist:NT \@defaultsubs {
+        \cs_gset_eq:NN \__pseudo_b_or_bx: \bfseries
+        \group_insert_after:N \__pseudo_b_or_bx:
+    }
+    \group_end:
+}
 \cs_new:Nn \__pseudo_fmt_pr:n {
     \textnormal{\prfont{ #1 }}
 }
@@ -270,7 +286,7 @@
     indent-text     .initial:n      = { \pseudofont\kw{else}\ },
     indent-level    .int_set:N      = \l__pseudo_initial_indent_level_int,
     kwfont          .tl_set:N       = \kwfont,
-    kwfont          .initial:n      = \fontseries{b}\selectfont,
+    kwfont          .initial:n      = \__pseudo_b_or_bx:,
     kw              .meta:n         = { font = \kwfont },
     kw              .value_forbidden:n = true,
     hl              .meta:n         = { bol-prepend = \pseudohl },

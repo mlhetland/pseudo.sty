@@ -1,15 +1,15 @@
 \begin{pseudo}*
 
-    \hd{Backward}(V, E, v, i)              \\
+    \hd{Backward}(V, E, v, i) \\
 
-    $v.\id{label} = i$                     \\
+    $v.\id{label} = i$ \\
 
-    for $(u,v)\in E$                       \\+
-        if $0 < v.\id{label} < i$          \\+
-            \pr{Backward}(V, E, u, i)      \\--
+    for $(u,v)\in E$ \\+
+        if $0 < v.\id{label} < i$ \\+
+            \pr{Backward}(V, E, u, i) \\--
 
-    for $(u,v)\in E$                       \\+
-        if $u.\id{label} \== 0$            \\+
+    for $(u,v)\in E$ \\+
+        if $u.\id{label} \== 0$ \\+
             \pr{Backward}(V, E, u, i+1)
 
 \end{pseudo}

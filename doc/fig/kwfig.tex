@@ -1,0 +1,28 @@
+\documentclass[beamer,preview,multi, border={-.14pt .14pt 0pt .03pt}]{standalone}
+
+% To silence the warning from the first execution of \kwfont, in this case:
+\usepackage{silence}
+\WarningFilter{latexfont}{Font shape}
+\WarningFilter{latexfont}{Some font shapes}
+
+\usepackage{varwidth}
+
+\usepackage{pseudo}
+\pseudoset{compact}
+
+\standaloneenv{myenv}
+
+\begin{document}
+
+% Contents duplicated from pseudo.doc:
+\begin{standaloneframe}
+\begin{myenv}
+\begin{varwidth}{\linewidth}
+\textbf{while}\\                  % Extended
+\kw{while}\\                      % Keyword
+{\fontseries{b}\selectfont while} % Non-extended
+\end{varwidth}
+\end{myenv}
+\end{standaloneframe}
+
+\end{document}

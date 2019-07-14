@@ -28,6 +28,10 @@
 \let\origbfseries\bfseries
 \def\bfseries{\fontseries{b}\selectfont}
 
+\let\origtt\texttt
+\def\texttt#1{\textnormal{\origtt{#1}}}
+% Still getting warnings about OT1/cmtt/b/n ...
+
 \usepackage{tikz}
 \usetikzlibrary{matrix,calc,decorations.pathreplacing,calligraphy}
 \tikzset{
@@ -1565,10 +1569,66 @@ vs.\
     foo \kw{bar}
 \end{pseudo*}
 \end{texexp}
+    The initial value isn't \emph{quite} as straightforward as indicated,
+    however.
+    For more info, see \refc{kwfont}.
 \end{docKey}
 
 \begin{docCommand}{kwfont}{}
+    \parindent1.5em
+    \noindent
     \fontcmd{kw}
+    Its initial definition is \emph{essentially}
+    \code{\cs{fontseries}\braces{b}\cs{selectfont}}, except the first time
+    it's called (normally when evaluating the initial value of
+    \refk{indent-text}), it also runs a check to see if the font selection
+    \emph{worked}, as in some cases (such as in a default
+    \pkg[https://ctan.org/pkg/beamer]{beamer} presentation), the non-extended
+    bold may not be available. In that case, it defaults to an extended bold
+    (\cs{bfseries}) instead. At this point, the command is redefined to
+    \code{\cs{fontseries}\braces{b}\cs{selectfont}} or \cs{bfseries}, as
+    appropriate (i.e., without this check). So, while
+    \code{\refc{kw}\braces{hello}} produces the non-extended \kw{hello} in a
+    default \LaTeX\ document, it yields the extended {\origbfseries\sffamily
+    hello} in a default \pkg[https://ctan.org/pkg/beamer]{beamer}
+    presentation. Perhaps more clearly, this is the result in plain \LaTeX\
+    (using \pkg[https://ctan.org/tex-archive/info/lmodern]{lmodern}):
+
+{\let\bfseries\origbfseries
+\begin{texexp}
+\textbf{while}\\                  % Extended
+\kw{while}\\                      % Keyword
+{\fontseries{b}\selectfont while} % Non-extended
+\end{texexp}
+}\ignorespaces\par
+
+    \noindent
+    The same code results in the the following in
+    \pkg[https://ctan.org/pkg/beamer]{beamer}:
+
+    \medskip\noindent
+    \includegraphics{kwfig}
+
+    \medskip\noindent
+    You'll also get a font warning,\footnote{Of course, if you use a different
+    font or theme, e.g., with the \pkg[https://ctan.org/pkg/beamer]{beamer}
+    command \code{\cs{usefonttheme}\braces{serif}}, you may not have any issues to
+    begin with.} though only once, as it's suppressed after the first occurrence,
+    so the fact that the font selection doesn't work on the last line isn't
+    reported. Note, however, that the current implementation of \refc{kwfont}
+    actually \emph{piggybacks} on this warning to determine if the non-extended
+    bold is available. This means that if you've tried (and failed) to use
+    \code{\cs{fontseries}\braces{b}} \emph{before} the fist use of \refc{kwfont},
+    the fallback (i.e., extended bold) won't be triggered.
+
+    Also note that \refk{indent-text} (which will tend to be the first
+    occurrence use of \refc{kwfont}) won't be evaluated (to determine
+    \refk{indent-length}) until you actually start a \refe{pseudo}
+    environment, so if you're \emph{aware} that you don't have non-extended
+    bold available, and you set \code*{\refk{kwfont} = \cs{bfseries}}, for
+    example, there will be no attempt to use the non-extended version, and you
+    won't get the font warning that the default implementation produces in
+    that case.
 \end{docCommand}
 
 \begin{docKey}{label}{\,=\,\meta{commands}}{%
@@ -2621,7 +2681,10 @@ which the current line is indented. The initial indent level may be set using
 variants we'll need of some standard commands:
 \begin{source}
 \cs_generate_variant:Nn \tl_if_novalue:nTF        { VTF   }
+\cs_generate_variant:Nn \tl_set:Nn                { Ne    }
 \cs_generate_variant:Nn \regex_extract_once:nnNTF { nVNTF }
+% \cs_generate_variant:Nn \regex_match:nnF          { nVF   }
+\cs_generate_variant:Nn \regex_match:nnF          { neF   }
 \end{source}
 \paragraph{Defining columns.} The \refk{preamble} is is configurable, but the
 \pkg[https://ctan.org/pkg/array]{array} package makes sure it doesn't expand
@@ -2831,6 +2894,43 @@ commands:
 (As a side-effect, we've now also defined \cs{pseudonf} and \cs{pseudotn},
 which we don't really need.)
 %
+While we're at it, we'll define the initial value for \refc{kwfont}, which is
+generally non-extended bold, if that's available, but extended bold otherwise:
+\begin{source}
+\cs_new:Nn \@@_b_or_bx: {
+
+    % Note: We're relying on the warning text in \@defaultsubs
+    % being defined by \selectfont if the desired font isn't
+    % found. This won't happen, however, if the same
+    % \curr@fontshape combination has been attempted before
+    % (cf. source2e.pdf page 179).
+
+    \group_begin:
+
+    \cs_if_exist:NT \@defaultsubs {
+        \@@_gsave_as:NN \@defaultsubs \@@_defaultsubs
+        \cs_gset_eq:NN \@defaultsubs \relax
+    }
+
+    % This is what we'd like:
+    \cs_gset:Nn \@@_b_or_bx: { \fontseries{b}\selectfont }
+
+    % Try it:
+    \@@_b_or_bx:
+
+    % Fallback, if that failed:
+    \cs_if_exist:NT \@defaultsubs {
+        \cs_gset_eq:NN \@@_b_or_bx: \bfseries
+        \group_insert_after:N \@@_b_or_bx:
+    }
+
+    \group_end:
+
+}
+\end{source}
+Note that the command redefines itself after the first use, so as not to
+execute the check every time.
+
 The \refc{pr} command is also a font shortcut, but in addition takes optional
 parenthesis-delimited arguments, which are set in math mode:
 \begin{source}
@@ -3062,7 +3162,7 @@ typesetting the pseudocode.
     indent-level    .int_set:N      = \l_@@_initial_indent_level_int,
 
     kwfont          .tl_set:N       = \kwfont,
-    kwfont          .initial:n      = \fontseries{b}\selectfont,
+    kwfont          .initial:n      = \@@_b_or_bx:,
 
     kw              .meta:n         = { font = \kwfont },
     kw              .value_forbidden:n = true,
