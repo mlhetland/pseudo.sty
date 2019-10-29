@@ -2684,7 +2684,6 @@ compatibility with older \TeX\ distributions.)
 \begin{source}
 \cs_generate_variant:Nn \quark_if_no_value:nTF    { VTF   }
 \cs_generate_variant:Nn \tl_set:Nn                { Ne    }
-\cs_generate_variant:Nn \regex_extract_once:nnNTF { nVNTF }
 \end{source}
 \paragraph{Defining columns.} The \refk{preamble} is is configurable, but the
 \pkg[https://ctan.org/pkg/array]{array} package makes sure it doesn't expand
@@ -3373,22 +3372,63 @@ latter of the two really shouldn't.\footnote{See
 \msg_new:nnn { pseudo } { unknown-key } {
     Unknown~key~'#1'~ignored.
 }
+
+\tl_new:N \l_@@_overlay_tl
+
 \keys_define:nn { pseudo } {
     unknown .code:n = {
-        \tl_set_eq:NN \l_tmpa_tl \l_keys_key_tl
-        \regex_extract_once:nVNTF {\A (.*) < (.*) > \Z}
-                                  \l_tmpa_tl \l_tmpa_seq {
-            \seq_pop_right:NN \l_tmpa_seq \l_tmpb_tl
-            \seq_pop_right:NN \l_tmpa_seq \l_tmpa_tl
+
+        \tl_map_inline:Nn \l_keys_key_tl {
+
+            \tl_if_eq:nnTF { ##1 } { < } {
+
+                \int_incr:N \l_tmpa_int
+                \int_compare:nF { \l_tmpb_int == 0 } {
+                    % We already found `>'!
+                    % Increment again to prevent match:
+                    \int_incr:N \l_tmpa_int
+                }
+
+                \tl_set_eq:NN \l_tmpb_tl \l_tmpa_tl
+                \tl_clear:N \l_tmpa_tl
+
+            } {
+
+            \tl_if_eq:nnTF { ##1 } { > } {
+
+                \int_incr:N \l_tmpb_int
+
+                \tl_set_eq:NN \l_@@_overlay_tl \l_tmpa_tl
+                \tl_clear:N \l_tmpa_tl
+
+            } {
+
+                \tl_put_right:Nn \l_tmpa_tl { ##1 }
+
+            } }
+
+        }
+
+        % A single `<' and a final, single `>'?
+        \bool_if:nTF {
+            \int_compare_p:n { \l_tmpa_int == \l_tmpb_int == 1 }
+            &&
+            \tl_if_empty_p:N \l_tmpa_tl
+        }{
+            % Match
             \tl_if_blank:nF{#1} {
-                \tl_put_right:Nn \l_tmpa_tl {= #1}
+                \tl_put_right:Nn \l_tmpb_tl {= #1}
             }
             \@@_keys_set_overlay:VnV
-                \l_tmpb_tl { pseudo } \l_tmpa_tl
-        }{
+                \l_@@_overlay_tl { pseudo } \l_tmpb_tl
+        } {
+            % No match
             \msg_error:nnx
                 { pseudo } { unknown-key } { \l_keys_path_tl }
         }
+
+        \group_end:
+
     }
 }
 \end{source}
