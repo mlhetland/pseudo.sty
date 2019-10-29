@@ -465,7 +465,7 @@
         \tl_gset_eq:NN \g__pseudo_cur_prefix_tl \pseudoprefix
     }
 }
-\NewDocumentCommand \__pseudo_eol_tail { !s d<> +O{ } } {
+\NewDocumentCommand \__pseudo_eol_tail { s d<> +O{ } } {
     \__pseudo_eol_handle_args:nnn{#1}{#2}{#3}
     \peek_meaning_ignore_spaces:NF \end {
         \pseudoeol
@@ -507,7 +507,7 @@
         }
     }
 }
-\NewDocumentEnvironment { pseudo } { !+o !s d<> +O{ } } {
+\NewDocumentEnvironment { pseudo } { +o s d<> +O{ } } {
     \group_begin:
     \__pseudo_gsave_as:NN \\ \c__pseudo_saved_cr_cs
     \__pseudo_gsave_as:NN \= \c__pseudo_saved_eq_cs

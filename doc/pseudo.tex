@@ -3509,7 +3509,7 @@ If starred, clear out the prefix:
         \tl_gset_eq:NN \g_@@_cur_prefix_tl \pseudoprefix
     }
 }
-\NewDocumentCommand \@@_eol_tail { !s d<> +O{ } } {
+\NewDocumentCommand \@@_eol_tail { s d<> +O{ } } {
     \@@_eol_handle_args:nnn{#1}{#2}{#3}
 \end{source}
 A new line is begun only if we're not at the end of the (or, at least of
@@ -3603,7 +3603,7 @@ While this is the main attraction, it's essentially just an augmented
 various macros already described.
 
 \begin{source}
-\NewDocumentEnvironment { pseudo } { !+o !s d<> +O{ } } {
+\NewDocumentEnvironment { pseudo } { +o s d<> +O{ } } {
 
     \group_begin:
 
