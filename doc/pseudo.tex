@@ -2678,9 +2678,11 @@ which the current line is indented. The initial indent level may be set using
 \subsection{Utilities}
 
 \paragraph{Variants.} First, let's just generate a couple of expansion
-variants we'll need of some standard commands:
+variants we'll need of some standard commands. (I'm using the
+\verb|\q_no_value| machinery rather than \verb|\c_novalue_tl| for
+compatibility with older \TeX\ distributions.)
 \begin{source}
-\cs_generate_variant:Nn \tl_if_novalue:nTF        { VTF   }
+\cs_generate_variant:Nn \quark_if_no_value:nTF    { VTF   }
 \cs_generate_variant:Nn \tl_set:Nn                { Ne    }
 \cs_generate_variant:Nn \regex_extract_once:nnNTF { nVNTF }
 \end{source}
@@ -2777,7 +2779,7 @@ provided, but \refk{indent-text} is only used if there is no \refk{indent-length
 \begin{source}
 \cs_new:Nn \@@_set_indent_length: {
 
-    \tl_if_novalue:VTF \l_@@_indent_length_tl {
+    \quark_if_no_value:VTF \l_@@_indent_length_tl {
         \hbox_set:Nn \l_tmpa_box { \l_@@_indent_text_tl }
         \dim_set:Nn \pseudoindentlength { \box_wd:N \l_tmpa_box }
     } {
@@ -3152,7 +3154,7 @@ typesetting the pseudocode.
     ref             .default:n      = \l_@@_label_tl,
 
     indent-length   .tl_set:N       = \l_@@_indent_length_tl,
-    indent-length   .initial:V      = \c_novalue_tl,
+    indent-length   .initial:V      = \q_no_value,
 
     indent-text     .tl_set:N       = \l_@@_indent_text_tl,
     indent-text     .initial:n      = { \pseudofont\kw{else}\ },

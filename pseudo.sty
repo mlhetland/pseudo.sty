@@ -42,7 +42,7 @@
 \dim_new:N  \pseudoindentlength
 \int_new:N  \g__pseudo_indent_level_int
 \int_new:N  \l__pseudo_initial_indent_level_int
-\cs_generate_variant:Nn \tl_if_novalue:nTF        { VTF   }
+\cs_generate_variant:Nn \quark_if_no_value:nTF    { VTF   }
 \cs_generate_variant:Nn \tl_set:Nn                { Ne    }
 \cs_generate_variant:Nn \regex_extract_once:nnNTF { nVNTF }
 \cs_new:Nn \__pseudo_undef_col:n {
@@ -88,7 +88,7 @@
     }
 }
 \cs_new:Nn \__pseudo_set_indent_length: {
-    \tl_if_novalue:VTF \l__pseudo_indent_length_tl {
+    \quark_if_no_value:VTF \l__pseudo_indent_length_tl {
         \hbox_set:Nn \l_tmpa_box { \l__pseudo_indent_text_tl }
         \dim_set:Nn \pseudoindentlength { \box_wd:N \l_tmpa_box }
     } {
@@ -280,7 +280,7 @@
     ref             .tl_set:N       = \thepseudoline,
     ref             .default:n      = \l__pseudo_label_tl,
     indent-length   .tl_set:N       = \l__pseudo_indent_length_tl,
-    indent-length   .initial:V      = \c_novalue_tl,
+    indent-length   .initial:V      = \q_no_value,
     indent-text     .tl_set:N       = \l__pseudo_indent_text_tl,
     indent-text     .initial:n      = { \pseudofont\kw{else}\ },
     indent-level    .int_set:N      = \l__pseudo_initial_indent_level_int,
