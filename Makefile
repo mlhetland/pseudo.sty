@@ -33,7 +33,7 @@ pseudo.sty:	VERSION LICENSE doc/pseudo.tex
 		-e "s/_@@/__pseudo/g" \
 		-e "s/@@/__pseudo/g" \
 		-e "s/VERSION/$$(cat VERSION)/g" \
-		-e "s/DATE/$$(date +"%Y-%m-%d")/g" \
+		-e "s/DATE/$$(date +"%Y\/%m\/%d")/g" \
 		-e "s/[ ]*%.*\$$//" \
 		-e "/^\$$/d" \
 		-e "p" \
