@@ -494,8 +494,10 @@ If you want, you can certainly create shortcuts, e.g.,
 \verb|\def\While{\kw{while}}|, or using various declaration commands, such as
 \refc{DeclarePseudoKeyword} or \refc{DeclarePseudoConstant}. Procedures and
 functions capture parenthesized arguments and set them in math mode; this
-carries over in such shortcuts, so if you define \verb|\Euclid| to mean
-\verb|\pr{Euclid}|, then \code*{\cs{Euclid}(a, b)} yields \pr{Euclid}(a,b).
+carries over in shortcuts, so if you define \verb|\Euclid| to mean
+\verb|\pr{Euclid}|, then \code*{\cs{Euclid}(a, b)} yields
+\pr{Euclid}(a,b).\footnote{Note that \code*{\cs{Euclid} (a, b)}, with a space
+before the parenthetical, yields \pr{Euclid} (a, b).}
 
 These commands are not used in the internals of the package, so they may be
 freely redefined for different styling, such as \verb|\let\id\textsf|. They
@@ -2931,20 +2933,35 @@ Note that the command redefines itself after the first use, so as not to
 execute the check every time.
 
 The \refc{pr} command is also a font shortcut, but in addition takes optional
-parenthesis-delimited arguments, which are set in math mode:
+parenthesis-delimited arguments, which are set in math mode. To avoid
+erroneousy slurping up following parentheticals, there should be no space
+separating the command and its optional argument. With current versions of
+\pkg[https://ctan.org/pkg/xparse]{xparse}, this can be achieved with the
+\verb|!| argument type, but for compatibility with older \TeX\ distributions,
+I'll deal with it ``manually.''
 \begin{source}
 \cs_new:Nn \@@_fmt_pr:n {
     \textnormal{\prfont{ #1 }}
 }
-\cs_new:Nn \@@_fmt_pr:nn {
-    \@@_fmt_pr:n { #1 }
-    \ensuremath{ ( #2 ) }
+
+\NewDocumentCommand \@@_parse_paren_args { +d() } {
+    \IfNoValueF { #1 } {
+        \ensuremath{ ( #1 ) }
+    }
 }
-\@@_new_cmd:Nnn \pr { m !+d() } {
-    \IfNoValueTF { #2 } {
-        \@@_fmt_pr:n  { #1 }
+
+\NewDocumentCommand \@@_parse_bracket_or_paren_args { +o } {
+    \IfNoValueTF { #1 } {
+        \@@_parse_paren_args
     } {
-        \@@_fmt_pr:nn { #1 } { #2 }
+        \ensuremath{ [ #1 ] }
+    }
+}
+
+\@@_new_cmd:Nnn \pr { m } {
+    \@@_fmt_pr:n { #1 }
+    \peek_catcode:NTF { ~ } { } {
+        \@@_parse_paren_args
     }
 }
 \end{source}
@@ -2954,26 +2971,10 @@ square brackets.
 \cs_new:Nn \@@_fmt_fn:n {
     \textnormal{\fnfont{ #1 }}
 }
-\cs_new:Nn \@@_fmt_fn:nn {
+\@@_new_cmd:Nnn \fn { m } {
     \@@_fmt_fn:n { #1 }
-    \ensuremath{ ( #2 ) }
-}
-\cs_new:Nn \@@_fmt_ar:nn {
-    \@@_fmt_fn:n { #1 }
-    \ensuremath{ [ #2 ] }
-}
-\@@_new_cmd:Nnn \fn { m !+o !+d() } {
-    \IfNoValueTF { #2 } {
-        \IfNoValueTF { #3 } {
-            \@@_fmt_fn:n  { #1 }
-        } {
-            \@@_fmt_fn:nn { #1 } { #3 }
-        }
-    } {
-        \@@_fmt_ar:nn { #1 } { #2 }
-        \IfNoValueF { #3 } {
-            ( #3 )
-        }
+    \peek_catcode:NTF { ~ } { } {
+        \@@_parse_bracket_or_paren_args
     }
 }
 \end{source}
@@ -2985,7 +2986,7 @@ argument can not be optional (unlike for \refc{pr}).
 \@@_new_ecmd:Nnn \hd { m +r() } {
     \multicolumn{2}
         {\@@_hd_preamble}
-        {\@@_fmt_pr:nn{#1}{#2}}
+        {\@@_fmt_pr:n{#1}\ensuremath{(#2)}}
 }
 \end{source}
 Finally, \refc{st} and \refc{ct} add quotes and comment delimiters,

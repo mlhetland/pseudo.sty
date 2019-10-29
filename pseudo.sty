@@ -157,46 +157,37 @@
 \cs_new:Nn \__pseudo_fmt_pr:n {
     \textnormal{\prfont{ #1 }}
 }
-\cs_new:Nn \__pseudo_fmt_pr:nn {
-    \__pseudo_fmt_pr:n { #1 }
-    \ensuremath{ ( #2 ) }
+\NewDocumentCommand \__pseudo_parse_paren_args { +d() } {
+    \IfNoValueF { #1 } {
+        \ensuremath{ ( #1 ) }
+    }
 }
-\__pseudo_new_cmd:Nnn \pr { m !+d() } {
-    \IfNoValueTF { #2 } {
-        \__pseudo_fmt_pr:n  { #1 }
+\NewDocumentCommand \__pseudo_parse_bracket_or_paren_args { +o } {
+    \IfNoValueTF { #1 } {
+        \__pseudo_parse_paren_args
     } {
-        \__pseudo_fmt_pr:nn { #1 } { #2 }
+        \ensuremath{ [ #1 ] }
+    }
+}
+\__pseudo_new_cmd:Nnn \pr { m } {
+    \__pseudo_fmt_pr:n { #1 }
+    \peek_catcode:NTF { ~ } { } {
+        \__pseudo_parse_paren_args
     }
 }
 \cs_new:Nn \__pseudo_fmt_fn:n {
     \textnormal{\fnfont{ #1 }}
 }
-\cs_new:Nn \__pseudo_fmt_fn:nn {
+\__pseudo_new_cmd:Nnn \fn { m } {
     \__pseudo_fmt_fn:n { #1 }
-    \ensuremath{ ( #2 ) }
-}
-\cs_new:Nn \__pseudo_fmt_ar:nn {
-    \__pseudo_fmt_fn:n { #1 }
-    \ensuremath{ [ #2 ] }
-}
-\__pseudo_new_cmd:Nnn \fn { m !+o !+d() } {
-    \IfNoValueTF { #2 } {
-        \IfNoValueTF { #3 } {
-            \__pseudo_fmt_fn:n  { #1 }
-        } {
-            \__pseudo_fmt_fn:nn { #1 } { #3 }
-        }
-    } {
-        \__pseudo_fmt_ar:nn { #1 } { #2 }
-        \IfNoValueF { #3 } {
-            ( #3 )
-        }
+    \peek_catcode:NTF { ~ } { } {
+        \__pseudo_parse_bracket_or_paren_args
     }
 }
 \__pseudo_new_ecmd:Nnn \hd { m +r() } {
     \multicolumn{2}
         {\__pseudo_hd_preamble}
-        {\__pseudo_fmt_pr:nn{#1}{#2}}
+        {\__pseudo_fmt_pr:n{#1}\ensuremath{(#2)}}
 }
 \__pseudo_new_cmd:Nnn \st { +m } {
     \textnormal {
