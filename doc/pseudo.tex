@@ -3052,7 +3052,9 @@ well).
         \tex_mskip:D     \l_tmpa_muskip
         \box_use:N       \l_tmpa_box
         \tex_mskip:D     \l_tmpb_muskip
-        \box_use_drop:N  \l_tmpa_box
+        % \box_use_drop:N  \l_tmpa_box
+        % Replaced for compatibility
+        \box             \l_tmpa_box
         \tex_mskip:D     \l_tmpa_muskip
     }
     \group_end:
@@ -3482,7 +3484,8 @@ setting it to zero.
 If the user happens to dedent too much, we might as well be a bit forgiving,
 and clamp the indent level to non-negative values:
 \begin{source}
-    \int_compare:nNnT \g_@@_indent_level_int > \c_zero_int {
+    % Not using \c_zero_int for compatibility
+    \int_compare:nNnT \g_@@_indent_level_int > 0 {
         \int_gdecr:N \g_@@_indent_level_int
     }
 }

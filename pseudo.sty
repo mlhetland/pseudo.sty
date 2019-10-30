@@ -218,7 +218,7 @@
         \tex_mskip:D     \l_tmpa_muskip
         \box_use:N       \l_tmpa_box
         \tex_mskip:D     \l_tmpb_muskip
-        \box_use_drop:N  \l_tmpa_box
+        \box             \l_tmpa_box
         \tex_mskip:D     \l_tmpa_muskip
     }
     \group_end:
@@ -440,7 +440,7 @@
     \int_gincr:N \g__pseudo_indent_level_int
 }
 \cs_new:Nn \__pseudo_dec_indent: {
-    \int_compare:nNnT \g__pseudo_indent_level_int > \c_zero_int {
+    \int_compare:nNnT \g__pseudo_indent_level_int > 0 {
         \int_gdecr:N \g__pseudo_indent_level_int
     }
 }
