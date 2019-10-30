@@ -1325,14 +1325,14 @@ See also \refk{bol-append}, \refk{setup-append} and \refk{dim-color}.
     shortcut, and configurable via \refk{eqs-pad}, \refk{eqs-scale} and
     \refk{eqs-sep}.
 \end{docCommand}
-\begin{docKey}{eqs-pad}{\,=\,\meta{length}}{\initialkeyvalue{\code{0.28mu}}}
+\begin{docKey}{eqs-pad}{\,=\,\meta{muskip}}{\initialkeyvalue{\code{0.28mu}}}
     The amount of space inserted on each side of \refc{eqs}.
 \end{docKey}
 \begin{docKey}{eqs-scale}{\,=\,\meta{number}}{\initialkeyvalue{\code{0.6785}}}
     The amount of horizontal scaling applied to the \code{=} signs in
     \refc{eqs}.
 \end{docKey}
-\begin{docKey}{eqs-sep}{\,=\,\meta{length}}{\initialkeyvalue{\code{0.63mu}}}
+\begin{docKey}{eqs-sep}{\,=\,\meta{muskip}}{\initialkeyvalue{\code{0.63mu}}}
     The amount of space inserted between the two \code{=} signs in \cs{eqs}.
 \end{docKey}
 
@@ -3385,6 +3385,8 @@ latter of the two really shouldn't.\footnote{See
 
 \keys_define:nn { pseudo } {
     unknown .code:n = {
+
+        \group_begin:
 
         \tl_map_inline:Nn \l_keys_key_tl {
 

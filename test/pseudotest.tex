@@ -1,0 +1,208 @@
+\documentclass[a4paper]{article}
+
+\def\id{my previous definition}
+
+\usepackage{pseudo}
+
+\title{Tests for the \textsf{pseudo} package}
+\author{Magnus Lie Hetland}
+
+\begin{document}
+\maketitle
+
+\noindent
+This document is an attempt to use the features of the \textsf{pseudo} package
+without any other dependencies (as opposed to the \textsf{pseudo}
+documentation), e.g., to determine whether it's usable with an older \TeX\
+distribution.
+
+\section*{Fonts and styling}
+
+The previous definition of \verb|\id| is: \id\\
+\let\id\pseudoid
+
+\bigskip
+\noindent
+\begin{tabular}{@{}ll@{}}
+\verb|\cmd|       & \verb|\pseudocmd|\\
+\kw{while}        & \pseudokw{while}\\
+\cn{false}        & \pseudocn{false}\\
+\id{rank}         & \pseudoid{rank}\\
+\st{Hello!}       & \pseudost{Hello!}\\
+\pr{Euclid}(a b)  & \pseudopr{Euclid}(a b)\\
+\fn{length}(A)    & \pseudofn{length}(A)\\
+\fn{length}[A]    & \pseudofn{length}[A]\\
+\ct{Important!}   & \pseudoct{Important!}\\
+\end{tabular}
+
+{\pseudoset{
+    kwfont=KW:~,
+    cnfont=CN:~,
+    idfont=ID:~,
+    stfont=ST:~,
+    st-left=[,
+    st-right=],
+    prfont=PR:~,
+    fnfont=FN:~,
+    ctfont=CT:~,
+    ct-left=[,
+    ct-right=],
+}
+\bigskip
+\noindent
+\begin{tabular}{@{}ll@{}}
+\verb|\cmd|       & \verb|\pseudocmd|\\
+\kw{while}        & \pseudokw{while}\\
+\cn{false}        & \pseudocn{false}\\
+\id{rank}         & \pseudoid{rank}\\
+\st{Hello!}       & \pseudost{Hello!}\\
+\pr{Euclid}(a b)  & \pseudopr{Euclid}(a b)\\
+\fn{length}(A)    & \pseudofn{length}(A)\\
+\fn{length}[A]    & \pseudofn{length}[A]\\
+\ct{Important!}   & \pseudoct{Important!}\\
+\end{tabular}}
+
+% The one on the line is ignored:
+\begin{pseudo}[hpad, dim-color=red, kw][dim-color=blue, dim]
+    foo \\[hl]
+    bar
+\end{pseudo}
+
+\noindent
+Should be \verb|\fn{test}[A]| followed by \verb|(B)| in normalfont:
+\fn{test}[A](B)
+
+\bigskip
+\noindent
+Should be \verb|\fn{test}(A)| followed by \verb|[B]| in normalfont:
+\fn{test}(A)[B]
+
+\section*{Declarations and definitions}
+
+\DeclarePseudoComment \Imp {Important!}
+\DeclarePseudoConstant \False {false}
+\DeclarePseudoFunction \Ln {length}
+\DeclarePseudoIdentifier \Rank {rank}
+\DeclarePseudoKeyword \While {while}
+\DeclarePseudoNormal \Error {halt with an error message}
+\DeclarePseudoProcedure \Euclid {Euclid}
+\DeclarePseudoString \Hello {Hello!}
+
+\begin{pseudo*}
+$x = y$ \qquad \Imp \\
+\False \\
+\Ln(A) or \Ln[A] \\
+\Rank \\
+\While \\
+\Error \\
+\Euclid(a, b) \\
+\Hello
+\end{pseudo*}
+
+\pseudodefinestyle{mystyle}{
+    font = \Large
+}
+
+\begin{pseudo*}[mystyle]
+Hello, world!
+\end{pseudo*}
+
+\section*{Notation}
+
+$A[1\..n] \== B[2\..n+1]$ \\
+$A[1\dts n] \eqs B[2\dts n+1]$ \\
+
+\noindent
+$\id{foo-bar:baz}$
+
+\noindent
+{\pseudoset{eqs-pad=10mu, eqs-scale=2, eqs-sep=5mu}$x\==y$}
+
+\begin{pseudo*}[kw]
+keyword \tn{normal} keyword \nf normal
+\end{pseudo*}
+
+\section*{Numbering and indentation}
+
+\begin{pseudo}[start=2, label=(\Roman*), label-align=l, ref=\Roman*]
+    one \\
+    two \label{linetwo} \\*
+? & three \\
+\end{pseudo}
+
+\begin{pseudo}*
+\hd{Header}(\id{args}) \\
+first line
+\end{pseudo}
+
+\noindent
+Reference to line~\ref{linetwo}.
+
+\begin{pseudo}[hpad=1cm, hsep=.1cm, indent-length=2cm, indent-level=1]
+A \\+
+B \\++
+C \\-
+D \\---
+E
+\end{pseudo}
+
+\begin{pseudo*}[indent-text={otherwise\ }]
+if this \\+
+    then that \\-
+otherwise something else
+\end{pseudo*}
+
+\section*{Layout}
+
+Here's a compact piece of pseudocode:
+\begin{pseudo*}[kw, compact]
+print \st{42}
+\end{pseudo*}
+
+\noindent
+Automatically compact:
+\fbox{\begin{pseudo*}
+In a box.
+\end{pseudo*}}
+
+\begin{pseudo}[left-margin=\parindent]
+indented
+\end{pseudo}
+
+\begin{pseudo}[line-height=2]
+lines \\
+far \\
+apart
+\end{pseudo}
+
+\begin{pseudo}[parskip=1cm, topsep=1cm, partopsep=1cm]
+custom parskip, topsep and partopsep
+\end{pseudo}
+
+\section*{Overlays etc.}
+
+Ignored outside \textsf{beamer}.
+
+\begin{pseudo}[pause, kwfont<3>=\nf, unknown<3>=42]
+    foo \\ <2>
+    bar
+\end{pseudo}
+
+% Things that could also be tested:
+% begin-tabular
+% bol
+% bol-append
+% bol-prepend
+% eol
+% eol-append
+% eol-prepend
+% preamble
+% prefix
+% pseudoeq
+% pseudoslash
+% setup
+% setup-append
+% setup-prepend
+% starred
+
+\end{document}

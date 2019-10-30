@@ -400,6 +400,7 @@
 \tl_new:N \l__pseudo_overlay_tl
 \keys_define:nn { pseudo } {
     unknown .code:n = {
+        \group_begin:
         \tl_map_inline:Nn \l_keys_key_tl {
             \tl_if_eq:nnTF { ##1 } { < } {
                 \int_incr:N \l_tmpa_int
