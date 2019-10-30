@@ -2,13 +2,14 @@ TARGETS=doc/pseudo.pdf doc/fig/readmefig.svg
 
 LATEX=latexmk -norc -pdf -auxdir=build -outdir=build
 FIGS=build/hilitefig.pdf build/pausefig.pdf build/kwfig.pdf
+TESTS=build/pseudotest.pdf
 
 all: $(TARGETS)
 
 doc/pseudo.pdf: build/pseudo.pdf
 	cp $< $@
 
-build/pseudo.pdf: doc/pseudo.tex build/pseudo.bib $(FIGS) README.md pseudo.sty
+build/pseudo.pdf: doc/pseudo.tex build/pseudo.bib $(FIGS) $(TESTS) README.md pseudo.sty
 	$(LATEX) $<
 
 build/pseudo.bib: doc/pseudo.bib
@@ -21,6 +22,9 @@ build/pausefig.pdf: doc/fig/pausefig.tex pseudo.sty
 	$(LATEX) $<
 
 build/kwfig.pdf: doc/fig/kwfig.tex pseudo.sty
+	$(LATEX) $<
+
+build/pseudotest.pdf: test/pseudotest.tex pseudo.sty
 	$(LATEX) $<
 
 pseudo.sty:	VERSION LICENSE doc/pseudo.tex
