@@ -184,8 +184,9 @@ custom parskip, topsep and partopsep
 Ignored outside \textsf{beamer}.
 
 \begin{pseudo}[pause, kwfont<3>=\nf, unknown<3>=42]
-    foo \\ <2>
-    bar
+    foo \\<2>
+    % bar \\ <3> % Dosn't work in older xparse versions
+    baz
 \end{pseudo}
 
 % Things that could also be tested:

@@ -431,6 +431,34 @@ There are also code-typesetting packages like
 \pkg[https://ctan.org/tex-archive/macros/latex/contrib/listings]{listings} and
 \pkg[https://ctan.org/pkg/minted]{minted}, of course.
 
+\subsection*{Using older \TeX\ distributions}
+
+The imlementation of \pkg{pseudo} uses some functionality that isn't available
+in older \TeX\ distributions, in particular, older versions of
+\pkg[https://ctan.org/pkg/xparse]{xparse} and
+\pkg[https://ctan.org/pkg/expl3]{expl3}. Some care has been taken to make the
+code backward compatible to the point where it works on \TeX\ Live~2016, which
+is what is used (at the time of writing) on \href{https://arxiv.org}{arXiv}.
+If you run into issues somewhere else (e.g., when submitting to some publisher
+with a custom setup), feel free to
+\href{https://github.com/mlhetland/pseudo.sty/issues}{file an issue}, or even
+\href{https://github.com/mlhetland/pseudo.sty/pulls}{provide a pull request}
+with a fix. One thing to look out for is that older versions of
+\pkg[https://ctan.org/pkg/xparse]{xparse} parse arguments differently, so
+things like
+\begin{texexp}[listing only]
+foo\\<1>
+bar\\[hl]
+\end{texexp}
+would work, but separating the arguments with spaces, as in
+\begin{texexp}[listing only]
+foo\\ <1>
+bar\\ [hl]
+\end{texexp}
+will \emph{not} work, though this works with more recent versions (as seen
+from some of my examples, later). For more advice on working around an older
+distribution, see also \cref{sec:older}.
+
 \section{Overview}
 
 The main component of the \pkg{pseudo} package is the \refe{pseudo}
@@ -1101,10 +1129,9 @@ alphabetical order), you'll find definitions of a couple of counters here
 
     This may not be enough, however. For example, if you're using
     \pkg[https://ctan.org/pkg/standalone]{standalone} to produce individual
-    pseudocode images, this compactness will \emph{not} be triggered
-    automatically. In such cases, you can override the behavior using the
-    \refk{compact} key, manually specifying whether you want the pseudocode to
-    be compact or not.
+    pseudocode images, this compactness may not be triggered automatically. In
+    such cases, you can override the behavior using the \refk{compact} key,
+    manually specifying whether you want the pseudocode to be compact or not.
 \end{docKey}
 
 \begin{docCommand}{ct}{\marg{text}}
@@ -2569,7 +2596,69 @@ course. This could be done by some hook triggered by the \code{-} flags in
 \refc{\bslash}. If it turns out there's a demand for something like that, I
 might add it in a future version.
 
+\subsection{\dots\,use \pkg{pseudo} with older \TeX\ distributions?}
+\label{sec:older}
+
+As mentioned in the introduction, I've tried to make \pkg{pseudo} work with at
+least \emph{somewhat} outdated \TeX\ distributions. In these cases, the
+package itself won't be available as part of the distribution, of course, but
+you can simply download the file
+\texttt{\href{http://mirrors.ctan.org/macros/latex/contrib/pseudo/pseudo.sty}{pseudo.sty}}
+and place it in the directory where you're compiling your document (or
+anywhere else where your \LaTeX\ executable can find it).
+
+However, there may be cases where this just doesn't work, such as when
+submitting to a publisher with a really old setup.\footnote{If possible,
+though, feel free to
+\href{https://github.com/mlhetland/pseudo.sty/issues}{file an issue} or
+\href{https://github.com/mlhetland/pseudo.sty/pulls}{provide a pull request}
+to address the issue.}
+In that case, the simplest solution is probably to use the
+\pkg[https://ctan.org/pkg/standalone]{standalone} package to produce
+individual PDFs of your algorithms, and then to include those in your
+document. Then you can submit the PDFs rather than the \LaTeX, so that the
+pseudocode need not be compiled on the old system. Each algorithm could go in
+a file like this:
+
+\begin{texexp}[listing only]
+\documentclass{standalone}
+\usepackage{pseudo}
+\begin{document}
+\begin{pseudo}
+    ...
+\end{pseudo}
+\end{document}
+\end{texexp}
+
+\noindent
+Let's say this is compiled to \texttt{algo1.pdf}. You then include this file:
+
+\begin{texexp}[listing only]
+\documentclass{article}
+\usepackage{graphicx} % For \includegraphics
+...
+\begin{document}
+... sanctus est Lorem ipsum dolor sit amet:
+
+\medskip\noindent
+\includegraphics{algo1}
+
+\smallskip
+Lorem ipsum dolor sit amet, consetetur sadipscing ...
+\end{document}
+\end{texexp}
+
+\noindent
+Of course, you can adjust the spacing (e.g., using \verb|\vspace| or the like)
+to your liking. Using this method, you can can achieve results essentially
+identical to if you compiled the pseudocode directly as part of the document.
+Of course, you won't have access to other functionality (such as
+\verb|\DeclarePseudoIdentifier| or the like) for use in the main tex, but most
+of that should be possible to emulate by hand (possibly peeking at the
+implementation in \cref{sec:impl}).
+
 \section{Implementation}
+\label{sec:impl}
 
 \lstdefinestyle{tcblatex}{language={[LaTeX]TeX},
     aboveskip={0\p@ \@plus 6\p@},
