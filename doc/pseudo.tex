@@ -2923,10 +2923,12 @@ generally non-extended bold, if that's available, but extended bold otherwise:
     % Fallback, if that failed:
     \cs_if_exist:NT \@defaultsubs {
         \cs_gset_eq:NN \@@_b_or_bx: \bfseries
-        \group_insert_after:N \@@_b_or_bx:
     }
 
     \group_end:
+
+    % Make sure the new version is used:
+    \@@_b_or_bx:
 
 }
 \end{source}
