@@ -431,6 +431,34 @@ There are also code-typesetting packages like
 \pkg[https://ctan.org/tex-archive/macros/latex/contrib/listings]{listings} and
 \pkg[https://ctan.org/pkg/minted]{minted}, of course.
 
+\subsection*{Using older \TeX\ distributions}
+
+The imlementation of \pkg{pseudo} uses some functionality that isn't available
+in older \TeX\ distributions, in particular, older versions of
+\pkg[https://ctan.org/pkg/xparse]{xparse} and
+\pkg[https://ctan.org/pkg/expl3]{expl3}. Some care has been taken to make the
+code backward compatible to the point where it works on \TeX\ Live~2016, which
+is what is used (at the time of writing) on \href{https://arxiv.org}{arXiv}.
+If you run into issues somewhere else (e.g., when submitting to some publisher
+with a custom setup), feel free to
+\href{https://github.com/mlhetland/pseudo.sty/issues}{file an issue}, or even
+\href{https://github.com/mlhetland/pseudo.sty/pulls}{provide a pull request}
+with a fix. One thing to look out for is that older versions of
+\pkg[https://ctan.org/pkg/xparse]{xparse} parse arguments differently, so
+things like
+\begin{texexp}[listing only]
+foo\\<1>
+bar\\[hl]
+\end{texexp}
+would work, but separating the arguments with spaces, as in
+\begin{texexp}[listing only]
+foo\\ <1>
+bar\\ [hl]
+\end{texexp}
+will \emph{not} work, though this works with more recent versions (as seen
+from some of my examples, later). For more advice on working around an older
+distribution, see also \cref{sec:older}.
+
 \section{Overview}
 
 The main component of the \pkg{pseudo} package is the \refe{pseudo}
@@ -494,8 +522,10 @@ If you want, you can certainly create shortcuts, e.g.,
 \verb|\def\While{\kw{while}}|, or using various declaration commands, such as
 \refc{DeclarePseudoKeyword} or \refc{DeclarePseudoConstant}. Procedures and
 functions capture parenthesized arguments and set them in math mode; this
-carries over in such shortcuts, so if you define \verb|\Euclid| to mean
-\verb|\pr{Euclid}|, then \code*{\cs{Euclid}(a, b)} yields \pr{Euclid}(a,b).
+carries over in shortcuts, so if you define \verb|\Euclid| to mean
+\verb|\pr{Euclid}|, then \code*{\cs{Euclid}(a, b)} yields
+\pr{Euclid}(a,b).\footnote{Note that \code*{\cs{Euclid} (a, b)}, with a space
+before the parenthetical, yields \pr{Euclid} (a, b).}
 
 These commands are not used in the internals of the package, so they may be
 freely redefined for different styling, such as \verb|\let\id\textsf|. They
@@ -1099,10 +1129,9 @@ alphabetical order), you'll find definitions of a couple of counters here
 
     This may not be enough, however. For example, if you're using
     \pkg[https://ctan.org/pkg/standalone]{standalone} to produce individual
-    pseudocode images, this compactness will \emph{not} be triggered
-    automatically. In such cases, you can override the behavior using the
-    \refk{compact} key, manually specifying whether you want the pseudocode to
-    be compact or not.
+    pseudocode images, this compactness may not be triggered automatically. In
+    such cases, you can override the behavior using the \refk{compact} key,
+    manually specifying whether you want the pseudocode to be compact or not.
 \end{docKey}
 
 \begin{docCommand}{ct}{\marg{text}}
@@ -1323,14 +1352,14 @@ See also \refk{bol-append}, \refk{setup-append} and \refk{dim-color}.
     shortcut, and configurable via \refk{eqs-pad}, \refk{eqs-scale} and
     \refk{eqs-sep}.
 \end{docCommand}
-\begin{docKey}{eqs-pad}{\,=\,\meta{length}}{\initialkeyvalue{\code{0.28mu}}}
+\begin{docKey}{eqs-pad}{\,=\,\meta{muskip}}{\initialkeyvalue{\code{0.28mu}}}
     The amount of space inserted on each side of \refc{eqs}.
 \end{docKey}
 \begin{docKey}{eqs-scale}{\,=\,\meta{number}}{\initialkeyvalue{\code{0.6785}}}
     The amount of horizontal scaling applied to the \code{=} signs in
     \refc{eqs}.
 \end{docKey}
-\begin{docKey}{eqs-sep}{\,=\,\meta{length}}{\initialkeyvalue{\code{0.63mu}}}
+\begin{docKey}{eqs-sep}{\,=\,\meta{muskip}}{\initialkeyvalue{\code{0.63mu}}}
     The amount of space inserted between the two \code{=} signs in \cs{eqs}.
 \end{docKey}
 
@@ -1958,10 +1987,10 @@ goto \tn{\ref{li:ref}}
 \begin{docCommand}{st}{\marg{string}}
     Typesets \meta{string} with added quotes using \refc{stfont}. (The entire
     thing is wrapped in \cs{textnormal}.) For example, \code*{print
-    \cs{st}\braces{42}} yields
+    \cs{st}\braces{42}} yields:
     \begin{pseudo*}
         print \st{42}
-    \end{pseudo*}.
+    \end{pseudo*}
     See also \refc{DeclarePseudoString}.
     \fontutil{strings}
     \pseudoshortcutted{st}
@@ -2567,7 +2596,69 @@ course. This could be done by some hook triggered by the \code{-} flags in
 \refc{\bslash}. If it turns out there's a demand for something like that, I
 might add it in a future version.
 
+\subsection{\dots\,use \pkg{pseudo} with older \TeX\ distributions?}
+\label{sec:older}
+
+As mentioned in the introduction, I've tried to make \pkg{pseudo} work with at
+least \emph{somewhat} outdated \TeX\ distributions. In these cases, the
+package itself won't be available as part of the distribution, of course, but
+you can simply download the file
+\texttt{\href{http://mirrors.ctan.org/macros/latex/contrib/pseudo/pseudo.sty}{pseudo.sty}}
+and place it in the directory where you're compiling your document (or
+anywhere else where your \LaTeX\ executable can find it).
+
+However, there may be cases where this just doesn't work, such as when
+submitting to a publisher with a really old setup.\footnote{If possible,
+though, feel free to
+\href{https://github.com/mlhetland/pseudo.sty/issues}{file an issue} or
+\href{https://github.com/mlhetland/pseudo.sty/pulls}{provide a pull request}
+to address the issue.}
+In that case, the simplest solution is probably to use the
+\pkg[https://ctan.org/pkg/standalone]{standalone} package to produce
+individual PDFs of your algorithms, and then to include those in your
+document. Then you can submit the PDFs rather than the \LaTeX, so that the
+pseudocode need not be compiled on the old system. Each algorithm could go in
+a file like this:
+
+\begin{texexp}[listing only]
+\documentclass{standalone}
+\usepackage{pseudo}
+\begin{document}
+\begin{pseudo}
+    ...
+\end{pseudo}
+\end{document}
+\end{texexp}
+
+\noindent
+Let's say this is compiled to \texttt{algo1.pdf}. You then include this file:
+
+\begin{texexp}[listing only]
+\documentclass{article}
+\usepackage{graphicx} % For \includegraphics
+...
+\begin{document}
+... sanctus est Lorem ipsum dolor sit amet:
+
+\medskip\noindent
+\includegraphics{algo1}
+
+\smallskip
+Lorem ipsum dolor sit amet, consetetur sadipscing ...
+\end{document}
+\end{texexp}
+
+\noindent
+Of course, you can adjust the spacing (e.g., using \verb|\vspace| or the like)
+to your liking. Using this method, you can can achieve results essentially
+identical to if you compiled the pseudocode directly as part of the document.
+Of course, you won't have access to other functionality (such as
+\verb|\DeclarePseudoIdentifier| or the like) for use in the main tex, but most
+of that should be possible to emulate by hand (possibly peeking at the
+implementation in \cref{sec:impl}).
+
 \section{Implementation}
+\label{sec:impl}
 
 \lstdefinestyle{tcblatex}{language={[LaTeX]TeX},
     aboveskip={0\p@ \@plus 6\p@},
@@ -2678,11 +2769,12 @@ which the current line is indented. The initial indent level may be set using
 \subsection{Utilities}
 
 \paragraph{Variants.} First, let's just generate a couple of expansion
-variants we'll need of some standard commands:
+variants we'll need of some standard commands. (I'm using the
+\verb|\q_no_value| machinery rather than \verb|\c_novalue_tl| for
+compatibility with older \TeX\ distributions.)
 \begin{source}
-\cs_generate_variant:Nn \tl_if_novalue:nTF        { VTF   }
+\cs_generate_variant:Nn \quark_if_no_value:nTF    { VTF   }
 \cs_generate_variant:Nn \tl_set:Nn                { Ne    }
-\cs_generate_variant:Nn \regex_extract_once:nnNTF { nVNTF }
 \end{source}
 \paragraph{Defining columns.} The \refk{preamble} is is configurable, but the
 \pkg[https://ctan.org/pkg/array]{array} package makes sure it doesn't expand
@@ -2713,21 +2805,22 @@ undefined):
 \cs_new:Nn \@@_meta_new_cmd:NNnn {
     \tl_set:Nn \l_tmpa_tl {pseudo \cs_to_str:N #2}
     \exp_args:Nc
-        #1 \l_tmpa_tl {#3} {#4}
+        #1 \l_tmpa_tl #3 {#4}
     \cs_if_free:NT #2 {\cs_gset_eq:Nc #2 \l_tmpa_tl}
 }
 
 \cs_new:Nn \@@_new_cmd:Nnn {
     \@@_meta_new_cmd:NNnn
-    \NewDocumentCommand #1 {#2} {
+    \NewDocumentCommand #1 {{#2}} {
         #3
     }
 }
 
-
 \cs_new:Nn \@@_new_ecmd:Nnn {
     \@@_meta_new_cmd:NNnn
-    \NewExpandableDocumentCommand #1 {#2} {
+    % \NewExpandableDocumentCommand #1 {{#2}} {
+    % Replaced for compatibility:
+    \def #1 {#2} {
         #3
     }
 }
@@ -2777,7 +2870,7 @@ provided, but \refk{indent-text} is only used if there is no \refk{indent-length
 \begin{source}
 \cs_new:Nn \@@_set_indent_length: {
 
-    \tl_if_novalue:VTF \l_@@_indent_length_tl {
+    \quark_if_no_value:VTF \l_@@_indent_length_tl {
         \hbox_set:Nn \l_tmpa_box { \l_@@_indent_text_tl }
         \dim_set:Nn \pseudoindentlength { \box_wd:N \l_tmpa_box }
     } {
@@ -2919,10 +3012,12 @@ generally non-extended bold, if that's available, but extended bold otherwise:
     % Fallback, if that failed:
     \cs_if_exist:NT \@defaultsubs {
         \cs_gset_eq:NN \@@_b_or_bx: \bfseries
-        \group_insert_after:N \@@_b_or_bx:
     }
 
     \group_end:
+
+    % Make sure the new version is used:
+    \@@_b_or_bx:
 
 }
 \end{source}
@@ -2930,20 +3025,35 @@ Note that the command redefines itself after the first use, so as not to
 execute the check every time.
 
 The \refc{pr} command is also a font shortcut, but in addition takes optional
-parenthesis-delimited arguments, which are set in math mode:
+parenthesis-delimited arguments, which are set in math mode. To avoid
+erroneousy slurping up following parentheticals, there should be no space
+separating the command and its optional argument. With current versions of
+\pkg[https://ctan.org/pkg/xparse]{xparse}, this can be achieved with the
+\verb|!| argument type, but for compatibility with older \TeX\ distributions,
+I'll deal with it ``manually.''
 \begin{source}
 \cs_new:Nn \@@_fmt_pr:n {
     \textnormal{\prfont{ #1 }}
 }
-\cs_new:Nn \@@_fmt_pr:nn {
-    \@@_fmt_pr:n { #1 }
-    \ensuremath{ ( #2 ) }
+
+\NewDocumentCommand \@@_parse_paren_args { +d() } {
+    \IfNoValueF { #1 } {
+        \ensuremath{ ( #1 ) }
+    }
 }
-\@@_new_cmd:Nnn \pr { m !+d() } {
-    \IfNoValueTF { #2 } {
-        \@@_fmt_pr:n  { #1 }
+
+\NewDocumentCommand \@@_parse_bracket_or_paren_args { +o } {
+    \IfNoValueTF { #1 } {
+        \@@_parse_paren_args
     } {
-        \@@_fmt_pr:nn { #1 } { #2 }
+        \ensuremath{ [ #1 ] }
+    }
+}
+
+\@@_new_cmd:Nnn \pr { m } {
+    \@@_fmt_pr:n { #1 }
+    \peek_catcode:NTF { ~ } { } {
+        \@@_parse_paren_args
     }
 }
 \end{source}
@@ -2953,26 +3063,10 @@ square brackets.
 \cs_new:Nn \@@_fmt_fn:n {
     \textnormal{\fnfont{ #1 }}
 }
-\cs_new:Nn \@@_fmt_fn:nn {
+\@@_new_cmd:Nnn \fn { m } {
     \@@_fmt_fn:n { #1 }
-    \ensuremath{ ( #2 ) }
-}
-\cs_new:Nn \@@_fmt_ar:nn {
-    \@@_fmt_fn:n { #1 }
-    \ensuremath{ [ #2 ] }
-}
-\@@_new_cmd:Nnn \fn { m !+o !+d() } {
-    \IfNoValueTF { #2 } {
-        \IfNoValueTF { #3 } {
-            \@@_fmt_fn:n  { #1 }
-        } {
-            \@@_fmt_fn:nn { #1 } { #3 }
-        }
-    } {
-        \@@_fmt_ar:nn { #1 } { #2 }
-        \IfNoValueF { #3 } {
-            ( #3 )
-        }
+    \peek_catcode:NTF { ~ } { } {
+        \@@_parse_bracket_or_paren_args
     }
 }
 \end{source}
@@ -2981,10 +3075,12 @@ two columns (effectively ignoring the labeling column). Because it needs to be
 expandable in order to insert the multicolumn, the final, parenthesis-enclosed
 argument can not be optional (unlike for \refc{pr}).
 \begin{source}
-\@@_new_ecmd:Nnn \hd { m +r() } {
+% \@@_new_ecmd:Nnn \hd { m +r() } {
+% Now uses \def syntax:
+\@@_new_ecmd:Nnn \hd { #1 ( #2 ) } {
     \multicolumn{2}
         {\@@_hd_preamble}
-        {\@@_fmt_pr:nn{#1}{#2}}
+        {\@@_fmt_pr:n{#1}\ensuremath{(#2)}}
 }
 \end{source}
 Finally, \refc{st} and \refc{ct} add quotes and comment delimiters,
@@ -3001,7 +3097,9 @@ respectively, to the typeset string, keeping it all in \cs{textnormal}:
 \end{source}
 Beyond text styling, we also have styling for entire rows, i.e., highlighting:
 \begin{source}
-\NewExpandableDocumentCommand \pseudohl { } {
+% \NewExpandableDocumentCommand \pseudohl { } {
+% For backward compatibility:
+\def \pseudohl {
     \rowcolor{\pseudohlcolor}
 }
 \end{source}
@@ -3043,7 +3141,9 @@ well).
         \tex_mskip:D     \l_tmpa_muskip
         \box_use:N       \l_tmpa_box
         \tex_mskip:D     \l_tmpb_muskip
-        \box_use_drop:N  \l_tmpa_box
+        % \box_use_drop:N  \l_tmpa_box
+        % Replaced for compatibility
+        \box             \l_tmpa_box
         \tex_mskip:D     \l_tmpa_muskip
     }
     \group_end:
@@ -3152,7 +3252,7 @@ typesetting the pseudocode.
     ref             .default:n      = \l_@@_label_tl,
 
     indent-length   .tl_set:N       = \l_@@_indent_length_tl,
-    indent-length   .initial:V      = \c_novalue_tl,
+    indent-length   .initial:V      = \q_no_value,
 
     indent-text     .tl_set:N       = \l_@@_indent_text_tl,
     indent-text     .initial:n      = { \pseudofont\kw{else}\ },
@@ -3371,22 +3471,65 @@ latter of the two really shouldn't.\footnote{See
 \msg_new:nnn { pseudo } { unknown-key } {
     Unknown~key~'#1'~ignored.
 }
+
+\tl_new:N \l_@@_overlay_tl
+
 \keys_define:nn { pseudo } {
     unknown .code:n = {
-        \tl_set_eq:NN \l_tmpa_tl \l_keys_key_tl
-        \regex_extract_once:nVNTF {\A (.*) < (.*) > \Z}
-                                  \l_tmpa_tl \l_tmpa_seq {
-            \seq_pop_right:NN \l_tmpa_seq \l_tmpb_tl
-            \seq_pop_right:NN \l_tmpa_seq \l_tmpa_tl
+
+        \group_begin:
+
+        \tl_map_inline:Nn \l_keys_key_tl {
+
+            \tl_if_eq:nnTF { ##1 } { < } {
+
+                \int_incr:N \l_tmpa_int
+                \int_compare:nF { \l_tmpb_int == 0 } {
+                    % We already found `>'!
+                    % Increment again to prevent match:
+                    \int_incr:N \l_tmpa_int
+                }
+
+                \tl_set_eq:NN \l_tmpb_tl \l_tmpa_tl
+                \tl_clear:N \l_tmpa_tl
+
+            } {
+
+            \tl_if_eq:nnTF { ##1 } { > } {
+
+                \int_incr:N \l_tmpb_int
+
+                \tl_set_eq:NN \l_@@_overlay_tl \l_tmpa_tl
+                \tl_clear:N \l_tmpa_tl
+
+            } {
+
+                \tl_put_right:Nn \l_tmpa_tl { ##1 }
+
+            } }
+
+        }
+
+        % A single `<' and a final, single `>'?
+        \bool_if:nTF {
+            \int_compare_p:n { \l_tmpa_int == \l_tmpb_int == 1 }
+            &&
+            \tl_if_empty_p:N \l_tmpa_tl
+        }{
+            % Match
             \tl_if_blank:nF{#1} {
-                \tl_put_right:Nn \l_tmpa_tl {= #1}
+                \tl_put_right:Nn \l_tmpb_tl {= #1}
             }
             \@@_keys_set_overlay:VnV
-                \l_tmpb_tl { pseudo } \l_tmpa_tl
-        }{
+                \l_@@_overlay_tl { pseudo } \l_tmpb_tl
+        } {
+            % No match
             \msg_error:nnx
                 { pseudo } { unknown-key } { \l_keys_path_tl }
         }
+
+        \group_end:
+
     }
 }
 \end{source}
@@ -3430,7 +3573,8 @@ setting it to zero.
 If the user happens to dedent too much, we might as well be a bit forgiving,
 and clamp the indent level to non-negative values:
 \begin{source}
-    \int_compare:nNnT \g_@@_indent_level_int > \c_zero_int {
+    % Not using \c_zero_int for compatibility
+    \int_compare:nNnT \g_@@_indent_level_int > 0 {
         \int_gdecr:N \g_@@_indent_level_int
     }
 }
@@ -3467,7 +3611,7 @@ If starred, clear out the prefix:
         \tl_gset_eq:NN \g_@@_cur_prefix_tl \pseudoprefix
     }
 }
-\NewDocumentCommand \@@_eol_tail { !s d<> +O{ } } {
+\NewDocumentCommand \@@_eol_tail { s d<> +O{ } } {
     \@@_eol_handle_args:nnn{#1}{#2}{#3}
 \end{source}
 A new line is begun only if we're not at the end of the (or, at least of
@@ -3561,7 +3705,7 @@ While this is the main attraction, it's essentially just an augmented
 various macros already described.
 
 \begin{source}
-\NewDocumentEnvironment { pseudo } { !+o !s d<> +O{ } } {
+\NewDocumentEnvironment { pseudo } { +o s d<> +O{ } } {
 
     \group_begin:
 
@@ -3579,7 +3723,8 @@ various macros already described.
     }
     \@@_set_indent_length:
 
-    % If not manually set as compact/noncompact, set automatically:
+    % If not manually set as compact/noncompact,
+    % set automatically:
     \bool_if:NF \l_@@_compact_def_bool {
         \bool_set:Nn \l_@@_compact_bool {
             \mode_if_horizontal_p: && \mode_if_inner_p:
