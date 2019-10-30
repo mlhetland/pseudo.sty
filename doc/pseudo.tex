@@ -2716,21 +2716,22 @@ undefined):
 \cs_new:Nn \@@_meta_new_cmd:NNnn {
     \tl_set:Nn \l_tmpa_tl {pseudo \cs_to_str:N #2}
     \exp_args:Nc
-        #1 \l_tmpa_tl {#3} {#4}
+        #1 \l_tmpa_tl #3 {#4}
     \cs_if_free:NT #2 {\cs_gset_eq:Nc #2 \l_tmpa_tl}
 }
 
 \cs_new:Nn \@@_new_cmd:Nnn {
     \@@_meta_new_cmd:NNnn
-    \NewDocumentCommand #1 {#2} {
+    \NewDocumentCommand #1 {{#2}} {
         #3
     }
 }
 
-
 \cs_new:Nn \@@_new_ecmd:Nnn {
     \@@_meta_new_cmd:NNnn
-    \NewExpandableDocumentCommand #1 {#2} {
+    % \NewExpandableDocumentCommand #1 {{#2}} {
+    % Replaced for compatibility:
+    \def #1 {#2} {
         #3
     }
 }
@@ -2983,7 +2984,9 @@ two columns (effectively ignoring the labeling column). Because it needs to be
 expandable in order to insert the multicolumn, the final, parenthesis-enclosed
 argument can not be optional (unlike for \refc{pr}).
 \begin{source}
-\@@_new_ecmd:Nnn \hd { m +r() } {
+% \@@_new_ecmd:Nnn \hd { m +r() } {
+% Now uses \def syntax:
+\@@_new_ecmd:Nnn \hd { #1 ( #2 ) } {
     \multicolumn{2}
         {\@@_hd_preamble}
         {\@@_fmt_pr:n{#1}\ensuremath{(#2)}}
@@ -3003,7 +3006,9 @@ respectively, to the typeset string, keeping it all in \cs{textnormal}:
 \end{source}
 Beyond text styling, we also have styling for entire rows, i.e., highlighting:
 \begin{source}
-\NewExpandableDocumentCommand \pseudohl { } {
+% \NewExpandableDocumentCommand \pseudohl { } {
+% For backward compatibility:
+\def \pseudohl {
     \rowcolor{\pseudohlcolor}
 }
 \end{source}

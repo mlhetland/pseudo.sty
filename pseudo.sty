@@ -21,7 +21,7 @@
 % SOFTWARE.
 %
 \def \pseudoversion {1.1.2}
-\def \pseudodate    {2019/10/29}
+\def \pseudodate    {2019/10/30}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -54,18 +54,18 @@
 \cs_new:Nn \__pseudo_meta_new_cmd:NNnn {
     \tl_set:Nn \l_tmpa_tl {pseudo \cs_to_str:N #2}
     \exp_args:Nc
-        #1 \l_tmpa_tl {#3} {#4}
+        #1 \l_tmpa_tl #3 {#4}
     \cs_if_free:NT #2 {\cs_gset_eq:Nc #2 \l_tmpa_tl}
 }
 \cs_new:Nn \__pseudo_new_cmd:Nnn {
     \__pseudo_meta_new_cmd:NNnn
-    \NewDocumentCommand #1 {#2} {
+    \NewDocumentCommand #1 {{#2}} {
         #3
     }
 }
 \cs_new:Nn \__pseudo_new_ecmd:Nnn {
     \__pseudo_meta_new_cmd:NNnn
-    \NewExpandableDocumentCommand #1 {#2} {
+    \def #1 {#2} {
         #3
     }
 }
@@ -184,7 +184,7 @@
         \__pseudo_parse_bracket_or_paren_args
     }
 }
-\__pseudo_new_ecmd:Nnn \hd { m +r() } {
+\__pseudo_new_ecmd:Nnn \hd { #1 ( #2 ) } {
     \multicolumn{2}
         {\__pseudo_hd_preamble}
         {\__pseudo_fmt_pr:n{#1}\ensuremath{(#2)}}
@@ -197,7 +197,7 @@
     \textnormal {
     \l__pseudo_ct_left_tl {\ctfont{#1}} \l__pseudo_ct_right_tl }
 }
-\NewExpandableDocumentCommand \pseudohl { } {
+\def \pseudohl {
     \rowcolor{\pseudohlcolor}
 }
 \__pseudo_new_dec:nn { Comment    } { ct }
