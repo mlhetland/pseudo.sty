@@ -1440,12 +1440,14 @@ We're not in math mode, but the argument of \Ln[A] is.
 \end{docCommand}
 
 \begin{docKey}{hd-preamble}{\,=\,\meta{columns}}{no default}
-    Sets the preamble used by \refc{hd}. Initially, a single left-aligned
-    column with \refc{pseudohpad} on either side (see
-    \cpageref{p:hdpreamble}). If you introduce more columns in
-    \refk{preamble}, you might want to increase the number of columns in
-    \refk{hd-preamble} as well, or at least remove the right-hand
-    \refc{pseudohpad}.
+    Sets the preamble used by \refc{hd}. The result is available as the column
+    type with name \cs{pseudohdpreamble}. (Note that this is the literal
+    column name, and not a macro containing the name. See \refk{preamble} for
+    more information.) Initially, a single left-aligned column with
+    \refc{pseudohpad} on either side (see \cpageref{p:hdpreamble}). If you
+    introduce more columns in \refk{preamble}, you might want to increase the
+    number of columns in \refk{hd-preamble} as well, or at least remove the
+    right-hand \refc{pseudohpad}.
 \end{docKey}
 
 \begin{docKey}{hl}{}{\novaluekey}
@@ -2093,7 +2095,6 @@ See also \refk{indent-level}.
 
 \section{But how do I\,\dots}
 
-
 Some functionality is not built in, but is still fairly easy to achieve. Some
 streamlining may be added in future versions.
 
@@ -2657,6 +2658,32 @@ Of course, you won't have access to other functionality (such as
 of that should be possible to emulate by hand (possibly peeking at the
 implementation in \cref{sec:impl}).
 
+\subsection{\dots\,use a header with no arguments?}
+
+Normally, \refc{hd} has a mandatory set of arguments; at the very least,
+you'll need to supply the parentheses:
+
+\begin{texexp}
+\begin{pseudo}*
+\hd{No-Arguments}() \\
+\dots\ but still with parentheses
+\end{pseudo}
+\end{texexp}
+
+\noindent
+This is because \refc{hd} has to be fully expandable to be able to insert the
+requisite \cs{multicolumn}, and then it cannot have any (final) optional
+arguments. If you'd like, though, you can just use \cs{multicolumn} yourself
+(see also \refk{hd-preamble}):
+
+\begin{texexp}
+\begin{pseudo}*
+\multicolumn{2}{\pseudohdpreamble}
+{\pr{No-Arguments}} \\
+\dots\ and no parentheses!
+\end{pseudo}
+\end{texexp}
+
 \section{Implementation}
 \label{sec:impl}
 
@@ -3079,7 +3106,7 @@ argument can not be optional (unlike for \refc{pr}).
 % Now uses \def syntax:
 \@@_new_ecmd:Nnn \hd { #1 ( #2 ) } {
     \multicolumn{2}
-        {\@@_hd_preamble}
+        {\pseudohdpreamble}
         {\@@_fmt_pr:n{#1}\ensuremath{(#2)}}
 }
 \end{source}
@@ -3370,7 +3397,7 @@ The preamble used for multicolumns is treated similarly:
 \label{p:hdpreamble}%
 \begin{source}
     hd-preamble     .code:n         =
-        \@@_def_col:nn{ \@@_hd_preamble }{#1},
+        \@@_def_col:nn{ \pseudohdpreamble }{#1},
     hd-preamble     .initial:n      = {
         >{\pseudohpad} l <{\pseudohpad}
     },

@@ -186,7 +186,7 @@
 }
 \__pseudo_new_ecmd:Nnn \hd { #1 ( #2 ) } {
     \multicolumn{2}
-        {\__pseudo_hd_preamble}
+        {\pseudohdpreamble}
         {\__pseudo_fmt_pr:n{#1}\ensuremath{(#2)}}
 }
 \__pseudo_new_cmd:Nnn \st { +m } {
@@ -348,7 +348,7 @@
         \tl_put_left:Nn \l__pseudo_setup_tl {#1}
     },
     hd-preamble     .code:n         =
-        \__pseudo_def_col:nn{ \__pseudo_hd_preamble }{#1},
+        \__pseudo_def_col:nn{ \pseudohdpreamble }{#1},
     hd-preamble     .initial:n      = {
         >{\pseudohpad} l <{\pseudohpad}
     },
