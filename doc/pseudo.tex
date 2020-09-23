@@ -2518,9 +2518,69 @@ have support for using vertical lines to indicate the block structure;
 \pkg[https://ctan.org/tex-archive/macros/latex/contrib/pseudocode]{pseudocode}
 uses large braces. At least in the current version, there is no such built-in
 functionality in \pkg{pseudo}. This could be added in a future version, but if
-you want to play around with it yourself, you could use
-\pkg[https://ctan.org/pkg/pgf]{tikz}. For example, you could add a \code{node}
-at the start of each code line, containing an \verb|\@arstrut|, the
+you want to play around with it yourself, lines are quite easily added with no
+extra packages, and for braces you could use
+\pkg[https://ctan.org/pkg/pgf]{tikz}.
+
+To add vertical lines, you could just set up some custom indentation. There
+isn't currently any API for accessing the indentation level, but you could use
+the internal variable \cs{g\_\_pseudo\_indent\_level\_int}:
+{%
+% ! Contents duplicated
+% ! Keep in group, to avoid overriding globally
+\ExplSyntaxOn
+\DeclareDocumentCommand \pseudoindent { } {
+    \int_step_inline:nn { \g__pseudo_indent_level_int } {
+        \smash{\rlap{
+            \color{lightgray}\rule[-.825ex]{.6pt}{2.8ex}
+        }}
+        \skip_horizontal:n{ \pseudoindentlength }
+    }
+    \ignorespaces
+}
+\ExplSyntaxOff
+\begin{texexp}[listing only]
+\ExplSyntaxOn
+\DeclareDocumentCommand \pseudoindentdecor { } {
+    \color{lightgray}\rule[-.825ex]{.6pt}{2.8ex}
+}
+\DeclareDocumentCommand \pseudoindent { } {
+    \int_step_inline:nn { \g__pseudo_indent_level_int } {
+        \smash{\rlap{
+            \pseudoindentdecor
+        }}
+        \skip_horizontal:n{ \pseudoindentlength }
+    }
+    \ignorespaces
+}
+\ExplSyntaxOff
+\end{texexp}
+
+\noindent
+This just inserts a \cs{rule} at each indent level, using \cs{smash} and
+\cs{rlap} to avoid interfering with the placement of the pseudocode. (The
+\cs{ExplSyntaxOn} and \cs{ExplSyntaxOff} is to permit the \LaTeX3
+underscores and ignore whitespace.) The result is as follows:
+\begin{texexp}
+\begin{pseudo}
+    while $x\leq n$                             \\+
+        $x = x + 1$                             \\
+        if $f(x) < y$                           \\+
+            $x = x + 1$                         \\-
+        print $x$ \\-
+    return $x$
+\end{pseudo}
+\end{texexp}
+There's no straightforward way to detect that we're decrementing the indent
+level until we're at the end of the line, so this doesn't have the ``corner''
+style at the bottom, used in some other packages, though straight lines are
+used in several code editors, for example. And of course you could easily use
+anything you'd like by redefining \cs{pseudoindentdecor} in the example above.
+
+} % End of group for indent decor
+
+To add braces, you could, for example, add a \code{node} at the start of each
+code line, containing an \verb|\@arstrut|, the
 (\pkg[https://ctan.org/pkg/array]{array}) strut used to indicate the extent of
 a tabular row:
 
