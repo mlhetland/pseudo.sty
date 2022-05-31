@@ -7,13 +7,13 @@ TESTS=build/pseudotest.pdf
 all: $(TARGETS)
 
 doc/pseudo.pdf: build/pseudo.pdf
-	cp $< $@
+	mkdir -p $(@D) && cp $< $@
 
 build/pseudo.pdf: doc/pseudo.tex build/pseudo.bib $(FIGS) $(TESTS) README.md pseudo.sty
 	$(LATEX) $<
 
 build/pseudo.bib: doc/pseudo.bib
-	cp $< $@
+	mkdir -p $(@D) && cp $< $@
 
 build/hilitefig.pdf: doc/fig/hilitefig.tex pseudo.sty
 	$(LATEX) $<
@@ -44,7 +44,7 @@ pseudo.sty:	VERSION LICENSE doc/pseudo.tex
 		-e "}" >> pseudo.sty
 
 build/readmecode.tex: doc/fig/readmecode.tex
-	cp $< $@
+	mkdir -p $(@D) && cp $< $@
 
 build/readmefig.pdf: doc/fig/readmefig.tex build/readmecode.tex
 	$(LATEX) $<
