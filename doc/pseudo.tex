@@ -1151,7 +1151,7 @@ alphabetical order), you'll find definitions of a couple of counters here
     The \refe{pseudo} environment emulates the built-in \LaTeX\ lists when it
     comes to spacing above and below, in normal text. If the environment is
     part of an ongoing paragraph, paragraphs will be inserted above and below,
-    along with whitespace specified by \refk{topsep} and \refk{parskip}. If
+    along with whitespace specified by \refk{topsep} (and \refk{parskip}). If
     the environment begins a paragraph of its own, additional whitespace is
     added, as specified by \refk{partopsep}. It is also possible to specify
     space to insert to the left of the environment, using \refk{left-margin}.
@@ -1815,11 +1815,11 @@ I'm a livin' in a box \\
 I'm a livin' in a cardboard box
 \end{pseudo*}}
 \end{texexp}
-Note that as opposed to \refk{topsep}, \refk{parskip} and \refk{partopsep}, we
-are \emph{not} working with one of the built-in list spacing commands;
-\cs{leftmargin} has no effect on this key (which is why the hyphenated naming
-style of other keys such as \refk{label-align} or \refk{indent-text} is also
-adopted for \refk{left-margin}).
+Note that as opposed to \refk{topsep} and \refk{partopsep}, we are \emph{not}
+working with one of the built-in list spacing commands; \cs{leftmargin} has no
+effect on this key (which is why the hyphenated naming style of other keys such
+as \refk{label-align} or \refk{indent-text} is also adopted for
+\refk{left-margin}).
 %
 See also \refk{compact}.
 \end{docKey}
@@ -1841,11 +1841,6 @@ See also \refk{compact}.
     \shortcutted{nf}{normalfont}
     See also \refc{tn}.
 \end{docCommand}
-
-\begin{docKey}{parskip}{\,=\,\meta{length}}{\initialkeyvalue{\cs{parskip}}}
-    Sets a \pkg{pseudo}-local copy of \cs{parskip} for use in vertical spacing
-    above and below the \refe{pseudo} environment. See also \refk{compact}.
-\end{docKey}
 
 \begin{docKey}{partopsep}{\,=\,\meta{length}}{\initialkeyvalue{\cs{partopsep}}}
     Sets a \pkg{pseudo}-local copy of \cs{partopsep} for use in vertical
@@ -3537,15 +3532,12 @@ The prefix is inserted by the row separator command.
 \end{source}
 \paragraph{List-like spacing.} Space above and below is handled similarly to
 in the built-in \LaTeX\ lists, with the option of locally overriding
-\cs{topsep}, \cs{parskip} and \cs{partopsep}, with \refk{compact} used to
-control the presence of this spacing (overriding the ordinary automatic choice
-based on the current mode).
+\cs{topsep} and \cs{partopsep}, with \refk{compact} used to control the presence
+of this spacing (overriding the ordinary automatic choice based on the current
+mode).
 \begin{source}
     topsep          .tl_set:N       = \l_@@_topsep_tl,
     topsep          .initial:n      = { \topsep },
-
-    parskip         .tl_set:N       = \l_@@_parskip_tl,
-    parskip         .initial:n      = { \parskip },
 
     partopsep       .tl_set:N       = \l_@@_partopsep_tl,
     partopsep       .initial:n      = { \partopsep },
@@ -3880,7 +3872,7 @@ various macros already described.
     \bool_if:nF { \l_@@_compact_bool } {
 
         \skip_set:Nn \l_tmpa_skip {
-            \l_@@_topsep_tl + \l_@@_parskip_tl
+            \l_@@_topsep_tl
         }
         \mode_if_vertical:TF {
             \skip_add:Nn \l_tmpa_skip { \l_@@_partopsep_tl }
