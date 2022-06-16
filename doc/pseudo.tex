@@ -101,13 +101,17 @@
 
 }
 
+\NewDocumentCommand \codefont { m } {
+    \texttt{ #1 }
+}
+
 \NewDocumentCommand \code { s m } {
     \tl_set:Nn \l_tmpa_tl { #2 }
     \IfBooleanT { #1 } {
         \regex_replace_all:nnN
             { \s+ }{ \c{textnormal}\cB\{ \0 \cE\} } \l_tmpa_tl
     }
-    \texttt{ \l_tmpa_tl }
+    \codefont{ \l_tmpa_tl }
 }
 
 \ExplSyntaxOff
@@ -518,6 +522,46 @@ indented text (a stylistic choice from
 \kw{if} $x < y$                                 \\+
     $x = x + 1$                                 \\-
 \kw{else} $x = x - 1$
+\end{pseudo}
+\end{texexp}
+%
+\label{p:indent-mark}%
+The indentation may also be configured with \refk{indent-mark}, which inserts a
+mark at every indenation step:
+\begin{texexp}
+\begin{pseudo}[indent-mark]
+    while $x\leq n$                             \\+
+        $x = x + 1$                             \\
+        if $f(x) < y$                           \\+
+            $x = x + 1$                         \\-
+        print $x$                               \\-
+    return $x$
+\end{pseudo}
+\end{texexp}
+The default is a vertical line, but anything else may be supplied as an
+argument. The color may be modified using \refk{indent-mark-color}:
+\begin{texexp}
+\begin{pseudo}[
+    indent-mark=$\triangleright$, indent-mark-color=teal]
+    while $x\leq n$                             \\+
+        $x = x + 1$                             \\
+        if $f(x) < y$                           \\+
+            $x = x + 1$                         \\-
+        print $x$                               \\-
+    return $x$
+\end{pseudo}
+\end{texexp}
+%
+The default indent mark scales with the \refk{line-height}, to avoid gaps in the
+vertical lines. The width of the (default) mark can be set with
+\refk{indent-mark-width}:
+\begin{texexp}
+\begin{pseudo}[
+    indent-mark, indent-mark-width=3pt, line-height=1.5]
+    the                                         \\+
+        lines                                   \\+
+            are                                 \\--
+    scaled
 \end{pseudo}
 \end{texexp}
 %
@@ -1551,6 +1595,50 @@ This is some text interrupting the code.
 \end{texexp}
 \end{docKey}
 
+\begin{docKey}{indent-mark}{\,=\,\meta{mark}}{default vertical line, initially
+    empty}
+\def\algoexample#1{%
+\begin{pseudo}[#1]
+\kw{repeat} $n-1$ times \\+
+    \kw{for} each edge $uv$ \\+
+        update estimate for $v$ via $u$ \\--
+\kw{for} each edge $uv$ \\+
+    \kw{if} estimate for $v$ improves via $u$ \\+
+        \kw{return} \cn{false} \\--
+\kw{return} \cn{true}
+\end{pseudo}
+}
+
+A mark used to indicate the start of each step of indentation. The
+following example uses \verb|indent-mark=$\cdot$|:
+
+\algoexample{indent-mark=$\cdot$}
+%
+By default, the indent mark is a vertical line with the same height and depth as
+each row of the tabular used to typeset the pseudocode (i.e., it scales with
+\refk{line-height}), so each indented block is indicated by a single unbroken
+vertical line. The following example uses the \refk{indent-mark} key with no
+argument:
+
+\algoexample{indent-mark}
+%
+This default mark may be configured by using \refk{indent-mark-color} and
+\refk{indent-mark-width}.
+\end{docKey}
+
+\begin{docKey}{indent-mark-color}{\,=\,\meta{color}}%
+    {\initialkeyvalue{\codefont{lightgray}}}
+    Sets the color to be used by the default \refk{indent-mark}.
+\end{docKey}
+
+\begin{docKey}{indent-mark-width}{\,=\,\meta{width}}%
+    {\initialkeyvalue{\codefont{.6pt}}}
+    Sets the width of the default \refk{indent-mark}.
+    %
+    The default value of \code{.6pt} corresponds to the
+    \pkg[https://ctan.org/pkg/pgf]{tikz} line width \code{semithick}.
+\end{docKey}
+
 \begin{docKey}{indent-text}{\,=\,\meta{text}}%
     {\initialkeyvalue{%
     \code*{\cs{pseudofont}\cs{kw}\braces{else}\cs{\verbvisiblespace}}}}
@@ -2514,78 +2602,20 @@ perhaps using \pkg[https://ctan.org/pkg/microtype]{microtype}), you may of
 course do so, but \pkg{pseudo} does not (at present) include any special
 attribute lookup commands that do it for you.
 
-\subsection{\dots\,get vertical lines or braces?}
+\subsection{\dots\,indicate blocks with braces or the like?}
 
-Some packages (such as \pkg[https://ctan.org/pkg/algorithm2e]{algorithm2e})
-have support for using vertical lines to indicate the block structure;
+Some packages (such as \pkg{algorithm2e}) have support for using vertical lines
+to indicate the block structure;
 \pkg[https://ctan.org/tex-archive/macros/latex/contrib/pseudocode]{pseudocode}
-uses large braces. At least in the current version, there is no such built-in
-functionality in \pkg{pseudo}. This could be added in a future version, but if
-you want to play around with it yourself, lines are quite easily added with no
-extra packages, and for braces you could use
-\pkg[https://ctan.org/pkg/pgf]{tikz}.
+uses large braces. In \pkg{pseudo}, there is support for using an
+\refk{indent-mark}, for which the default is a semithick, gray vertical line
+(see \cpageref{p:indent-mark}). However, by using
+\pkg[https://ctan.org/pkg/pgf]{tikz}, you could draw all kinds of indentation
+decorations.
 
-To add vertical lines, you could just set up some custom indentation. There
-isn't currently any API for accessing the indentation level, but you could use
-the internal variable \cs{g\_\_pseudo\_indent\_level\_int}:
-{%
-% ! Contents duplicated
-% ! Keep in group, to avoid overriding globally
-\ExplSyntaxOn
-\DeclareDocumentCommand \pseudoindent { } {
-    \int_step_inline:nn { \g__pseudo_indent_level_int } {
-        \smash{\rlap{
-            \color{lightgray}\rule[-.825ex]{.6pt}{2.8ex}
-        }}
-        \skip_horizontal:n{ \pseudoindentlength }
-    }
-    \ignorespaces
-}
-\ExplSyntaxOff
-\begin{texexp}[listing only]
-\ExplSyntaxOn
-\DeclareDocumentCommand \pseudoindentdecor { } {
-    \color{lightgray}\rule[-.825ex]{.6pt}{2.8ex}
-}
-\DeclareDocumentCommand \pseudoindent { } {
-    \int_step_inline:nn { \g__pseudo_indent_level_int } {
-        \smash{\rlap{
-            \pseudoindentdecor
-        }}
-        \skip_horizontal:n{ \pseudoindentlength }
-    }
-    \ignorespaces
-}
-\ExplSyntaxOff
-\end{texexp}
-
-\noindent
-This just inserts a \cs{rule} at each indent level, using \cs{smash} and
-\cs{rlap} to avoid interfering with the placement of the pseudocode. (The
-\cs{ExplSyntaxOn} and \cs{ExplSyntaxOff} is to permit the \LaTeX3
-underscores and ignore whitespace.) The result is as follows:
-\begin{texexp}
-\begin{pseudo}
-    while $x\leq n$                             \\+
-        $x = x + 1$                             \\
-        if $f(x) < y$                           \\+
-            $x = x + 1$                         \\-
-        print $x$ \\-
-    return $x$
-\end{pseudo}
-\end{texexp}
-There's no straightforward way to detect that we're decrementing the indent
-level until we're at the end of the line, so this doesn't have the ``corner''
-style at the bottom, used in some other packages, though straight lines are
-used in several code editors, for example. And of course you could easily use
-anything you'd like by redefining \cs{pseudoindentdecor} in the example above.
-
-} % End of group for indent decor
-
-To add braces, you could, for example, add a \code{node} at the start of each
-code line, containing an \verb|\@arstrut|, the
-(\pkg[https://ctan.org/pkg/array]{array}) strut used to indicate the extent of
-a tabular row:
+You could, for example, add a \code{node} at the start of each code line,
+containing an \verb|\@arstrut|, the (\pkg{array}) strut used to indicate the
+extent of a tabular row:
 
 % ! Contents duplicated
 \makeatletter
@@ -2864,6 +2894,7 @@ variants we'll need of some standard commands. (I'm using the
 compatibility with older \TeX\ distributions.)
 \begin{source}
 \cs_generate_variant:Nn \quark_if_no_value:nTF    { VTF   }
+\cs_generate_variant:Nn \tl_if_novalue:nTF        { VTF   }
 \cs_generate_variant:Nn \tl_set:Nn                { Ne    }
 \end{source}
 \paragraph{Defining columns.} The \refk{preamble} is is configurable, but the
@@ -2976,7 +3007,19 @@ The indent size is subsequently used by the indent command, which takes the
 number of indentation steps as its only argument:
 \begin{source}
 \cs_new:Nn \@@_indent:N {
-    \skip_horizontal:n{ \pseudoindentlength * #1 }
+    \tl_if_novalue:VTF \l_@@_indent_mark_tl {
+        \skip_horizontal:n{ \pseudoindentlength * #1 }
+    } {
+        \group_begin:
+        \color{\l_@@_indent_color_tl}
+        \int_step_inline:nn { \g_@@_indent_level_int } {
+            \smash{\rlap{ % XXX Better way to do this with boxes?
+                \l_@@_indent_mark_tl
+            }}
+            \skip_horizontal:n{ \pseudoindentlength }
+        }
+        \group_end:
+    }
     \ignorespaces
 }
 \end{source}
@@ -3347,6 +3390,19 @@ typesetting the pseudocode.
     indent-text     .tl_set:N       = \l_@@_indent_text_tl,
     indent-text     .initial:n      = { \pseudofont\kw{else}\ },
 
+    indent-mark     .tl_set:N       = \l_@@_indent_mark_tl,
+    indent-mark     .initial:x      = \c_novalue_tl,
+    indent-mark     .default:n      =
+        \tex_vrule:D height \box_ht:N \@arstrutbox
+                     depth  \box_dp:N \@arstrutbox
+                     width  \l_@@_indent_mark_wd_tl,
+
+    indent-mark-width  .tl_set:N    = \l_@@_indent_mark_wd_tl,
+    indent-mark-width  .initial:n   = .6pt,
+
+    indent-mark-color .tl_set:N     = \l_@@_indent_color_tl,
+    indent-mark-color .initial:n    = lightgray,
+
     indent-level    .int_set:N      = \l_@@_initial_indent_level_int,
 
     kwfont          .tl_set:N       = \kwfont,
@@ -3419,7 +3475,7 @@ typesetting the pseudocode.
         setup-append = \color{\pseudodimcolor}
     },
 
-    line-height     .fp_set:N       = \l_@@_line_height_fp,
+    line-height     .tl_set:N       = \l_@@_line_height_tl,
     line-height     .initial:n      = 1,
 
     start           .tl_set:N       = \l_@@_start_tl,
@@ -3839,10 +3895,8 @@ various macros already described.
 
     }
 
-
-    \dim_set:Nn \tabcolsep    { \l_@@_hsep_tl / 2 }
-    \tl_set:Nn  \arraystretch
-        { \fp_to_decimal:n { \l_@@_line_height_fp } }
+    \dim_set:Nn   \tabcolsep    { \l_@@_hsep_tl / 2 }
+    \tl_set_eq:NN \arraystretch \l_@@_line_height_tl
 
     \stepcounter{pseudoenv}
     \setcounter{pseudoline}{\l_@@_start_tl}
