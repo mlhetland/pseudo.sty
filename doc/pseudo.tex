@@ -94,7 +94,8 @@
 \NewDocumentCommand \pkg { o m } {
 
     \IfNoValueTF { #1 } {
-        \textsf { #2 }
+        % The literal colon has a different meaning with expl3 syntax
+        \href{ https\c_colon_str//ctan.org/pkg/#2 }{ \textsf { #2 } }
     } {
         \href{ #1 }{ \textsf { #2 } }
     }
@@ -123,9 +124,8 @@
 }
 
 \NewDocumentCommand \shortcutted { m m } {%
-    If some package defines \cs{#1} before \pkg{pseudo} is loaded,
-    \pkg{pseudo} will not overwrite it. The command will still be available,
-    as \cs{#2}.%
+    If some package defines \cs{#1} before \pkg{pseudo} is loaded, \pkg{pseudo}
+    will not overwrite it. The command will still be available, as \cs{#2}.%
 }
 
 \NewDocumentCommand \pseudoshortcutted { m } {%
@@ -407,9 +407,9 @@ commands for conditionals, loops, etc.
 
 The basic style of pseudocode is inspired by the standard reference
 \emph{Introduction to Algorithms} by \citet{Cormen:2009} (i.e., similar to
-that of \pkg[https://ctan.org/pkg/newalg]{newalg},
+that of \pkg{newalg},
 \pkg[https://ctan.org/tex-archive/macros/latex/contrib/clrscode]{clrscode} and
-\pkg[https://ctan.org/pkg/clrscode3e]{clrscode3e}).
+\pkg{clrscode3e}).
 %
 Rather than locking down all aspects of pseudocode appearance, however, I've
 tried to make \pkg{pseudo} highly configurable, but if it's not flexible
@@ -419,16 +419,16 @@ following packages:
 \begin{quote}
     \raggedright
     \pkg[https://ctan.org/tex-archive/macros/latex/contrib/alg]{alg},
-    \pkg[https://ctan.org/pkg/algobox]{algobox},
-    \pkg[https://ctan.org/pkg/algorithm2e]{algorithm2e},
-    \pkg[https://ctan.org/pkg/algorithmicx]{algorithmicx},
-    \pkg[https://ctan.org/pkg/algorithms]{algorithms},
-    \pkg[https://ctan.org/pkg/algpseudocodex]{algpseudocodex},
-    \pkg[https://ctan.org/pkg/algxpar]{algxpar},
+    \pkg{algobox},
+    \pkg{algorithm2e},
+    \pkg{algorithmicx},
+    \pkg{algorithms},
+    \pkg{algpseudocodex},
+    \pkg{algxpar},
     \pkg[https://ctan.org/tex-archive/macros/latex/contrib/clrscode]{clrscode},
-    \pkg[https://ctan.org/pkg/clrscode3e]{clrscode3e},
+    \pkg{clrscode3e},
     \pkg[https://github.com/esneider/latex-pseudocode]{latex-pseudocode},
-    \pkg[https://ctan.org/pkg/newalg]{newalg},
+    \pkg{newalg},
     \pkg[https://ctan.org/tex-archive/macros/latex/contrib/program]{program},
     \pkg[https://ctan.org/tex-archive/macros/latex/contrib/pseudocode]{pseudocode}
 \end{quote}
@@ -436,23 +436,22 @@ following packages:
 \noindent
 There are also code-typesetting packages like
 \pkg[https://ctan.org/tex-archive/macros/latex/contrib/listings]{listings} and
-\pkg[https://ctan.org/pkg/minted]{minted}, of course.
+\pkg{minted}, of course.
 
 \subsection*{Using older \TeX\ distributions}
 
 The imlementation of \pkg{pseudo} uses some functionality that isn't available
-in older \TeX\ distributions, in particular, older versions of
-\pkg[https://ctan.org/pkg/xparse]{xparse} and
-\pkg[https://ctan.org/pkg/expl3]{expl3}. Some care has been taken to make the
-code backward compatible to the point where it works on \TeX\ Live~2016, which
-is what is used (at the time of writing) on \href{https://arxiv.org}{arXiv}.
+in older \TeX\ distributions, in particular, older versions of \pkg{xparse} and
+\pkg{expl3}. Some care has been taken to make the code backward compatible to
+the point where it works on \TeX\ Live~2016, which is what is used (at the time
+of writing) on \href{https://arxiv.org}{arXiv}.
+% XXX XXX XXX They've switched to 2020?
 If you run into issues somewhere else (e.g., when submitting to some publisher
 with a custom setup), feel free to
 \href{https://github.com/mlhetland/pseudo.sty/issues}{file an issue}, or even
 \href{https://github.com/mlhetland/pseudo.sty/pulls}{provide a pull request}
 with a fix. One thing to look out for is that older versions of
-\pkg[https://ctan.org/pkg/xparse]{xparse} parse arguments differently, so
-things like
+\pkg{xparse} parse arguments differently, so things like
 \begin{texexp}[listing only]
 foo\\<1>
 bar\\[hl]
@@ -512,11 +511,12 @@ the more convenient short forms (\refc{kw}, \refc{cn}, etc.)\@ are prone to
 name collisions, and are only defined if the names are not already in use when
 \pkg{pseudo} is imported.
 
+% XXX Split into two separate examples? Better example (i.e., to better show off
+% how it actually will look with proper pseudocode)?
 The \refk{indent-length} option, which determines the length of each
 indentation step, is initially set via the secondary \refk{indent-text} key,
 so that the any code after \code{\cs{kw}\braces{else}} aligns with the
-indented text (a stylistic choice from
-\pkg[https://ctan.org/pkg/clrscode3e]{clrscode3e}):
+indented text (a stylistic choice from \pkg{clrscode3e}):
 \begin{texexp}
 \begin{pseudo}
 \kw{if} $x < y$                                 \\+
@@ -689,8 +689,8 @@ As can be seen in this example, \cs{==} (or \refc{eqs}) is a notational
 convenience defined by \pkg{pseudo}, along with interval dots \cs{..}\@ (or
 \refc{dts}). Other special symbols may be found in other packages. For
 example, if you want to use $\coloneqq$ for assignment, you can use
-\cs{coloneqq} from \pkg[https://ctan.org/pkg/mathtools]{mathtools} (perhaps
-with \verb|\let\gets\coloneqq|).\footnote{Tip: If you want to use a left-arrow
+\cs{coloneqq} from \pkg{mathtools} (perhaps with
+\verb|\let\gets\coloneqq|).\footnote{Tip: If you want to use a left-arrow
 for assignment, but think it's a bit large in Computer Modern or Latin
 Modern, you can use the
 \pkg[https://ctan.org/tex-archive/fonts/old-arrows]{old-arrows} package,
@@ -719,9 +719,8 @@ argument to the row separator, i.e.,
 level. Within the \refe{pseudo} environment, there is also a counter named
 \code{*} that is simply a local clone of \code{pseudoline}, letting you use
 starred versions of counter commands, similarly to how label definitions work
-in \pkg[https://ctan.org/pkg/enumitem]{enumitem}:\footnote{Also like in
-\pkg[https://ctan.org/pkg/enumitem]{enumitem}, there's a \refk{start} key for
-setting the first line number.}
+in \pkg{enumitem}:\footnote{Also like in \pkg{enumitem}, there's a \refk{start}
+key for setting the first line number.}
 
 \begin{texexp}
 \pseudoset{label=\small\arabic*:}
@@ -749,8 +748,8 @@ And here's a reference to line \ref{roman-line}.
 %
 The \refk{label-align} key sets the alignment of the label column, and can be
 \code{l}, \code{r} or \code{c} (or really any other column type compatible
-with the \pkg[https://ctan.org/pkg/array]{array} package; you could use a
-\code{p\braces{\dots}} column to get fixed width, for example).
+with the \pkg{array} package; you could use a \code{p\braces{\dots}} column to
+get fixed width, for example).
 
 Highlighting can also be done in a similar manner, by, e.g., inserting a
 \cs{rowcolor} at the start of the first column. Rather than doing this
@@ -789,12 +788,11 @@ controls the separation between the two columns.
 \end{texexp}
 
 \noindent\label{p:overlays}%
-For ease of use with \pkg[https://ctan.org/pkg/beamer]{beamer}, the various
-\pkg{pseudo} options support \pkg[https://ctan.org/pkg/beamer]{beamer} overlay
-specifications. For example, using \code{\refk{hl}<1>} means that the
-\refk{hl} specification would only take effect on slide~1. If you use such an
-overlay specification on a key when \emph{not} using beamer, the key is simply
-ignored.
+For ease of use with \pkg{beamer}, the various \pkg{pseudo} options support
+\pkg{beamer} overlay specifications. For example, using \code{\refk{hl}<1>}
+means that the \refk{hl} specification would only take effect on slide~1. If you
+use such an overlay specification on a key when \emph{not} using beamer, the key
+is simply ignored.
 
 What is more, the row separator \emph{itself} takes an overlay specification
 as a shortcut for the one on \refk{hl}, so \code{\refc{\bslash}<1,2-4>} is
@@ -890,8 +888,8 @@ This section gives an overview of all the moving parts of the package. A
 explicit value given, while an \emph{initial} value is one provided to the key
 at the point where \pkg{pseudo} is imported. Several commands (such as, e.g.,
 \refc{pseudoprefix}) may be modified using corresponding keys (e.g.,
-\refk{prefix}). When the behavior of such commands is described, the
-description references their initial behavior.
+\refk{prefix}). When the behavior of such commands is described, the description
+references their initial behavior.
 
 \subsection{Line structure}
 \label{sec:linestructure}
@@ -1007,10 +1005,9 @@ appropriate options (e.g., \refk{prefix} and \refk{setup}).
     \item[\refk{eol}] Inserted by the terminating \refc{\bslash} (using
         \refc{pseudoeol}), unless we're at the end of the environment. Useful,
         e.g., for taking actions such as a
-        \pkg[https://ctan.org/pkg/beamer]{beamer} \cs{pause} (cf.,
-        \refk{pause}) between the lines.\footnote{If the same action must be
-        taken after the last line, you can simply insert it there
-        manually.}
+        \pkg{beamer} \cs{pause} (cf., \refk{pause}) between the
+        lines.\footnote{If the same action must be taken after the last line,
+        you can simply insert it there manually.}
     \item[\refc{\bslash}] The row/line separator. Ends one line (inserting
         \refk{eol}) and begins another (inserting \refk{prefix}). As in
         tabulars in general, this command is also permitted after the final
@@ -1030,9 +1027,8 @@ alphabetical order), you'll find definitions of a couple of counters here
     This counter is a duplicate of \refk{pseudoline}, available inside
     \refe{pseudo}. It makes it possible to simplify calls such as
     \code{\cs{arabic}\braces{\refk{pseudoline}}} to starred forms such as
-    \cs{arabic*}, like in \pkg[https://ctan.org/pkg/enumitem]{enumitem}. These
-    short forms are available (and intended) for use in \refk{label} and
-    \refk{ref}.
+    \cs{arabic*}, like in \pkg{enumitem}. These short forms are available (and
+    intended) for use in \refk{label} and \refk{ref}.
 \end{docKey}
 
 \begin{docCommand}{..}{}
@@ -1067,9 +1063,9 @@ alphabetical order), you'll find definitions of a couple of counters here
 
     \parindent1.5em
     \noindent
-    This row separator is the workhorse of the \pkg{pseudo} package. Just as
-    in a \code{tabular} environment, it signals the end of a line. It is
-    optional after the list line, where it doesn't do any work.
+    This row separator is the workhorse of the \pkg{pseudo} package. Just as in
+    a \code{tabular} environment, it signals the end of a line. It is optional
+    after the list line, where it doesn't do any work.
 %
     The command may be followed by a series of one or more plus (\code{+})
     signs, each of which will increment the indentation level before starting
@@ -1108,8 +1104,7 @@ alphabetical order), you'll find definitions of a couple of counters here
     environment used by \refe{pseudo}. Normally not needed, as the
     \code{tabular} behavior may be modified by other keys, but could be used
     to use some other tabular environment, e.g., from packages such as
-    \pkg[https://ctan.org/pkg/tabularx]{tabularx} or
-    \pkg[https://ctan.org/pkg/longtable]{longtable}.
+    \pkg{tabularx} or \pkg{longtable}.
 \end{docKey}
 
 \begin{docKey}{bol}{\,=\,\meta{commands}}{\initiallyempty}
@@ -1157,10 +1152,9 @@ alphabetical order), you'll find definitions of a couple of counters here
     space to insert to the left of the environment, using \refk{left-margin}.
 
     However, these spacing commands don't work well inside \cs{mbox},
-    \cs{fbox}, etc. To avoid getting into trouble, \pkg{pseudo} determines
-    that the environment should be \emph{compact}, and drop this surrounding
-    space, if we're in inner horizontal mode at the beginning of the
-    environment.
+    \cs{fbox}, etc. To avoid getting into trouble, \pkg{pseudo} determines that
+    the environment should be \emph{compact}, and drop this surrounding space,
+    if we're in inner horizontal mode at the beginning of the environment.
 
 \begin{texexp}
 % In preamble:
@@ -1175,10 +1169,10 @@ alphabetical order), you'll find definitions of a couple of counters here
 \end{texexp}
 
     This may not be enough, however. For example, if you're using
-    \pkg[https://ctan.org/pkg/standalone]{standalone} to produce individual
-    pseudocode images, this compactness may not be triggered automatically. In
-    such cases, you can override the behavior using the \refk{compact} key,
-    manually specifying whether you want the pseudocode to be compact or not.
+    \pkg{standalone} to produce individual pseudocode images, this compactness
+    may not be triggered automatically. In such cases, you can override the
+    behavior using the \refk{compact} key, manually specifying whether you want
+    the pseudocode to be compact or not.
 \end{docKey}
 
 \begin{docCommand}{ct}{\marg{text}}
@@ -1222,8 +1216,8 @@ alphabetical order), you'll find definitions of a couple of counters here
     \medskip\noindent
 
     Or if you'd rather have the comments right-aligned (like you can in, e.g.,
-    \pkg[https://ctan.org/pkg/algorithm2e]{algorithm2e}), you could use
-    insert the \cs{hfill} at the beginning of the \refk{ct-left}:
+    \pkg{algorithm2e}), you could use insert the \cs{hfill} at the beginning of
+    the \refk{ct-left}:
 
     \medskip\noindent
 
@@ -1365,8 +1359,7 @@ See also \refk{bol-append}, \refk{setup-append} and \refk{dim-color}.
     A two-dot ellipsis, for use in the Wirth interval notation $1\..n$,
     typeset as \citeauthor{Graham:1994} did in
     \citetitle{Graham:1994}~\citep{Graham:1994}. Its definition is the same as
-    in \pkg[https://ctan.org/pkg/gkpmac]{gkpmac}. Also accessible via the
-    \refc{..} shortcut.
+    in \pkg{gkpmac}. Also accessible via the \refc{..} shortcut.
 \end{docCommand}
 
 \begin{docKey}{end-tabular}{}{\initialkeyvalue{\code{\cs{end}\braces{tabular}}}}
@@ -1391,13 +1384,11 @@ See also \refk{bol-append}, \refk{setup-append} and \refk{dim-color}.
 \begin{docCommand}{eqs}{}
     Two equality signs typeset together as a binary relation, as in $x \eqs
     y$ (as opposed to the wider $x == y$, resulting from \code*{\$x == y\$}).
-    It emulates the \pkg[https://ctan.org/pkg/stix]{stix} symbol \cs{eqeq},
-    but for use with Computer Modern (the default \LaTeX\ font) or Latin
-    Modern (available via the
-    \pkg[https://ctan.org/tex-archive/info/lmodern]{lmodern} package). It
-    should work just fine with other fonts. Also accessible via the \refc{==}
-    shortcut, and configurable via \refk{eqs-pad}, \refk{eqs-scale} and
-    \refk{eqs-sep}.
+    It emulates the \pkg{stix} symbol \cs{eqeq}, but for use with Computer
+    Modern (the default \LaTeX\ font) or Latin Modern (available via the
+    \pkg[https://ctan.org/tex-archive/info/lmodern]{lmodern} package). It should
+    work just fine with other fonts. Also accessible via the \refc{==} shortcut,
+    and configurable via \refk{eqs-pad}, \refk{eqs-scale} and \refk{eqs-sep}.
 \end{docCommand}
 \begin{docKey}{eqs-pad}{\,=\,\meta{muskip}}{\initialkeyvalue{\code{0.28mu}}}
     The amount of space inserted on each side of \refc{eqs}.
@@ -1498,8 +1489,8 @@ We're not in math mode, but the argument of \Ln[A] is.
 \end{docKey}
 
 \begin{docKey}{hl}{}{\novaluekey}
-    Prepends \refc{pseudohl} to \refk{bol}. Normally used with
-    \pkg[https://ctan.org/pkg/beamer]{beamer} (see \cpageref{p:overlays}).
+    Prepends \refc{pseudohl} to \refk{bol}. Normally used with \pkg{beamer} (see
+    \cpageref{p:overlays}).
 \end{docKey}
 
 \begin{docKey}{hl-color}{\,=\,\meta{color}}{\initialkeyvalue{\code{black!12}}}
@@ -1537,9 +1528,8 @@ $\mathit{foo-bar:baz}$
 \end{texexp}
 
     This may be remedied, e.g., by using the (internal) command
-    \cs{newmcodes@} from \pkg[https://ctan.org/pkg/amsopn]{amsopn}, but the
-    kerning, spacing and font application in the result still leaves something
-    to be desired:
+    \cs{newmcodes@} from \pkg{amsopn}, but the kerning, spacing and font
+    application in the result still leaves something to be desired:
 
 \makeatletter
 \begin{texexp}
@@ -1705,16 +1695,16 @@ vs.\
     it's called (normally when evaluating the initial value of
     \refk{indent-text}), it also runs a check to see if the font selection
     \emph{worked}, as in some cases (such as in a default
-    \pkg[https://ctan.org/pkg/beamer]{beamer} presentation), the non-extended
-    bold may not be available. In that case, it defaults to an extended bold
-    (\cs{bfseries}) instead. At this point, the command is redefined to
+    \pkg{beamer} presentation), the non-extended bold may not be available. In
+    that case, it defaults to an extended bold (\cs{bfseries}) instead. At this
+    point, the command is redefined to
     \code{\cs{fontseries}\braces{b}\cs{selectfont}} or \cs{bfseries}, as
     appropriate (i.e., without this check). So, while
     \code{\refc{kw}\braces{hello}} produces the non-extended \kw{hello} in a
     default \LaTeX\ document, it yields the extended {\origbfseries\sffamily
-    hello} in a default \pkg[https://ctan.org/pkg/beamer]{beamer}
-    presentation. Perhaps more clearly, this is the result in plain \LaTeX\
-    (using \pkg[https://ctan.org/tex-archive/info/lmodern]{lmodern}):
+    hello} in a default \pkg{beamer} presentation. Perhaps more clearly, this is
+    the result in plain \LaTeX\ (using
+    \pkg[https://ctan.org/tex-archive/info/lmodern]{lmodern}):
 
 {\let\bfseries\origbfseries
 \begin{texexp}
@@ -1725,21 +1715,20 @@ vs.\
 }\ignorespaces\par
 
     \noindent
-    The same code results in the the following in
-    \pkg[https://ctan.org/pkg/beamer]{beamer}:
+    The same code results in the the following in \pkg{beamer}:
 
     \medskip\noindent
     \includegraphics{kwfig}
 
     \medskip\noindent
     You'll also get a font warning,\footnote{Of course, if you use a different
-    font or theme, e.g., with the \pkg[https://ctan.org/pkg/beamer]{beamer}
-    command \code{\cs{usefonttheme}\braces{serif}}, you may not have any issues to
-    begin with.} though only once, as it's suppressed after the first occurrence,
-    so the fact that the font selection doesn't work on the last line isn't
-    reported. Note, however, that the current implementation of \refc{kwfont}
-    actually \emph{piggybacks} on this warning to determine if the non-extended
-    bold is available. This means that if you've tried (and failed) to use
+    font or theme, e.g., with the \pkg{beamer} command
+    \code{\cs{usefonttheme}\braces{serif}}, you may not have any issues to begin
+    with.} though only once, as it's suppressed after the first occurrence, so the
+    fact that the font selection doesn't work on the last line isn't reported. Note,
+    however, that the current implementation of \refc{kwfont} actually
+    \emph{piggybacks} on this warning to determine if the non-extended bold is
+    available. This means that if you've tried (and failed) to use
     \code{\cs{fontseries}\braces{b}} \emph{before} the fist use of \refc{kwfont},
     the fallback (i.e., extended bold) won't be triggered.
 
@@ -1785,9 +1774,9 @@ goto \tn{\ref{li:label}}
     which is a part of the default \refk{preamble}. In other words, beyond the
     basic \code{l} and \code{r} (for left- and right-justified), you can
     supply anything that would be valid as part of the preamble (possibly
-    using functionality from the \pkg[https://ctan.org/pkg/array]{array}
-    package). If you want to get creative here, though, it might be easier to
-    get the results you want by specifying your own \refk{preamble} in full.
+    using functionality from the \pkg{array} package). If you want to get
+    creative here, though, it might be easier to get the results you want by
+    specifying your own \refk{preamble} in full.
 \end{docKey}
 
 \begin{docKey}{left-margin}{\,=\,\meta{length}}{\initialkeyvalue{\code{0pt}}}
@@ -1831,9 +1820,8 @@ See also \refk{compact}.
     gets too crowded with text and notation, you may wish to increase
     \code{line-height}. To emulate, e.g., the
     \cs{jot} set by
-    \pkg[https://ctan.org/pkg/amsmath]{amsmath} (which is
-    \code{0.25\cs{baselineskip}}), you could use \code{1.25}, though even
-    \code{1.1} should help in many cases.
+    \pkg{amsmath} (which is \code{0.25\cs{baselineskip}}), you could use
+    \code{1.25}, though even \code{1.1} should help in many cases.
 \end{docKey}
 
 \begin{docCommand}{nf}{}
@@ -1843,8 +1831,8 @@ See also \refk{compact}.
 \end{docCommand}
 
 \begin{docKey}{partopsep}{\,=\,\meta{length}}{\initialkeyvalue{\cs{partopsep}}}
-    Sets a \pkg{pseudo}-local copy of \cs{partopsep} for use in vertical
-    spacing above and below the \refe{pseudo} environment. See also \refk{compact}.
+    Sets a \pkg{pseudo}-local copy of \cs{partopsep} for use in vertical spacing
+    above and below the \refe{pseudo} environment. See also \refk{compact}.
 \end{docKey}
 
 \begin{docKey}{pause}{}{\novaluekey}
@@ -1866,11 +1854,11 @@ See also \refk{compact}.
     available as the column type with name \cs{pseudopreamble}. (Note that
     this is the literal column name, and not a macro containing the name.
     Initially, \pkg{pseudo} uses a \code{tabular} as redefined by the
-    \pkg[https://ctan.org/pkg/array]{array}, which prevents the expansion of
-    whatever is provided as its preamble, and so we supply the preamble in the
-    form of a single ``column'' instead.) For the default value, see the
-    actual implementation on \cpageref{p:preamble} as well as the explanation
-    in \cref{sec:linestructure}.
+    \pkg{array}, which prevents the expansion of whatever is provided as its
+    preamble, and so we supply the preamble in the form of a single ``column''
+    instead.) For the default value, see the actual implementation on
+    \cpageref{p:preamble} as well as the explanation in
+    \cref{sec:linestructure}.
 \end{docKey}
 
 \begin{docKey}{prefix}{\,=\,\meta{commands}}{no default}
@@ -2008,8 +1996,7 @@ Second line
 
 \begin{docCommand}{pseudoset}{\marg{options}}
     Used to set the configuration keys of the \pkg{pseudo} package (using
-    \pkg[https://ctan.org/pkg/l3kernel]{l3keys} with
-    \code{pseudo} as the module). These may also be set as
+    \pkg{l3keys} with \code{pseudo} as the module). These may also be set as
     % package options (in \cs{usepackage}) and as
     optional arguments to the \refEnv*{pseudo} and \refEnv*{pseudo*}
     environments. For example, if you'd like to switch to \cs{rm} as your base
@@ -2026,11 +2013,10 @@ Second line
 \end{docCommand}
 
 \begin{docCommand}{pseudoslash}{}
-    Command similar to the \cs{arrayslash} of the
-    \pkg[https://ctan.org/pkg/array]{array} package. Switches the definition
-    of \cs{\bslash} to the one used by \pkg{pseudo}. Useful if you've used
-    some code that modifies \cs{\bslash} for its own purposes (such as
-    \cs{raggedleft} or the like).
+    Command similar to the \cs{arrayslash} of the \pkg{array} package. Switches
+    the definition of \cs{\bslash} to the one used by \pkg{pseudo}. Useful if
+    you've used some code that modifies \cs{\bslash} for its own purposes (such
+    as \cs{raggedleft} or the like).
 \end{docCommand}
 
 \begin{docKey}{ref}{\,=\,\meta{commands}}{initially empty, default
@@ -2140,8 +2126,8 @@ See also \refk{indent-level}.
 \end{docKey}
 
 \begin{docKey}{unknown}{}{}
-    Unknown keys are checked for \pkg[https://ctan.org/pkg/beamer]{beamer}
-    overlay specifications. That is, if an unknown key has the form
+    Unknown keys are checked for \pkg{beamer} overlay specifications. That is,
+    if an unknown key has the form
 
     \medskip
 
@@ -2150,8 +2136,8 @@ See also \refk{indent-level}.
 
     \medskip
 
-    then it does not trigger an error, but, if
-    \pkg[https://ctan.org/pkg/beamer]{beamer} is used, is rewritten to:
+    then it does not trigger an error, but, if \pkg{beamer} is used, is
+    rewritten to:
 
     \medskip
 
@@ -2161,9 +2147,8 @@ See also \refk{indent-level}.
 
     \medskip
 
-    If \pkg[https://ctan.org/pkg/beamer]{beamer} is \emph{not} used, the key
-    is simply ignored. Note that because of current limitations on how keys
-    are handled,
+    If \pkg{beamer} is \emph{not} used, the key is simply ignored. Note that
+    because of current limitations on how keys are handled,
     % Cf. https://github.com/latex3/latex3/issues/67
     unknown keys cannot have defaults, and so there is no way to insert a
     marker for when no value is provided, which could be used to determine
@@ -2210,7 +2195,7 @@ The effect would then be the following:
 %
 No indentation here, and normal spacing. If, however, you wish to suppress
 indentation after \emph{all} instances of \refe{pseudo}, you could use the
-\pkg[https://ctan.org/pkg/noindentafter]{noindentafter} package, as follows:
+\pkg{noindentafter} package, as follows:
 
 \medskip
 
@@ -2250,20 +2235,18 @@ If you use the \refk{kw} key, all pseudocode not in math mode will end up
 using the keyword font (\refc{kwfont}), which initially is bold. Though some
 \emph{do} typeset, e.g., grouping braces in boldface, you might not want to do
 that; the same goes for, say, line-terminating semicolons. The
-\code{theoremfont} option of, e.g., \pkg[https://ctan.org/pkg/newtx]{newtx}
-does something similar (for italics), but uses a custom font for that.
-Packages like \pkg[https://ctan.org/pkg/embrac]{emrac} rely on straightforward
-textual substitution, replacing certain characters with marked-up ones, but
-the way things are set up at the moment, our font command won't have access to
-the entire line when it's executed.
+\code{theoremfont} option of, e.g., \pkg{newtx} does something similar (for
+italics), but uses a custom font for that. Packages like \pkg{emrac} rely on
+straightforward textual substitution, replacing certain characters with
+marked-up ones, but the way things are set up at the moment, our font command
+won't have access to the entire line when it's executed.
 
-If you're adventurous, it's not hard (using the
-\pkg[https://ctan.org/pkg/xparse]{xparse} argument type \code{u}) to make a
-version that \emph{does} gobble up the entire line, up to and including
-\verb|\\| (and you could then use the regular expression functionality from
-\pkg[https://ctan.org/pkg/expl3]{expl3}, presumably also reinserting
-\refc{\bslash}). A simpler solution is to just use \refc{DeclarePseudoNormal}.
-Here's an example based on pseudocode from \citet{Knuth:1975}:
+If you're adventurous, it's not hard (using the \pkg{xparse} argument type
+\code{u}) to make a version that \emph{does} gobble up the entire line, up to
+and including \verb|\\| (and you could then use the regular expression
+functionality from \pkg{expl3}, presumably also reinserting \refc{\bslash}). A
+simpler solution is to just use \refc{DeclarePseudoNormal}. Here's an example
+based on pseudocode from \citet{Knuth:1975}:
 
 \begin{texexp}
 % \usepackage{mathtools}
@@ -2300,14 +2283,13 @@ only do it locally, at the very least):
 \end{pseudo*}
 \end{texexp}
 
-\subsection{\dots\,use \texttt{tabularx}?}
+\subsection{\dots\,use \codefont{tabularx}?}
 \label{sec:tabularx}
 
-You can use other tabular packages such as
-\pkg[https://ctan.org/pkg/tabularx]{tabularx} via \refk{begin-tabular} and
-\refk{end-tabular}. Let's say, for example, that you wish to extend the
-\refe{pseudo} environment to fill out the entire line, and set up a new column
-for comments. You could achieve that as follows:
+You can use other tabular packages such as \pkg{tabularx} via
+\refk{begin-tabular} and \refk{end-tabular}. Let's say, for example, that you
+wish to extend the \refe{pseudo} environment to fill out the entire line, and
+set up a new column for comments. You could achieve that as follows:
 
 % ! Duplicate of the one inside texexp, so it can be reused later.
 \pseudodefinestyle{fullwidth}{
@@ -2316,7 +2298,7 @@ for comments. You could achieve that as follows:
         r                                      % Labels
         >{\pseudosetup}                        % Indent, font, ...
         X                                      % Code (flexible)
-        >{\leavevmode\small\color{black!60}}   % Comment styling
+        >{\leavevmode\small\color{gray}}       % Comment styling
         p{0.45\linewidth}                      % Comments (fixed)
         @{}},
     end-tabular=\endtabularx
@@ -2328,7 +2310,7 @@ for comments. You could achieve that as follows:
         r                                      % Labels
         >{\pseudosetup}                        % Indent, font, ...
         X                                      % Code (flexible)
-        >{\leavevmode\small\color{black!60}}   % Comment styling
+        >{\leavevmode\small\color{gray}}       % Comment styling
         p{0.45\linewidth}                      % Comments (fixed)
         @{}},
     end-tabular = \endtabularx,
@@ -2350,13 +2332,12 @@ that \code{tabularx} environments with \code{X} columns don't interact nicely
 with \cs{=}; so if you wish to use \refc{==}, you can reassert the definition
 by adding \code{>\braces{\refc{pseudoeq}}} before each column.
 
-See the \pkg[https://ctan.org/pkg/tabularx]{tabularx} documentation
-(page~4) for an explanation of why we can't use
-\code{\cs{begin}\braces{tabularx}} and \code{\cs{end}\braces{tabularx}}.
-Also note that because \pkg[https://ctan.org/pkg/tabularx]{tabularx} passes
-its contents as the argument to a macro, the parsing \pkg{pseudo} uses to
-determine if \refc{\bslash} is at the end of the last line doesn't work; if
-you add \refc{\bslash} at the end here, you'll introduce an empty line.
+See the \pkg{tabularx} documentation (page~4) for an explanation of why we can't
+use \code{\cs{begin}\braces{tabularx}} and \code{\cs{end}\braces{tabularx}}.
+Also note that because \pkg{tabularx} passes its contents as the argument to a
+macro, the parsing \pkg{pseudo} uses to determine if \refc{\bslash} is at the
+end of the last line doesn't work; if you add \refc{\bslash} at the end here,
+you'll introduce an empty line.
 
 \makeatletter
 For simplicity, I've used \code{@\braces{}} to remove space on either side.
@@ -2368,19 +2349,18 @@ to use \cs{pseudolabelalign}, rather than \code{r}.
 
 \subsection{\dots\,get tab stops?}
 
-Some packages, such as \pkg[https://ctan.org/pkg/clrscode3e]{clrscode3e}, use
-an actual \code{tabbing} environment internally. While this may be a bit
-brittle (e.g., creating problems if you wish to insert your pseudocode into a
+Some packages, such as \pkg{clrscode3e}, use an actual \code{tabbing}
+environment internally. While this may be a bit brittle (e.g., creating problems
+if you wish to insert your pseudocode into a
 \pkg[https://ctan.org/pkg/pgf]{tikz} node---one of the goals of \pkg{pseudo}),
 it does mean that you can use the tabbing command \cs{>} manually, to align
 various construct.
 
 If all your tabbing is done \emph{before} the text on a given code line, you
 can achieve this in \pkg{pseudo} as well, by using the \code{+} and \code{-}
-modifiers. (For example, the tab stops in
-\pkg[https://ctan.org/pkg/clrscode3e]{clrscode3e} are set at fixed intervals,
-just like in \pkg{pseudo}.) But what if you'd like to align something that
-comes later, such as comments after code lines? You can't simply use
+modifiers. (For example, the tab stops in \pkg{clrscode3e} are set at fixed
+intervals, just like in \pkg{pseudo}.) But what if you'd like to align something
+that comes later, such as comments after code lines? You can't simply use
 \cs{hspace}, of course, unless the code lines themselves have exactly the same
 length.
 
@@ -2402,7 +2382,7 @@ And here is some more
 \noindent
 By using \cs{rlap} on the code lines in question, you can insert \cs{hspace}
 that begins at the beginning of the code line (here with an example
-convenience command defined using \pkg[https://ctan.org/pkg/xparse]{xparse}):
+convenience command defined using \pkg{xparse}):
 
 \begin{texexp}
 \NewDocumentCommand \C { +u{/* } +u{ */} } {%
@@ -2428,8 +2408,8 @@ horizontal lines above and below, and generally a header row on top. While
 this may be part of a surrounding floating environment (see
 \cref{sec:floats}), you may also wish to include such lines in your actual
 pseudocode. In this case, you can simply use existing \code{tabular}-based
-tools such as \pkg[https://ctan.org/pkg/booktabs]{booktabs}, making sure to
-suppress the \pkg{pseudo} \refk{prefix} using the star flag (\code{*}):
+tools such as \pkg{booktabs}, making sure to suppress the \pkg{pseudo}
+\refk{prefix} using the star flag (\code{*}):
 
 \begin{texexp}
 % \usepackage{booktabs}
@@ -2560,10 +2540,9 @@ loops. The result $T$ is initially empty.}
 
 \subsection{\dots\,handle object attributes?}
 
-In the \pkg[https://ctan.org/pkg/clrscode3e]{clrscode3e} package, you'll find
-an assortment of commands for handling
-object attributes such as $A.\id{length}$. The manual says (here with emulated
-kerning of the dot operator):
+In the \pkg{clrscode3e} package, you'll find an assortment of commands for
+handling object attributes such as $A.\id{length}$. The manual says (here with
+emulated kerning of the dot operator):
 
 \begin{quote}
     You might think you could typeset $A\mkern1mu.\id{length}$ by
@@ -2574,15 +2553,11 @@ kerning of the dot operator):
 
 \noindent
 However, this is a font issue, more than anything. If, for example, if you
-want Times New Roman (like Cormen et al.)\@ and use
-\pkg[https://ctan.org/pkg/mathptm]{mathptm}, you at times run into the problem
-described; with \pkg[https://ctan.org/pkg/newtx]{newtx} it's less pronounced.
-With other fonts (e.g.,
-\pkg[https://ctan.org/pkg/fourier]{fourier},
-\pkg[https://ctan.org/pkg/mathpple]{mathpple} or
-\pkg[https://ctan.org/pkg/newtx]{newtxmath} with
-\pkg[https://ctan.org/pkg/libertine]{libertine}), or even without any font
-packages (or possibly using \pkg{lmodern}), the kerning works just fine.
+want Times New Roman (like Cormen et al.)\@ and use \pkg{mathptm}, you at times
+run into the problem described; with \pkg{newtx} it's less pronounced. With
+other fonts (e.g., \pkg{fourier}, \pkg{mathpple} or \pkg{newtxmath} with
+\pkg{libertine}), or even without any font packages (or possibly using
+\pkg{lmodern}), the kerning works just fine.
 
 In general, then, I suggest you try to use \code{\$A.\cs{id}\braces{length}\$}
 and the like, and see if the result is satisfactory:
@@ -2593,9 +2568,9 @@ $v.\id{prev}.\id{next} = v.\id{next}$
 
 \noindent
 If you \emph{do} need to adjust the kerning (with \cs{mkern} commands or
-perhaps using \pkg[https://ctan.org/pkg/microtype]{microtype}), you may of
-course do so, but \pkg{pseudo} does not (at present) include any special
-attribute lookup commands that do it for you.
+perhaps using \pkg{microtype}), you may of course do so, but \pkg{pseudo} does
+not (at present) include any special attribute lookup commands that do it for
+you.
 
 \subsection{\dots\,indicate blocks with braces or the like?}
 
@@ -2689,12 +2664,12 @@ might add it in a future version.
 \label{sec:older}
 
 As mentioned in the introduction, I've tried to make \pkg{pseudo} work with at
-least \emph{somewhat} outdated \TeX\ distributions. In these cases, the
-package itself won't be available as part of the distribution, of course, but
-you can simply download the file
-\texttt{\href{http://mirrors.ctan.org/macros/latex/contrib/pseudo/pseudo.sty}{pseudo.sty}}
-and place it in the directory where you're compiling your document (or
-anywhere else where your \LaTeX\ executable can find it).
+least \emph{somewhat} outdated \TeX\ distributions. In these cases, the package
+itself won't be available as part of the distribution, of course, but you can
+simply download the file
+\codefont{\href{http://mirrors.ctan.org/macros/latex/contrib/pseudo/pseudo.sty}%
+{pseudo.sty}} and place it in the directory where you're compiling your document
+(or anywhere else where your \LaTeX\ executable can find it).
 
 However, there may be cases where this just doesn't work, such as when
 submitting to a publisher with a really old setup.\footnote{If possible,
@@ -2703,11 +2678,10 @@ though, feel free to
 \href{https://github.com/mlhetland/pseudo.sty/pulls}{provide a pull request}
 to address the issue.}
 In that case, the simplest solution is probably to use the
-\pkg[https://ctan.org/pkg/standalone]{standalone} package to produce
-individual PDFs of your algorithms, and then to include those in your
-document. Then you can submit the PDFs rather than the \LaTeX, so that the
-pseudocode need not be compiled on the old system. Each algorithm could go in
-a file like this:
+\pkg{standalone} package to produce individual PDFs of your algorithms, and then
+to include those in your document. Then you can submit the PDFs rather than the
+\LaTeX, so that the pseudocode need not be compiled on the old system. Each
+algorithm could go in a file like this:
 
 \begin{texexp}[listing only]
 \documentclass{standalone}
@@ -2720,7 +2694,7 @@ a file like this:
 \end{texexp}
 
 \noindent
-Let's say this is compiled to \texttt{algo1.pdf}. You then include this file:
+Let's say this is compiled to \codefont{algo1.pdf}. You then include this file:
 
 \begin{texexp}[listing only]
 \documentclass{article}
@@ -2793,7 +2767,7 @@ arguments. If you'd like, though, you can just use \cs{multicolumn} yourself
 \noindent
 \textbf{Note:} In the following, \verb|_@@| and \verb|@@| represent
 an internal prefix (\verb|__pseudo|), the same way they do with
-\pkg[https://ctan.org/pkg/l3docstrip]{l3docstrip}.
+\pkg{l3docstrip}.
 
 \bigskip\noindent
 First, we just define some metadata:
@@ -2802,7 +2776,7 @@ First, we just define some metadata:
 \def \pseudodate    {DATE}
 \end{source}
 The \pkg{pseudo} package is implemented using experimental \LaTeX\,3, so we
-start by importing \pkg[https://ctan.org/pkg/expl3]{expl3}:
+start by importing \pkg{expl3}:
 \begin{source}
 \RequirePackage{expl3}
 \end{source}
@@ -2829,14 +2803,12 @@ still use the mechanism:
 \RequirePackage{l3keys2e}
 \end{source}
 Inside the \refe{pseudo} environment, \refk{*} is an alias for
-\refk{pseudoline}. To perform the proper aliasing, we use
-\pkg[https://ctan.org/pkg/aliascnt]{aliascnt}:
+\refk{pseudoline}. To perform the proper aliasing, we use \pkg{aliascnt}:
 \begin{source}
 \RequirePackage{aliascnt}
 \end{source}
 As part of the initial setup, we also record whether we're part of a
-\pkg[https://ctan.org/pkg/beamer]{beamer} presentation; this will affect the
-overlay functionality:
+\pkg{beamer} presentation; this will affect the overlay functionality:
 \begin{source}
 \bool_new:N \c_@@_beamer_bool
 \@ifclassloaded{beamer}
@@ -2893,19 +2865,18 @@ compatibility with older \TeX\ distributions.)
 \cs_generate_variant:Nn \tl_set:Nn                { Ne    }
 \end{source}
 \paragraph{Defining columns.} The \refk{preamble} is is configurable, but the
-\pkg[https://ctan.org/pkg/array]{array} package makes sure it doesn't expand
-any part of its preamble. One way of inserting a dynamically generated one is
-to simply define it all as a single column type. To avoid getting an error
-when overwriting this definition through the configuration, we'll also need to
-be able to \emph{un}-define column types:
+\pkg{array} package makes sure it doesn't expand any part of its preamble. One
+way of inserting a dynamically generated one is to simply define it all as a
+single column type. To avoid getting an error when overwriting this definition
+through the configuration, we'll also need to be able to \emph{un}-define column
+types:
 \begin{source}
 \cs_new:Nn \@@_undef_col:n {
     \tl_set_eq:cN { NC@find@ \token_to_str:N #1 } \scan_stop:
 }
 \end{source}
-Note that the implementation specifically targets the
-\pkg[https://ctan.org/pkg/array]{array} package. The following command then
-will either define or \emph{re}-define a column type:
+Note that the implementation specifically targets the \pkg{array} package. The
+following command then will either define or \emph{re}-define a column type:
 \begin{source}
 \cs_new:Nn \@@_def_col:nn {
     \@@_undef_col:n { #1 }
@@ -3020,9 +2991,8 @@ number of indentation steps as its only argument:
 \end{source}
 %
 \paragraph{Counter copying.} Inside the \refe{pseudo} environment, we want
-\code{*} to be a duplicate of \code{pseudoline}, for convenience. This
-requires a bit of work. We use the
-\pkg[https://ctan.org/pkg/aliascnt]{aliascnt} package to deal with much of the
+\code{*} to be a duplicate of \code{pseudoline}, for convenience. This requires
+a bit of work. We use the \pkg{aliascnt} package to deal with much of the
 book-keeping, but in order for \cs{newaliascnt} to work whenever a counter
 already exists, we need to undefine it first. (Here we're relying on the
 internal \LaTeX\ convention of using \verb|c@| as a prefix to counter names.)
@@ -3156,9 +3126,8 @@ The \refc{pr} command is also a font shortcut, but in addition takes optional
 parenthesis-delimited arguments, which are set in math mode. To avoid
 erroneousy slurping up following parentheticals, there should be no space
 separating the command and its optional argument. With current versions of
-\pkg[https://ctan.org/pkg/xparse]{xparse}, this can be achieved with the
-\verb|!| argument type, but for compatibility with older \TeX\ distributions,
-I'll deal with it ``manually.''
+\pkg{xparse}, this can be achieved with the \verb|!| argument type, but for
+compatibility with older \TeX\ distributions, I'll deal with it ``manually.''
 \begin{source}
 \cs_new:Nn \@@_fmt_pr:n {
     \textnormal{\prfont{ #1 }}
@@ -3255,9 +3224,8 @@ equals sign, ubiquitous in modern programming languages, and useful if
 as well as the space between them and the padding on both sides may be
 adjusted by using the keys \refk{eqs-scale}, \refk{eqs-sep} and
 \refk{eqs-pad}. Initially, these are set to emulate the \cs{eqeq} symbol from
-\pkg[https://ctan.org/pkg/stix]{stix} when used with Computer Modern, Latin
-Modern or the like (though the command works just fine with other fonts as
-well).
+\pkg{stix} when used with Computer Modern, Latin Modern or the like (though the
+command works just fine with other fonts as well).
 \begin{source}
 \NewDocumentCommand \eqs { } {
     \group_begin:
@@ -3295,8 +3263,7 @@ For convenience and source-code clarity, the following shortcut (i.e.,
 Similarly, there's the
 \href{https://proofwiki.org/wiki/Definition:Real_Interval/Notation/Wirth}{Pascal
 two-dot interval notation}, whose implementation mirrors Knuth's \cs{dts}
-command from Concrete Mathematics (see
-\pkg[https://ctan.org/pkg/gkpmac]{gkpmac.tex}).
+command from Concrete Mathematics (see \pkg{gkpmac.tex}).
 
 \begin{source}
 \cs_new:Nn \@@_dts: {
@@ -3326,15 +3293,14 @@ There's a shortcut (\cs{..}) defined for this as well (this time hijacking
 \subsection{Options}
 \label{sec:options}
 
-Much of the behavior of \pkg{pseudo} may be configured through various
-options, and these are defined below. You provide these either through
-\refc{pseudoset} or (where applicable) as optional arguments to
-\refc{\bslash} or the \refe{pseudo} environment itself.
+Much of the behavior of \pkg{pseudo} may be configured through various options,
+and these are defined below. You provide these either through \refc{pseudoset}
+or (where applicable) as optional arguments to \refc{\bslash} or the
+\refe{pseudo} environment itself.
 
-The \cs{usepackage} options (handled by
-\pkg[https://ctan.org/pkg/l3keys2e]{l3keys2e}) are subject to full expansion,
-an so many options simply won't work. In order to make the \refk{kw} option as
-easily available as possible, however, we permit it here, by way of a
+The \cs{usepackage} options (handled by \pkg{l3keys2e}) are subject to full
+expansion, an so many options simply won't work. In order to make the \refk{kw}
+option as easily available as possible, however, we permit it here, by way of a
 \code{bool} that triggers the \emph{actual} key later on:
 
 \begin{source}
@@ -3479,7 +3445,7 @@ typesetting the pseudocode.
 %
 \paragraph{Line structure.} The preamble for the internal \code{tabular} is
 defined as a single column type, to make it easier to apply it despite the
-\pkg[https://ctan.org/pkg/array]{array} protections against expansion.
+\pkg{array} protections against expansion.
 \begin{source}
     preamble        .code:n         =
         \@@_def_col:nn{ \pseudopreamble }{#1},
@@ -3569,7 +3535,7 @@ mode).
 \end{source}
 %
 Now that we've defined the real \refk{kw} key, we reexamine the placeholder
-handled by \pkg[https://ctan.org/pkg/l3keys2e]{l3keys2e}:
+handled by \pkg{l3keys2e}:
 \begin{source}
 \bool_if:NT \g_@@_kw_bool {
     \keys_set:nn { pseudo } { kw }
@@ -3577,8 +3543,7 @@ handled by \pkg[https://ctan.org/pkg/l3keys2e]{l3keys2e}:
 \end{source}
 %
 \paragraph{Beamer overlays.}
-We redefine the \refk{pause} key if we're using
-\pkg[https://ctan.org/pkg/beamer]{beamer}:
+We redefine the \refk{pause} key if we're using \pkg{beamer}:
 \begin{source}
 \bool_if:NT \c_@@_beamer_bool {
     \keys_define:nn { pseudo } {
@@ -3586,11 +3551,10 @@ We redefine the \refk{pause} key if we're using
     }
 }
 \end{source}
-There's also the mechanism for handling overlay specifications on keys. Here
-we handle unknown keys by checking if they end with an overlay specification,
-and if they do, and we're in \pkg[https://ctan.org/pkg/beamer]{beamer}, we
-extract it. Outside \pkg[https://ctan.org/pkg/beamer]{beamer}, keys with
-overlays are simply ignored.
+There's also the mechanism for handling overlay specifications on keys. Here we
+handle unknown keys by checking if they end with an overlay specification, and
+if they do, and we're in \pkg{beamer}, we extract it. Outside \pkg{beamer}, keys
+with overlays are simply ignored.
 
 Note that because unknown keys currently can't have a default (which we could,
 in this case, use for some kind of marker, indicating no value was supplied),
@@ -3802,10 +3766,10 @@ for use in the \refk{preamble}, together with \refc{pseudosavelabel} and
 }
 \end{source}
 \noindent
-The \refc{pseudoslash} command simply redefines the row separator, and is used at
-the start of the \refe{pseudo} environment. It may be useful for the user if
+The \refc{pseudoslash} command simply redefines the row separator, and is used
+at the start of the \refe{pseudo} environment. It may be useful for the user if
 some other construct redefines \refc{\bslash} as well. (This is similar to the
-\cs{arraycr} command of the \pkg[https://ctan.org/pkg/array]{array} package.)
+\cs{arraycr} command of the \pkg{array} package.)
 \begin{source}
 \NewDocumentCommand \pseudoslash { } {
     \cs_gset_eq:NN \\ \@@_eol:
@@ -3836,7 +3800,7 @@ for setting multiple keys at some later point:
 \end{source}
 %
 % Not allowed to use \code in header, here:
-\subsection{The \texttt{pseudo} environment}
+\subsection{The \codefont{pseudo} environment}
 
 While this is the main attraction, it's essentially just an augmented
 \code{tabular} environment, which does a bit of setup initially, using the
@@ -3898,8 +3862,8 @@ various macros already described.
 \end{source}
 We use \cs{noalign} to be able to place these definitions inside the tabular,
 without messing up \cs{multicolumn} or \cs{hline} or the like. It's not really
-supposed to be used in \pkg[https://ctan.org/pkg/expl3]{expl3}; the
-alternative would be to create an extra dummy line, like:
+supposed to be used in \pkg{expl3}; the alternative would be to create an extra
+dummy line, like:
 \begin{texexp}[listing only]
 \skip_vertical:n{ -\dim_eval:n{ \box_ht:N \@arstrutbox +
                                 \box_dp:N \@arstrutbox } }
@@ -3910,9 +3874,8 @@ more hacky than just using \cs{noalign} here, though, so\,\dots
 \begin{source}
     \tex_noalign:D {
 \end{source}
-We keep the \refc{\bslash}-definition inside the \code{tabular}, to override
-the redefinition placed there by \pkg[https://ctan.org/pkg/array]{array},
-without patching any internals:
+We keep the \refc{\bslash}-definition inside the \code{tabular}, to override the
+redefinition placed there by \pkg{array}, without patching any internals:
 \begin{source}
         \pseudoslash
 \end{source}
