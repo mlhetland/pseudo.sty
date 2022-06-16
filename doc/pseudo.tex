@@ -25,6 +25,8 @@
 % Avoid too much space after code:
 \def\paragraph#1{\noindent\textbf{#1}\enskip}
 
+\usepackage{lmodern}
+
 \let\origbfseries\bfseries
 \def\bfseries{\fontseries{b}\selectfont}
 
@@ -347,7 +349,7 @@
     after={\mbox{}\\\def\if@endpe{%
       \@doendpe
       \let\par\@@par
-      \iffalse}},
+      \iffalse}}, % \fi
     #1
 }
 \makeatother
@@ -947,18 +949,21 @@ Each line of a \refe{pseudo} environment is (initially) structured as follows:
         ($(line-1-7.south east)+(-1pt,-4pt)$)
         ;
 
-    \draw[overlay] (prefix.south) node[font=\footnotesize, below] {\strut Inserted by
-        \refc{\bslash} (not
-        \code{\refc{\bslash}*})};
-    \draw (setup.south) node[font=\footnotesize, below] {\strut Part of preamble};
+    \draw[overlay] (prefix.south) node[font=\footnotesize, below=2pt, inner sep=0pt]
+        {\strut Inserted by \refc{\bslash} (not \code{\refc{\bslash}*})};
+
+    \draw (setup.south) node[font=\footnotesize, below=2pt, inner sep=0pt]
+        {\strut Part of preamble};
 
     \draw[semithick] (line-1-9.south) + (0,-4pt)
-    -- (line-1-9.south |- setup.south) node[font=\footnotesize, below]
+    -- (line-1-9.south |- setup.south)
+        node[font=\footnotesize, below=2pt, inner sep=0pt]
         {\strut Inserted by \refc{\bslash} (not last)};
 
     \draw[semithick] (line.south west) rectangle (line.north east);
 \end{tikzpicture}
 \end{center}
+\vspace{-2.5pt}
 
 \noindent
 The components in the \refk{prefix} are populated by the \refc{\bslash}
@@ -1051,9 +1056,9 @@ alphabetical order), you'll find definitions of a couple of counters here
     In some contexts, this may not work because \cs{=} has reverted to its
     original meaning (as is currently the case if you try to use it within a
     custom float, as in \cref{sec:floats}, or a standard one such as
-    \code{figure}). In this case, you can restore the \pkg{pseudo} meaning
-    (and the \refc{==} shortcut) by using \refc{pseudoeq}. In some cases, you
-    may want to just use \refc{eqs} instead.
+    \code{figure}). In this case, you can restore the \pkg{pseudo} meaning (and
+    the \refc{==} shortcut) by using \refc{pseudoeq}. In some cases, you may
+    want to just use \refc{eqs} instead.
 \end{docCommand}
 
 \begin{docCommand}{\protect\bslash}{\,\colOpt{+}%
@@ -1961,14 +1966,18 @@ Second line
     % Protrudes into the margin:
     % \setandused{indent-length}{pseudosetup}
     % Manual:
-    The command set by the \refk{indent-length} option. Used in
-    \refc{pseudosetup}.
+    The command set by the \refk{indent-length} and \refk{indent-mark} options.
+    Used in \refc{pseudosetup}.
     More precisely, \refk{indent-length} is stored textually, and is converted
     to the length \cs{pseudoindentlength} when entering a \refe{pseudo}
     environment (so that units like \code{em} and \code{ex} adapt to the
-    current font). The \cs{pseudoindent} command then inserts a horizontal
-    space of length $\cs{pseudoindentlength}\times\textit{current indent
-    level}$.
+    current font). If no \refk{indent-mark} is set, the \cs{pseudoindent}
+    command then inserts a horizontal space of length
+    $\cs{pseudoindentlength}\times\textit{current indent level}$. Otherwise,
+    one \refk{indent-mark} and a horizontal space of length
+    \cs{pseudoindentlength} is inserted for each level of indentation up to the
+    current indentation level. (This horizontal space is measured from the left
+    edge of the \refk{indent-mark}.)
 \end{docCommand}
 
 \begin{docCommand}{pseudolabel}{}
@@ -2330,7 +2339,8 @@ next line; you'll need to insert \cs{leavevmode} or the like to prevent that.
 This is true also of normal \code{tabular} environments. Also note
 that \code{tabularx} environments with \code{X} columns don't interact nicely
 with \cs{=}; so if you wish to use \refc{==}, you can reassert the definition
-by adding \code{>\braces{\refc{pseudoeq}}} before each column.
+by adding \code{>\braces{\refc{pseudoeq}}} before each column.\footnote{You can
+also, of course, just use \refc{eqs} instead.}
 
 See the \pkg{tabularx} documentation (page~4) for an explanation of why we can't
 use \code{\cs{begin}\braces{tabularx}} and \code{\cs{end}\braces{tabularx}}.
@@ -2608,7 +2618,7 @@ extent of a tabular row:
 \end{texexp}
 
 \noindent
-We can then use the resulting nodes to draw braces or lines or whatever. First
+You can then use the resulting nodes to draw braces or lines or whatever. First
 some example setup:
 
 % ! Duplicated
