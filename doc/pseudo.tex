@@ -1159,7 +1159,8 @@ alphabetical order), you'll find definitions of a couple of counters here
     However, these spacing commands don't work well inside \cs{mbox},
     \cs{fbox}, etc. To avoid getting into trouble, \pkg{pseudo} determines that
     the environment should be \emph{compact}, and drop this surrounding space,
-    if we're in inner horizontal mode at the beginning of the environment.
+    if we're in inner horizontal mode at the beginning of the environment. This
+    will also turn off setting \cs{prevdepth} (cf.\@ \refk{prevdepth}).
 
 \begin{texexp}
 % In preamble:
@@ -1844,6 +1845,79 @@ See also \refk{compact}.
     Equivalent to \code*{\refk{eol-append} = \cs{pause}} (see \cref{p:pause}).
 \end{docKey}
 
+\begin{docKey}{pos}{\,=\,\meta{depth}}{\initialkeyvalue{\code{t}}}
+    Specifies the vertical position of the \refe{pseudo} environment, i.e.,
+    whether it should be vertically aligned on the top (\code{t}) or bottom
+    (\code{b}) row, or be vertically centered (no value).
+%
+    This is equivalent to the (optional) \code{pos} argument to \code{tabular},
+    and is in fact supplied to the internal \code{tabular} environment. The
+    initial value is \code{t}, which makes sure the spacing above is
+    consistent, regardless of the depth of the previous line. Here are two
+    examples, set side by side:
+
+    \medskip
+
+    \begin{minipage}[t]{1.1cm}
+    $x$
+    \begin{pseudo}
+    foo \\
+    bar
+    \end{pseudo}
+    \end{minipage}
+    \begin{minipage}[t]{1.1cm}
+    $f(x)$
+    \begin{pseudo}
+    frozz \\
+    bozz
+    \end{pseudo}
+    \end{minipage}
+
+    \medskip
+
+    The \refe{pseudo} environments are properly aligned. If, instead, we set
+    \code*{pos = \braces{}}, they will not be, because $f(x)$ has more depth
+    than $x$:\footnote{This was the behavior in older versions of
+    \pkg{pseudo}.}
+
+    \medskip
+
+    \begin{minipage}[t]{1.1cm}
+    $x$
+    \begin{pseudo}[pos=]
+    foo \\
+    bar
+    \end{pseudo}
+    \end{minipage}
+    \begin{minipage}[t]{1.1cm}
+    $f(x)$
+    \begin{pseudo}[pos=]
+    frozz \\
+    bozz
+    \end{pseudo}
+    \end{minipage}
+
+    \medskip
+
+    If \refk{compact} is set to \code{true}, \refk{pos} is automatically
+    emptied like this---a behavior which can, of course, be overridden:
+
+    \begin{texexp}
+    Lorem
+    \begin{pseudo*}[compact]
+        foo \\ bar
+    \end{pseudo*}
+    ipsum
+    \begin{pseudo*}[compact, pos=b]
+        foo \\ bar
+    \end{pseudo*}
+    dolor
+    \begin{pseudo*}[compact, pos=t]
+        foo \\ bar
+    \end{pseudo*}.
+    \end{texexp}
+\end{docKey}
+
 \begin{docCommand}{pr}{\marg{name}\colOpt{(\meta{arguments})}}
     Indicates a procedure name, such as \cn{Quicksort}, and is initially
     more or less an alias for \refCom*{cn}. The optional arguments (in
@@ -1874,6 +1948,15 @@ See also \refk{compact}.
     actual code is inserted by the user. For the default value, see the actual
     implementation on \cpageref{p:prefix} as well as the explanation in
     \cref{sec:linestructure}.
+\end{docKey}
+
+\begin{docKey}{prevdepth}{\,=\,\meta{depth}}{\initialkeyvalue{\code{.3\cs{baselineskip}}}}
+    This value is used to properly adjust the vertical distance to any
+    following text, by setting \cs{prevdepth} to \meta{depth}, unless
+    \refk{compact} is set to \code{true}. In general, it should not be
+    necessary to change its value.\footnote{In previous versions,
+    \cs{prevdepth} was not set. To get the old behavior, set \code*{prevdepth =
+    0pt}.}
 \end{docKey}
 
 \begin{docKey}{prfont}{\,=\,\meta{font}}{\initialkeyvalue{\refc{cnfont}}}
@@ -3499,9 +3582,20 @@ The prefix is inserted by the row separator command.
     prefix          .initial:n      = {
         \pseudobol \stepcounter* \pseudolabel &
     },
+\end{source}
+\paragraph{Tabular setup.}
+The beginning and end of the tabular environment, as well as some positioning
+and spacing.
+\begin{source}
+    pos             .tl_set:N       = \pseudopos,
+    pos             .initial:n      = t,
+
+    prevdepth       .tl_set:N       = \l_@@_prevdepth_tl,
+    prevdepth       .initial:n      = .3\baselineskip,
 
     begin-tabular   .tl_set:N       = \l_@@_begin_tabular_tl,
-    begin-tabular   .initial:n      = \begin{tabular}{\pseudopreamble},
+    begin-tabular   .initial:n      =
+        \begin{tabular}[\pseudopos]{\pseudopreamble},
 
     end-tabular     .tl_set:N       = \l_@@_end_tabular_tl,
     end-tabular     .initial:n      = \end{tabular},
@@ -3519,14 +3613,20 @@ mode).
     partopsep       .initial:n      = { \partopsep },
 
     compact         .meta:n         = {
-        compact-val = #1,
-        compact-def = true,
+        compact-val  = { #1 },
+        compact-def  = true,
+        compact-code = { #1 },
     },
     compact         .default:n      = true,
 
     % For internal use:
     compact-val     .bool_set:N     = \l_@@_compact_bool,
     compact-def     .bool_set:N     = \l_@@_compact_def_bool,
+    compact-code    .code:n         = {
+        \bool_if:nT { \l_@@_compact_bool } {
+            \tl_clear:N \pseudopos
+        }
+    },
 \end{source}
 
 \paragraph{Details.} Finally, some tweakable parameters.
@@ -3539,7 +3639,6 @@ mode).
 
     eqs-pad         .tl_set:N       = \l_@@_eqs_pad_tl,
     eqs-pad         .initial:n      = 0.28mu,
-
 
 }
 \end{source}
@@ -3910,9 +4009,15 @@ the line:
 } {
 
     \tl_use:N \l_@@_end_tabular_tl
+\end{source}
+We'll only adjust spacing here if we're not \refk{compact}. Otherwise, we'll
+just end the current group:
+\begin{source}
+    \bool_if:nTF { \l_@@_compact_bool } {
 
+        \group_end:
 
-    \bool_if:nF { \l_@@_compact_bool } {
+    } {
 
         \mode_if_vertical:F {
             \unskip \par
@@ -3920,10 +4025,14 @@ the line:
         }
 
         \addvspace{ \l_tmpa_skip }
+\end{source}
+To ensure any local changes to \refk{prevdepth} are used, we expand its local
+value before setting cs{prevdepth} \emph{outside} the group.\footnote{See,
+e.g., \url{https://tex.stackexchange.com/questions/56294}.}
+\begin{source}
+        \exp_args:NNNV \group_end: \dim_set:Nn \prevdepth \l_@@_prevdepth_tl
 
     }
-
-    \group_end:
 
 }
 \end{source}
