@@ -21,7 +21,7 @@
 % SOFTWARE.
 %
 \def \pseudoversion {1.1.3}
-\def \pseudodate    {2022/06/16}
+\def \pseudodate    {2022/06/20}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -379,8 +379,13 @@
     prefix          .initial:n      = {
         \pseudobol \stepcounter* \pseudolabel &
     },
+    pos             .tl_set:N       = \pseudopos,
+    pos             .initial:n      = t,
+    prevdepth       .tl_set:N       = \l__pseudo_prevdepth_tl,
+    prevdepth       .initial:n      = .3\baselineskip,
     begin-tabular   .tl_set:N       = \l__pseudo_begin_tabular_tl,
-    begin-tabular   .initial:n      = \begin{tabular}{\pseudopreamble},
+    begin-tabular   .initial:n      =
+        \begin{tabular}[\pseudopos]{\pseudopreamble},
     end-tabular     .tl_set:N       = \l__pseudo_end_tabular_tl,
     end-tabular     .initial:n      = \end{tabular},
     topsep          .tl_set:N       = \l__pseudo_topsep_tl,
@@ -388,12 +393,18 @@
     partopsep       .tl_set:N       = \l__pseudo_partopsep_tl,
     partopsep       .initial:n      = { \partopsep },
     compact         .meta:n         = {
-        compact-val = #1,
-        compact-def = true,
+        compact-val  = { #1 },
+        compact-def  = true,
+        compact-code = { #1 },
     },
     compact         .default:n      = true,
     compact-val     .bool_set:N     = \l__pseudo_compact_bool,
     compact-def     .bool_set:N     = \l__pseudo_compact_def_bool,
+    compact-code    .code:n         = {
+        \bool_if:nT { \l__pseudo_compact_bool } {
+            \tl_clear:N \pseudopos
+        }
+    },
     eqs-scale       .fp_set:N       = \l__pseudo_eqs_scale_fp,
     eqs-scale       .initial:n      = 0.6785,
     eqs-sep         .tl_set:N       = \l__pseudo_eqs_sep_tl,
@@ -564,14 +575,16 @@
     \__pseudo_bol:
 } {
     \tl_use:N \l__pseudo_end_tabular_tl
-    \bool_if:nF { \l__pseudo_compact_bool } {
+    \bool_if:nTF { \l__pseudo_compact_bool } {
+        \group_end:
+    } {
         \mode_if_vertical:F {
             \unskip \par
             \group_insert_after:N \@endparenv
         }
         \addvspace{ \l_tmpa_skip }
+        \exp_args:NNNV \group_end: \dim_set:Nn \prevdepth \l__pseudo_prevdepth_tl
     }
-    \group_end:
 }
 \pseudodefinestyle{starred}{
     preamble={

@@ -179,6 +179,152 @@ apart
 custom topsep and partopsep
 \end{pseudo}
 
+\noindent
+Adjustments based on depth:
+
+\bigskip
+
+{
+
+\parskip0pt % Default
+\topsep0pt
+\partopsep0pt
+\noindent
+\begin{minipage}[t]{2em}
+.
+
+\begin{pseudo*}[hl]
+(x) \\
+x \\
+x \\
+(x)
+\end{pseudo*}%
+\end{minipage}%
+%
+%
+%
+\begin{minipage}[t]{2em}
+.
+
+\begin{pseudo*}[hl]
+x \\
+x \\
+x \\
+x
+\end{pseudo*}%
+\end{minipage}%
+%
+%
+%
+\begin{minipage}[t]{2em}%
+.
+
+\begin{tabular}[t]{@{}l@{}}
+x \\
+x \\
+x \\
+x
+\end{tabular}%
+\end{minipage}
+%
+%
+%
+\begin{minipage}[t]{2em}%
+.
+
+x
+
+\begin{tabular}[t]{@{}l@{}}
+x \\
+x
+\end{tabular}%
+
+\prevdepth=.3\baselineskip
+
+x
+\end{minipage}%
+%
+%
+%
+\begin{minipage}[t]{2em}
+.
+
+x
+
+\begin{pseudo*}[hl]
+x \\
+x
+\end{pseudo*}%
+
+\noindent
+x
+\end{minipage}%
+%
+%
+%
+\begin{minipage}[t]{2em}
+.
+
+g
+
+\begin{pseudo*}[hl]
+x \\
+x
+\end{pseudo*}%
+
+\noindent
+x
+\end{minipage}%
+%
+%
+%
+\begin{minipage}[t]{2em}
+.
+
+x
+
+\begin{pseudo*}[hl]
+x \\
+x
+\end{pseudo*}%
+
+\noindent
+A
+\end{minipage}%
+%
+%
+%
+\begin{minipage}[t]{2em}
+.
+
+(x)
+
+\begin{pseudo*}[hl]
+x \\
+x
+\end{pseudo*}%
+
+\noindent
+(x)
+\end{minipage}%
+%
+%
+%
+\begin{minipage}[t]{2em}
+.
+
+\strut x
+
+\begin{pseudo*}[hl]
+x \\
+x
+\end{pseudo*}%
+
+\noindent
+\strut x
+\end{minipage}%
+}
+
 \section*{Overlays etc.}
 
 Ignored outside \textsf{beamer}.
