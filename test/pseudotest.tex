@@ -4,6 +4,9 @@
 
 \usepackage{pseudo}
 
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,theorems}
+
 \title{Tests for the \textsf{pseudo} package}
 \author{Magnus Lie Hetland}
 
@@ -334,6 +337,18 @@ Ignored outside \textsf{beamer}.
     % bar \\ <3> % Dosn't work in older xparse versions
     baz
 \end{pseudo}
+
+\section*{Boxes and floats}
+
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+
+\begin{tcolorbox}[pseudo/ruled]
+    Test: $f(x)$
+\end{tcolorbox}
+
+\noindent At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
+kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
 % Things that could also be tested:
 % begin-tabular

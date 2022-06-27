@@ -21,7 +21,7 @@
 % SOFTWARE.
 %
 \def \pseudoversion {1.1.3}
-\def \pseudodate    {2022/06/20}
+\def \pseudodate    {2022/06/27}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -29,6 +29,7 @@
     {\pseudoversion}
     {Straightforward pseudocode}
 \RequirePackage{xparse}
+\RequirePackage{pgfkeys}
 \RequirePackage{array, xcolor, colortbl}
 \RequirePackage{l3keys2e}
 \RequirePackage{aliascnt}
@@ -102,7 +103,7 @@
         \group_begin:
         \color{\l__pseudo_indent_color_tl}
         \int_step_inline:nn { \g__pseudo_indent_level_int } {
-            \smash{\rlap{
+            \smash{\hbox_overlap_right:n {
                 \l__pseudo_indent_mark_tl
             }}
             \skip_horizontal:n{ \pseudoindentlength }
@@ -583,7 +584,9 @@
             \group_insert_after:N \@endparenv
         }
         \addvspace{ \l_tmpa_skip }
-        \exp_args:NNNV \group_end: \dim_set:Nn \prevdepth \l__pseudo_prevdepth_tl
+        \exp_args:NNNV
+            \group_end:
+            \dim_set:Nn \prevdepth \l__pseudo_prevdepth_tl
     }
 }
 \pseudodefinestyle{starred}{
@@ -598,4 +601,93 @@
     \begin{pseudo}[starred, #1]
 } {
     \end{pseudo}
+}
+\@ifpackageloaded { booktabs } { } {
+    \dim_const:Nn \aboverulesep       { .40ex }
+    \dim_const:Nn \belowrulesep       { .65ex }
+    \dim_const:Nn \heavyrulewidth     { .08em }
+    \dim_const:Nn \lightrulewidth     { .05em }
+}
+\cs_new:Npn \__pseudo_prevdepth_adjustment: {
+    \par
+    \dim_compare:nNnF \prevdepth < \c_zero_dim {
+        \dim_compare:nNnT \prevdepth < { .3\baselineskip } {
+            \skip_vertical:n { .3\baselineskip - \prevdepth }
+            \skip_vertical:N \c_zero_dim
+        }
+    }
+}
+\pgfqkeys {tcb/pseudo} {
+boxruled/.style = {
+    floatplacement = tbp,
+    before~upper = {
+        \dim_set:Nn \parskip    { .3\baselineskip }
+        \dim_set:Nn \topsep     { .2\baselineskip }
+        \dim_set:Nn \partopsep  { 0pt             }
+        \dim_set:Nn \prevdepth  { .3\baselineskip }
+    },
+    after~upper = \__pseudo_prevdepth_adjustment:,
+    beforeafter~skip~balanced = 0.5\baselineskip plus 2pt,
+    boxsep              = 0pt,
+    toptitle            =      \belowrulesep,
+    bottomtitle         =      \aboverulesep,
+    top                 = 1.75 \belowrulesep,
+    bottom              = 1.75 \aboverulesep,
+    left                = 1.50 \belowrulesep,
+    right               = 1.50 \belowrulesep,
+    fonttitle           = \bfseries,
+    description~font    = \normalfont,
+    before~title        =
+        \dim_set:Nn \prevdepth  { .3\baselineskip },
+    after~title         = \__pseudo_prevdepth_adjustment:,
+    separator~sign      = {
+        \normalfont
+        \skip_horizontal:n{ .5em - \fontdimen2\font\space }
+    },
+    sharp~corners,
+    colback             = white,
+    colbacktitle        = white,
+    coltitle            = black,
+    colframe            = black,
+    boxrule             = .4pt,
+    titlerule           = .2pt,
+},
+ruled/.style = {
+    pseudo/boxruled,
+    empty,
+    boxrule             = 0pt,
+    toprule             = \heavyrulewidth,
+    titlerule           = \lightrulewidth,
+    bottomrule          = \heavyrulewidth,
+    left                = 0pt,
+    right               = 0pt,
+    titlerule~style     = draw,
+    borderline~horizontal = {\heavyrulewidth}{0pt}{black},
+},
+boxed/.style = {
+    pseudo/boxruled,
+    empty,
+    titlerule           = 0pt,
+    borderline          = {.4pt}{0pt}{black},
+    bottomtitle         = 0pt,
+    top                 = .3\baselineskip,
+},
+tworuled/.style = {
+    pseudo/boxed,
+    no~borderline,
+    left                = 0pt,
+    right               = 0pt,
+    boxrule             = 0pt,
+    toprule             = \heavyrulewidth,
+    bottomrule          = \heavyrulewidth,
+    borderline~horizontal = {\heavyrulewidth}{0pt}{black},
+},
+filled/.style = {
+    pseudo/boxruled,
+    tile,
+    colback             = black!11,
+    colbacktitle        = black!22,
+    left                = 2 \belowrulesep,
+    right               = 2 \belowrulesep,
+}
 }

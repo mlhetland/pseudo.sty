@@ -51,6 +51,9 @@
     hooks,
     listingsutf8, documentation]{tcolorbox}
 
+% For box/float examples
+\tcbuselibrary{theorems}
+
 \usepackage{pseudo}
 
 \usepackage{noindentafter}
@@ -63,6 +66,7 @@
 \usepackage{amsmath}
 \DeclareMathOperator{\MyFunc}{my-func}
 
+\usepackage{varioref}
 \usepackage{cleveref}
 
 \usepackage{booktabs}
@@ -162,6 +166,10 @@
     The command set by the \refk{#1} option. Used as part of \refc{#2}.%
 }
 
+\NewDocumentCommand \setandusedinit{ m m }{%
+    The command set by the \refk{#1} option. Used as part of the initial value
+    of \refk{#2}.%
+}
 
 \NewDocumentCommand \fontcmd { m } {%
     \setandused{#1font}{#1}%
@@ -193,7 +201,9 @@
     extendedchars=true,
     nolol,
     inputencoding=\kvtcb@listingencoding,
-    literate={\$}{\textcolor{black!65}{\$}}1,
+    literate={\$}{\textcolor{black!65}{\$}}{1}%
+    {~}{\textcolor{gray}{\raisebox{-.75ex}{\textasciitilde}}}{1},
+    commentstyle=\color{gray},
 }
 
 \let\braces\brackets
@@ -213,8 +223,8 @@
     },
     left=1.5em, % \parindent -- but that changes inside doc
     text above listing,
-    before={\par\pagebreak[0]\medskip\parindent=0pt},
-    after={\par\medskip\noindent},
+    before app={\par\pagebreak[0]\medskip\parindent=0pt},
+    after app={\par\medskip\noindent},
     % Because listings messes with the equals sign:
     before lower app={
         \pseudoeq
@@ -345,14 +355,26 @@
     arc=0pt,
     boxsep=0pt,
     left=\parindent,
-    before={\par\medskip\parindent=0pt},
-    after={\mbox{}\\\def\if@endpe{%
-      \@doendpe
-      \let\par\@@par
-      \iffalse}}, % \fi
+    top=0pt,
+    bottom=0pt,
+    beforeafter skip balanced = 12pt plus 4pt minus 4pt, % bigskip
+    after app={\noindent},
     #1
 }
 \makeatother
+
+\newtcbtheorem[
+        number within = section,
+        crefname = {algorithm}{algorithms}
+    ]%
+    {algorithm}{Algorithm}{pseudo/ruled}{alg}
+
+\newtcbtheorem[
+        use counter from=algorithm,
+        crefname={algorithm}{algorithms}
+    ]%
+    % {internalpseudobox}{Algorithm}{float}{pbx}
+    {internalpseudobox}{Algorithm}{}{pbx}
 
 \begin{document}
 \maketitle
@@ -389,6 +411,34 @@ The only option usable here at the moment is \refk{kw} (used in the example
 above), as the \cs{usepackage} command is a bit too eager in expanding its
 arguments, but there are several options that may be provided to the
 \refc{pseudoset} command, to configure things (see \cref{sec:cmdandkeyref}).
+
+{
+\pseudodefinestyle{fullwidth}{
+    begin-tabular =
+    \tabularx{\linewidth}[t]{@{}
+        r                                      % Labels
+        >{\leavevmode\pseudosetup}             % Indent, font, ...
+        X                                      % Code (flexible)
+        >{\leavevmode\small\color{gray}}       % Comment styling
+        p{0.50\linewidth}                      % Comments (fixed)
+        % p{0.45\linewidth}                      % Comments (fixed)
+        @{}},
+    end-tabular=\endtabularx,
+}
+\begin{algorithm}{Euclid's algorithm, \pr{Euclid}(a, b)}{euclid}
+\textbf{Input:} Two positive integers, $a$ and $b$.
+
+\textbf{Output:} The greatest common divisor of $a$ and $b$.
+\begin{pseudo}[kw, indent-mark, fullwidth]%*
+    while $a \neq b$ & If equal, both are gcd \\+
+        if $a > b$ & Reduce greatest with multiple of smallest \\+
+            $a = a - b$ & $a$ is largest \\-
+        else $b = b - a$ & $b$ is largest \\-
+    return $a$ & Both are gcd, so return one
+\end{pseudo}
+The running time is quadratic in the number of bits in the input.
+\end{algorithm}
+}
 
 \subsection*{Alternatives}
 
@@ -446,14 +496,12 @@ The imlementation of \pkg{pseudo} uses some functionality that isn't available
 in older \TeX\ distributions, in particular, older versions of \pkg{xparse} and
 \pkg{expl3}. Some care has been taken to make the code backward compatible to
 the point where it works on \TeX\ Live~2016, which is what is used (at the time
-of writing) on \href{https://arxiv.org}{arXiv}.
-% XXX XXX XXX They've switched to 2020?
-If you run into issues somewhere else (e.g., when submitting to some publisher
-with a custom setup), feel free to
+of writing) on \href{https://arxiv.org}{arXiv}. If you run into issues somewhere
+else (e.g., when submitting to some publisher with a custom setup), feel free to
 \href{https://github.com/mlhetland/pseudo.sty/issues}{file an issue}, or even
 \href{https://github.com/mlhetland/pseudo.sty/pulls}{provide a pull request}
-with a fix. One thing to look out for is that older versions of
-\pkg{xparse} parse arguments differently, so things like
+with a fix. One thing to look out for is that older versions of \pkg{xparse}
+parse arguments differently, so things like
 \begin{texexp}[listing only]
 foo\\<1>
 bar\\[hl]
@@ -513,8 +561,6 @@ the more convenient short forms (\refc{kw}, \refc{cn}, etc.)\@ are prone to
 name collisions, and are only defined if the names are not already in use when
 \pkg{pseudo} is imported.
 
-% XXX Split into two separate examples? Better example (i.e., to better show off
-% how it actually will look with proper pseudocode)?
 The \refk{indent-length} option, which determines the length of each
 indentation step, is initially set via the secondary \refk{indent-text} key,
 so that the any code after \code{\cs{kw}\braces{else}} aligns with the
@@ -562,14 +608,14 @@ vertical lines. The width of the (default) mark can be set with
     indent-mark, indent-mark-width=3pt, line-height=1.5]
     the                                         \\+
         lines                                   \\+
-            are                                 \\--
+            are                                 \\-
     scaled
 \end{pseudo}
 \end{texexp}
-%
-If you want, you can certainly create shortcuts, e.g.,
-\verb|\def\While{\kw{while}}|, or using various declaration commands, such as
-\refc{DeclarePseudoKeyword} or \refc{DeclarePseudoConstant}. Procedures and
+
+If you want, you can certainly create shortcuts, e.g., with simple macro
+definitions like \verb|\def\While{\kw{while}}|, or with declaration commands such
+as \refc{DeclarePseudoKeyword} or \refc{DeclarePseudoConstant}. Procedures and
 functions capture parenthesized arguments and set them in math mode; this
 carries over in shortcuts, so if you define \verb|\Euclid| to mean
 \verb|\pr{Euclid}|, then \code*{\cs{Euclid}(a, b)} yields
@@ -882,6 +928,304 @@ unnumbered version of the \refe{pseudo} environment:
 \end{texexp}
 }
 
+\section{Boxes and floats}
+\label{sec:floats}
+
+There are (at least) two different ways of viewing a block of pseudocode: as
+an inline element, like equations, or as a float, like figures and tables. For
+example, \citet{Cormen:2009} place their pseudocode inline, and refer to the
+algorithms by name (e.g., ``\pr{Dijkstra}''), while \citet{Williamson:2011} place
+them in floats, and refer to them by number (e.g., ``Algorithm~3.1'').%
+\footnote{A third option that is sometimes used is to use a theorem-like
+environment for your algorithms. There are many packages to help with this;
+just search \href{https://ctan.org}{\textsc{ctan}} for
+``\href{https://ctan.org/search/?phrase=theorem}{theorem}''.}
+
+Just using the \refe{pseudo} environment is sufficient for typesetting
+pseudocode as part of the body text. If you wish to place your pseudocode in a
+float, you can easily use a package such as
+\pkg{float}.\footnote{Or you could do a quick
+\href{https://ctan.org}{\textsc{ctan}} search for
+``\href{https://ctan.org/search/?phrase=float}{float}'', or a look at the
+\href{https://ctan.org/recommendations/float}{recommendations} related to
+the \pkg{float} package, will give you many options, with varying
+functionality.} You could also use the float environments supplied with packages
+such as \pkg{algorithms}, \pkg{algorithmicx} and
+\pkg{algorithm2e}.\footnote{The definition of \refc{==} doesn't properly carry
+    over into floats. It's properly redefined inside \refe{pseudo}, so you
+    probably won't notice, but if you wish to use the symbol outside the
+    \refe{pseudo} environment, but in a float (e.g., inside \cs{caption}),
+you'll need to either call \refc{pseudoeq} to re-establish \pkg{pseudo}'s
+redefinition of \cs{=} or simply use \refc{eqs} instead of \refc{==}.}
+
+The \pkg{pseudo} package does provide some specialized setup,
+however, using \pkg{tcolorbox}. This also lets you typeset non-float pseudocode
+with a colored background, for example, like \citeauthor{Cormen:2022} do in the
+most recent version of their textbook~\citep{Cormen:2022}.
+
+\medskip\noindent
+\textb{Note:} For performance reasons, \pkg{pseudo} does \emph{not}
+automatically import \pkg{tcolorbox}; if you want to use the float
+functionality, you will need to import \pkg{tcolorbox} yourself:
+\begin{texexp}[listing only]
+\usepackage{pseudo}
+% ...
+\usepackage{tcolorbox}          % possibly with options
+\tcbuselibrary{skins,theorems}  % remember these
+\end{texexp}
+It does not matter whether you import
+\pkg{tcolorbox} before or after \pkg{pseudo}, but make sure you also import the
+two libraries \code{skins} and \code{theorems}, as in the example above.
+
+The styles defined by \pkg{pseudo} are versions of the commonly used
+\emph{boxed} and \emph{ruled} styles, as found in, e.g., \pkg{float}, as well as
+the \emph{boxruled} and \emph{tworuled} styles found in \pkg{algorithm2e}. In
+addition, there's a \emph{filled} style, with a colored background. If you wish
+to customize and extend the box style, \code{pseudo/boxruled} is probably the
+best starting point, as the other styles disable the default frame drawing.
+
+The ruled style is one of the more common ones in  use in publications. This is
+a style originally used for (non-floating) tables in \emph{Concrete
+Mathematics}~\citep{Graham:1994}. Rather than reproducing the look of those
+tables directly, \pkg{pseudo} aims to match the style of \pkg{booktabs}, with
+spacing and line thicknesses taken from its constants such as \cs{aboverulesep},
+\cs{heavyrulewidth}, etc.\@ (with defaults provided if \pkg{booktabs} has not
+been imported).\footnote{In \pkg{booktabs}, the contents between the top rules
+is the header row, whereas in the \emph{Concrete Mathematics} style, it's the
+caption.}
+
+The \pkg{pseudo} box styles can be used used directly to style \code{tcolorbox}
+environments, possiby with additional \pkg{tcolorbox} options for customization:
+{
+\pseudoset{kw}
+\begin{texexp}
+% In preamble:
+% \usepackage[cmyk]{xcolor}
+\definecolor{lighttan}{cmyk}{0,0.05,0.17,0} % from clrscode4e.sty
+
+\begin{tcolorbox}[pseudo/filled, colback=lighttan]
+    \begin{pseudo}*
+        \hd{Search}(v, i)                       \\
+        $v.\lambda = i$                         \\
+        for \nf each neighbor $u$ of $v$        \\+
+            if $0 < u.\lambda < i$              \\+
+                \pr{Search}(u, i)               \\--
+        for \nf each neighbor $u$ of $v$        \\+
+            if $ u.\lambda \== 0$               \\+
+                \pr{Search}(u, i + 1)
+    \end{pseudo}
+\end{tcolorbox}
+\end{texexp}
+}
+
+You can also new environments with \cs{newtcolorbox},\footnote{See the
+\pkg{tcolorbox} for details and alternatives.} but the most common use-case will
+probably be to define a (possibly floating) theorem-style environment, using
+\cs{newtcbtheorem} (probably in the preamble):
+
+\begin{texexp}[listing only]
+\newtcbtheorem{algorithm}{Algorithm}{pseudo/ruled}{alg}
+\end{texexp}
+
+\noindent
+Here \code{algorithm} is the name we've chosen for our new environment,
+\code{Algorithm} is the label to be used when numbering (i.e., ``Algorithm~1,''
+etc.), \code{pseudo/ruled} is the ruled box style, and \code{alg} is is a prefix
+that will be used in automatically labeling our boxes.
+
+If you want a \emph{floating} box (like figures and tables, for example), simply
+add the key \code{float} alongside the box style, such as:
+\begin{texexp}[listing only]
+\newtcbtheorem{algorithm}{Algorithm}{pseudo/ruled, float}{alg}
+\end{texexp}
+%
+Other \pkg{tcolorbox} styling options may be inserted in the same place. One can
+also supply some \emph{init options} as a first argument, for configuring the
+automatic numbering. For example, if we want our algorithms to be numbered
+within sections, and we wish to provide \pkg{cleveref} with the appropriate
+names, we could define the environment like this:\footnote{If you use the
+\code{crefname} option, you should make sure to place your \cs{newtcbtheorem}
+command in the preamble, and not in the document body, for the naming to take
+effect.}
+%
+% Actual definition in preamble (so crefname works)
+\begin{texexp}[listing only]
+\newtcbtheorem[
+        number within = section,
+        crefname = {algorithm}{algorithms}
+    ]%
+    {algorithm}{Algorithm}{pseudo/ruled, float}{alg}
+\end{texexp}
+%
+Once our environment has been defined with \cs{newtcbtheorem}, it can be used as
+follows:
+
+% Disappears when it's in a texexp, because the tcolorboxes check if they're
+% first inside another box:
+\vspace{0.5\baselineskip plus 2pt}
+{
+\pseudoset{kw}
+\begin{texexp}
+\begin{algorithm}{Sort an array $A$ of $n$ elements.}{gnome}
+\begin{pseudo}
+    $i = 1$                                     \\
+    while $i < n$                               \\+
+        if \nf $i\== 1$ or $A[i-1] \leq A[i]$   \\+
+            $i = i + 1$                         \\-
+        else \nf swap $A[i-1]$ and $A[i]$       \\+
+            $i = i - 1$
+\end{pseudo}
+\end{algorithm}
+\end{texexp}
+}
+
+The first argument is the title, or ``caption,'' and the second argument
+(\code{gnome}) is the \emph{marker}, which is combined with the prefix (in our
+case, \code{alg}) to create the label, \code{alg:gnome}, which can be used with
+\cs{ref} or (using \pkg{cleveref}) \cs{cref}, etc.:\footnote{The separator
+(\code{:}) can be configured; see the \pkg{tcolorbox} docs.}
+
+\begin{texexp}
+\Cref{alg:gnome} is the well-known \emph{gnome sort}, by
+Sarbazi-Azad and Grune.
+\end{texexp}
+
+% The internalpseudobox environment is defined in the preamble, so crefname
+% works.
+\noindent
+\Cref{pbx:boxed,pbx:boxruled,pbx:tworuled,pbx:filled} are typeset with the
+remaining box styles.
+
+\begin{internalpseudobox}[pseudo/boxed]{\code{pseudo/boxed}}{boxed}
+\begin{pseudo}[kw]
+    $i = 1$ \\
+    while $i < n$\\+
+        if \nf $i\== 1$ or $A[i-1] \leq A[i]$ \\+
+            $i = i + 1$ \\-
+        else \nf swap $A[i-1]$ and $A[i]$ \\+
+            $i = i - 1$
+\end{pseudo}
+\end{internalpseudobox}
+
+\begin{internalpseudobox}[pseudo/boxruled]{\code{pseudo/boxruled}}{boxruled}
+\begin{pseudo}[kw]
+    $i = 1$ \\
+    while $i < n$\\+
+        if \nf $i\== 1$ or $A[i-1] \leq A[i]$ \\+
+            $i = i + 1$ \\-
+        else \nf swap $A[i-1]$ and $A[i]$ \\+
+            $i = i - 1$
+\end{pseudo}
+\end{internalpseudobox}
+
+\begin{internalpseudobox}[pseudo/tworuled]{\code{pseudo/tworuled}}{tworuled}
+\begin{pseudo}[kw]
+    $i = 1$ \\
+    while $i < n$\\+
+        if \nf $i\== 1$ or $A[i-1] \leq A[i]$ \\+
+            $i = i + 1$ \\-
+        else \nf swap $A[i-1]$ and $A[i]$ \\+
+            $i = i - 1$
+\end{pseudo}
+\end{internalpseudobox}
+
+\begin{internalpseudobox}[pseudo/filled]{\code{pseudo/filled}}{filled}
+\begin{pseudo}[kw]%*
+    $i = 1$ \\
+    while $i < n$\\+
+        if \nf $i\== 1$ or $A[i-1] \leq A[i]$ \\+
+            $i = i + 1$ \\-
+        else \nf swap $A[i-1]$ and $A[i]$ \\+
+            $i = i - 1$
+\end{pseudo}
+\end{internalpseudobox}
+
+Unnumbered boxes may be constructed with \cs{newtcolorbox}, using the same
+styles. These boxes, by default, have no title part---only the main
+body, containing the pseudocode itself:
+
+{
+\pseudoset{kw}
+\begin{texexp}
+\newtcolorbox{pseudobox}{pseudo/filled}
+
+\begin{pseudobox}
+\begin{pseudo}*
+    \hd{Sum}(a, b)                              \\
+    if $b \== 0$                                \\+
+        return $a$                              \\-
+    return $\pr{Sum}(a, b - 1) + 1$
+\end{pseudo}
+\end{pseudobox}
+\end{texexp}
+}
+
+It is possible to add titles using the \code{title} key, but then the definition
+must be expanded slightly, to permit arguments, e.g.:
+
+\begin{texexp}[listing only]
+\newtcolorbox{pseudobox}[1][]{pseudo/filled, #1}
+\end{texexp}%
+\newtcolorbox{pseudobox}[1][]{pseudo/filled, #1}% For later use
+%
+Here we've added a single argument (\code{[1]}), with an empty default
+(\code{[]}), and this is spliced into the box options at the end. Now we
+may con\-figure each box individually, as we please:
+
+{
+\pseudoset{kw}
+\begin{texexp}
+\begin{pseudobox}[title={\pr{Sum}(a, b)}]
+\begin{pseudo}
+    if $b \== 0$                                \\+
+        return $a$                              \\-
+    return $\pr{Sum}(a, b - 1) + 1$
+\end{pseudo}
+\end{pseudobox}
+\end{texexp}
+}%
+%
+Colors (e.g., \code{colback}, \code{colbacktitle} or \code{colframe}), fonts
+(e.g., \code{fonttitle}), line thicknesses (\code{boxrule} or \code{titlerule}),
+puncutation (\code{separator sign} and \code{terminator sign}) etc., may also be
+configured, either for all the boxes of this type (directly in the call to
+\cs{newtcolorbox}) or for any individual box, as with the \code{title} key in
+the previous example. The style that is closest to a plain, default
+\code{tcolorbox} is \code{pseudo/boxruled}, which may be a good starting-point
+for this kind of configuration. However, if you just wish to add some minor
+tweaks to one of the existing \code{pseudo} styles (e.g., changing the colors of
+\code{pseudo/filled}), starting with that style may be easier.
+
+The contents of one of these boxes need not be restricted to pseudocode---the
+spacing is set up to handle plain text as well. For example, you may want to
+specify inputs and outputs:\footnote{Common alternatives to ``Input/Output'' are
+``Require/Ensure'' and ``Data/Result.''}
+
+\vspace{0.5\baselineskip plus 2pt}
+{
+\pseudoset{kw}
+\begin{texexp}
+\begin{algorithm}{Gnome sort}{} % environment defined earlier
+
+\textbf{Input:} An array $A$ of length $n$.
+
+\textbf{Output:} $A$, sorted in nondescending order.
+
+\begin{pseudo}
+    $i = 1$                                     \\
+    while $i < n$                               \\+
+        if \nf $i \== 1$ or $A[i-1] \leq A[i]$  \\+
+            $i = i + 1$                         \\-
+        else \nf swap $A[i-1]$ and $A[i]$       \\+
+            $i = i - 1$
+\end{pseudo}
+
+The running time of the algorithm is quadratic.
+
+\end{algorithm}
+\end{texexp}
+}
+
 \section{Reference}
 \label{sec:reference}
 
@@ -1046,6 +1390,7 @@ alphabetical order), you'll find definitions of a couple of counters here
 \end{docCommand}
 
 \begin{docCommand}{==}{}
+    \pseudoeq % Having some trouble bc/o floats, or something?
     This is a shortcut that hijacks the normal \cs{=} accent command, so that
     if it is called with \code{=} as an argument, the result is \cs{eqs}. In
     other words, the command \cs{==} is really the call
@@ -1109,7 +1454,18 @@ alphabetical order), you'll find definitions of a couple of counters here
     environment used by \refe{pseudo}. Normally not needed, as the
     \code{tabular} behavior may be modified by other keys, but could be used
     to use some other tabular environment, e.g., from packages such as
-    \pkg{tabularx} or \pkg{longtable}.
+    \pkg{tabularx} or \pkg{longtable}. Rather than
+    \code{\cs{begin}\braces{tabularx}} and \code{\cs{end}{\braces{tabularx}}},
+    the command versions \cs{tabularx} and \cs{endtabularx} should be used.
+    Commands such as \refc{pseudopos} and \refc{pseudopreamble} may be used as
+    part of the setup:
+\begin{texexp}[listing only]
+\pseudoset{
+    begin-tabular =
+        \tabularx{\linewidth}[\pseudopos]{\pseudopreamble},
+    end-tabular = \endtabularx
+}
+\end{texexp}
 \end{docKey}
 
 \begin{docKey}{bol}{\,=\,\meta{commands}}{\initiallyempty}
@@ -1208,7 +1564,7 @@ alphabetical order), you'll find definitions of a couple of counters here
     \medskip\noindent
 
     \begin{pseudo}[
-        begin-tabular=\tabularx{\linewidth}{@{}r>{\pseudosetup}X@{}},
+        begin-tabular=\tabularx{\linewidth}[t]{@{}r>{\pseudosetup}X@{}},
         end-tabular=\endtabularx,
         ctfont=\color{black!75},
         ct-left=\unskip\qquad\texttt{/* },
@@ -1228,7 +1584,7 @@ alphabetical order), you'll find definitions of a couple of counters here
     \medskip\noindent
 
     \begin{pseudo}[
-        begin-tabular=\tabularx{\linewidth}{@{}r>{\pseudosetup}X@{}},
+        begin-tabular=\tabularx{\linewidth}[t]{@{}r>{\pseudosetup}X@{}},
         end-tabular=\endtabularx,
         ctfont=\color{black!75},
         ct-left=\hfill\texttt{/* },
@@ -1754,7 +2110,7 @@ vs.\
 \pseudoset{kw, label=\footnotesize\arabic*:}
 
 \begin{pseudo}
-print \st{Hello, label!} \label{li:label} \\
+print \st{Hello, label!} \label{li:label}       \\
 goto \tn{\ref{li:label}}
 \end{pseudo}
 \end{texexp}
@@ -2072,6 +2428,14 @@ Second line
     Counter for pseudocode lines. See also \refk{*}.
 \end{docKey}
 
+\begin{docCommand}{pseudopos}{}
+    \setandusedinit{pos}{begin-tabular}
+\end{docCommand}
+
+\begin{docCommand}{pseudopreamble}{}
+    \setandusedinit{preamble}{begin-tabular}
+\end{docCommand}
+
 \begin{docCommand}{pseudoprefix}{}
     \setandused{prefix}{\bslash}
 \end{docCommand}
@@ -2341,6 +2705,7 @@ simpler solution is to just use \refc{DeclarePseudoNormal}. Here's an example
 based on pseudocode from \citet{Knuth:1975}:
 
 \begin{texexp}
+% In preamble:
 % \usepackage{mathtools}
 \let\gets\coloneqq
 
@@ -2386,7 +2751,7 @@ set up a new column for comments. You could achieve that as follows:
 % ! Duplicate of the one inside texexp, so it can be reused later.
 \pseudodefinestyle{fullwidth}{
     begin-tabular =
-    \tabularx{\linewidth}{@{}
+    \tabularx{\linewidth}[t]{@{}
         r                                      % Labels
         >{\pseudosetup}                        % Indent, font, ...
         X                                      % Code (flexible)
@@ -2398,7 +2763,7 @@ set up a new column for comments. You could achieve that as follows:
 \begin{texexp}
 \pseudodefinestyle{fullwidth}{
     begin-tabular =
-    \tabularx{\linewidth}{@{}
+    \tabularx{\linewidth}[t]{@{}
         r                                      % Labels
         >{\pseudosetup}                        % Indent, font, ...
         X                                      % Code (flexible)
@@ -2528,108 +2893,6 @@ Rather than \code{\cs{\bslash}[bol=\cs{midrule}]}, you could also have used
 \code{\cs{\bslash}*}, followed by \code{\cs{midrule}\cs{pseudoprefix}}. (Note
 that the paragraph break between \refc{\bslash} and its argument has been
 commented out.)
-
-\subsection{\dots\,get an algorithm float?}
-\label{sec:floats}
-
-There are (at least) two different ways of viewing a block of pseudocode: As
-an inline element, like equations, or as a float, like figures and tables. For
-example, \citet{Cormen:2009} place their pseudocode inline, and refer to the
-algorithms by name (e.g., \pr{Dijkstra}), while \citet{Williamson:2011} place
-them in floats, and refer to them by number (e.g.,
-Algorithm~3.1).%
-\footnote{A third option that is sometimes used is to use a theorem-like
-environment for your algorithms. There are many packages to help with this;
-just search \href{https://ctan.org}{\textsc{ctan}} for
-``\href{https://ctan.org/search/?phrase=theorem}{theorem}''.}
-%
-Some pseudocode packages have a custom float environment (à la \code{table}
-and \code{figure}) for use with algorithms described by pseudocode. Beyond
-having a new float name (such as ``Algorithm'') with its own numbering and the
-like, they at times have rather distinct styling (horizontal lines in
-\pkg[https://ctan.org/pkg/algorithms]{algorithms} and
-\pkg[https://ctan.org/pkg/algorithmicx]{algorithmicx}, and a surrounding box
-in \pkg[https://ctan.org/pkg/algorithm2e]{algorithm2e}), which may or may not
-suit the styling of the rest of your document.
-
-Rather than getting into the business of float environments, I leave such
-things to separate packages designed for that use. A basic solution would be
-to simply use the \pkg[https://ctan.org/pkg/float]{float} package (which also
-provides ruled and boxed floats, should you wish to have those), but a quick
-\href{https://ctan.org}{\textsc{ctan}} search for
-``\href{https://ctan.org/search/?phrase=float}{float}'', or a look at the
-\href{https://ctan.org/recommendations/float}{recommendations} related to the
-\pkg[https://ctan.org/pkg/float]{float} package, will give you many options,
-with varying functionality.
-%
-
-\medskip
-
-\paragraph{Note:} The definition of \refc{==} doesn't properly carry over into
-floats. It's properly redefined inside \refe{pseudo}, so you probably won't
-notice, but if you wish to use the symbol outside the \refe{pseudo}
-environment, but in a float (e.g., inside \cs{caption}), you'll need to either
-call \refc{pseudoeq} to re-establish the definition of \cs{=} or simply use
-\refc{eqs} instead of \refc{==}.
-
-\medskip
-
-\noindent
-Here's a simple example using the \pkg[https://ctan.org/pkg/float]{float}
-and \pkg[https://ctan.org/pkg/caption]{caption} packages, reusing the
-\code{fullwidth} style example from \cref{sec:tabularx} and the horizontal
-line ideas from \cref{sec:horizontallines}:
-
-% ! Duplicate of the code in the actual float
-\begin{texexp}[listing only]
-% \usepackage{float}
-% \usepackage{caption}
-\floatstyle{plaintop}
-\newfloat{algorithm}{tbp}{alg}[section]
-\floatname{algorithm}{Algorithm}
-
-\begin{algorithm}
-\begin{pseudo}[fullwidth]*
-
-% Insert pseudocode and comments
-
-\end{pseudo}
-\caption{...}
-\end{algorithm}
-\end{texexp}
-
-\noindent
-You can see the result in \cref{alg:example}.
-
-\floatstyle{plaintop}
-\newfloat{algorithm}{tbp}{alg}[section]
-\floatname{algorithm}{Algorithm}
-\begin{algorithm}
-\begin{pseudo}[fullwidth]*
-\toprule
-
-    \hd{Bor\r{u}vka}(G, w) &
-        Construct MST $T$ for $G$ wrt.\ $w$ \\[bol=\midrule]
-
-    \kw{while} $E(G)$ is not empty &
-        Not all are contracted yet \\+
-        \kw{for} each $u\in V(G)$ &
-            One light edge per node \\+
-            add light $uv \in E(G)$ to $T$ &
-            $T$ is the tree we're building \\-
-        \kw{for} each $e \in T$ &
-            These edges are already used \\+
-            contract $e$ &
-            We focus on the remaining ones \\*
-
-\bottomrule
-\end{pseudo}
-\caption{Bor\r{u}vka's algorithm for finding minimum spanning trees. For a
-node $u$, a \emph{light} edge is an edge $uv$ of minimum weight $w(u,v)$.
-Contracting $uv$ deletes it, identifies $u$ and $v$, and removes resulting
-loops. The result $T$ is initially empty.}
-\label{alg:example}
-\end{algorithm}
 
 \subsection{\dots\,handle object attributes?}
 
@@ -2854,7 +3117,9 @@ arguments. If you'd like, though, you can just use \cs{multicolumn} yourself
     extendedchars=true,
     nolol,
     inputencoding=\kvtcb@listingencoding,
-    literate={VERSION}{\pseudoversion}{3}{DATE}{\pseudodate}{10},
+    literate={VERSION}{\pseudoversion}{3}{DATE}{\pseudodate}{10}%
+    {~}{\textcolor{gray}{\raisebox{-.75ex}{\textasciitilde}}}{1},
+    commentstyle=\color{gray},
 }
 
 \noindent
@@ -2884,6 +3149,10 @@ Then we're ready start the package:
 Tools for defining user commands:
 \begin{source}
 \RequirePackage{xparse}
+\end{source}
+For defining \pkg{tcolorbox} styles, without importing \pkg{tcolorbox}:
+\begin{source}
+\RequirePackage{pgfkeys}
 \end{source}
 The \refe{pseudo} environment is built upon tabular functionality, and we're
 using some extensions:
@@ -3063,7 +3332,9 @@ Note that the configured indent length is stored in a \code{tl}, which is
 expanded in the \refe{pseudo} environment.
 
 The indent size is subsequently used by the indent command, which takes the
-number of indentation steps as its only argument:
+number of indentation steps as its only argument. If no \refk{indent-mark} is
+set, it just inserts an appropriate horizontal space. Otherwise, it iterates
+over the indent levels, inserting one indent marker for each leve.
 \begin{source}
 \cs_new:Nn \@@_indent:N {
     \tl_if_novalue:VTF \l_@@_indent_mark_tl {
@@ -3072,7 +3343,7 @@ number of indentation steps as its only argument:
         \group_begin:
         \color{\l_@@_indent_color_tl}
         \int_step_inline:nn { \g_@@_indent_level_int } {
-            \smash{\rlap{ % XXX Better way to do this with boxes?
+            \smash{\hbox_overlap_right:n {
                 \l_@@_indent_mark_tl
             }}
             \skip_horizontal:n{ \pseudoindentlength }
@@ -3446,13 +3717,28 @@ typesetting the pseudocode.
 
     indent-mark     .tl_set:N       = \l_@@_indent_mark_tl,
     indent-mark     .initial:x      = \c_novalue_tl,
+\end{source}
+The default \refk{indent-mark} is a vertical with width set by
+\refk{indent-mark-width}. The height and depth are normally
+\code{.7\cs{baselineskip}} and \code{.3\cs{baselineskip}}, though these are
+scaled by \code{line-height}. This is simply handled by measuring the array
+strut (as given by \code{\@arstrutbox}),\footnote{Ideally, we should be using
+\cs{rule:nnn}, here, but that is a fairly recent command, and not
+necessarily available.} which will only work for tabular environments (as set by
+\refk{begin-tabular} and \refk{end-tabular}) that use \code{@arstrutbox}. If
+there is trouble with this, a simple fix would be to set \refk{indent-mark} to
+\code*{\cs{vrule} height .7\cs{baselineskip} depth .3\cs{baselineskip} width
+.6pt},\footnote{Or
+\code*{\cs{rule}[-.3\cs{baselineskip}]\braces{.6pt}\braces{\cs{baselineskip}}}.}
+changing or scaling the values as appropriate.
+\begin{source}
     indent-mark     .default:n      =
         \tex_vrule:D height \box_ht:N \@arstrutbox
                      depth  \box_dp:N \@arstrutbox
                      width  \l_@@_indent_mark_wd_tl,
 
     indent-mark-width  .tl_set:N    = \l_@@_indent_mark_wd_tl,
-    indent-mark-width  .initial:n   = .6pt,
+    indent-mark-width  .initial:n   = .6pt, % TikZ semithick
 
     indent-mark-color .tl_set:N     = \l_@@_indent_color_tl,
     indent-mark-color .initial:n    = lightgray,
@@ -4030,7 +4316,9 @@ To ensure any local changes to \refk{prevdepth} are used, we expand its local
 value before setting cs{prevdepth} \emph{outside} the group.\footnote{See,
 e.g., \url{https://tex.stackexchange.com/questions/56294}.}
 \begin{source}
-        \exp_args:NNNV \group_end: \dim_set:Nn \prevdepth \l_@@_prevdepth_tl
+        \exp_args:NNNV
+            \group_end:
+            \dim_set:Nn \prevdepth \l_@@_prevdepth_tl
 
     }
 
@@ -4056,7 +4344,207 @@ The starred version of the environment is just a wrapper that uses the custom
     \end{pseudo}
 }
 \end{source}
-%
+
+\subsection{Boxes and floats}
+
+Some spacing and width values are taken from \pkg{booktabs}, to partly emulate
+its table appearance. If \pkg{booktabs} is not loaded, we'll just define these
+constants ourselves; if \pkg{booktabs} is loaded later, it will blithely
+overwrite these.
+\begin{source}
+\@ifpackageloaded { booktabs } { } {
+    \dim_const:Nn \aboverulesep       { .40ex }
+    \dim_const:Nn \belowrulesep       { .65ex }
+    \dim_const:Nn \heavyrulewidth     { .08em }
+    \dim_const:Nn \lightrulewidth     { .05em }
+}
+\end{source}
+We'll be adjusting the spacing after the contents based on the value of
+\cs{prevdepth}. If \cs{prevdepth} is negative, this is suppressed. Otherwise, we
+add vertical space to the \cs{prevdepth}, to take us to (at least)
+\code{.3\cs{baselineskip}}. Since the mechanism is the same for the title and
+the body, we define a macro:
+\begin{source}
+\cs_new:Npn \@@_prevdepth_adjustment: {
+    \par % Ensure vertical mode
+    \dim_compare:nNnF \prevdepth < \c_zero_dim {
+        \dim_compare:nNnT \prevdepth < { .3\baselineskip } {
+            \skip_vertical:n { .3\baselineskip - \prevdepth }
+            \skip_vertical:N \c_zero_dim % Hide previous skip
+        }
+    }
+}
+\end{source}
+We now define some \pkg{tcolorbox} box styles. Rather than importing
+\pkg{tcolorbox}, we just use its key management mechanism, \pkg{pgfkeys}, with
+the appropriate name\-space
+\begin{source}
+\pgfqkeys {tcb/pseudo} {
+\end{source}
+The first style (\code{pseudo/boxruled}) is the basis for the others.
+\begin{source}
+boxruled/.style = {
+\end{source}
+By default, our boxes aren't floats, but if the \code{float} style is used,
+we'll want to have the placement configured. The \pkg{tcolorbox} default is
+\code{htb}, but we're emulating normal floats, so we'll use the normal \LaTeX{}
+default:
+\begin{source}
+    floatplacement = tbp,
+\end{source}
+Before the contents (which uses the upper part of the box), we adjust some
+distances, and set \cs{prevdepth}, for consistent vertical spacing of the first
+line. These settings may be overridden using \code*{before upper app}, which
+appends code to \code*{before upper}. For example, one could change the
+\cs{topsep} by using \code*{before upper app =
+\braces{\cs{topsep}10pt}}.\footnote{While you might want to modify \cs{parskip},
+\cs{topsep} or \cs{partopsep}, there's probably no need to change
+\cs{prevdepth}.}
+\begin{source}
+    before~upper = {
+        \dim_set:Nn \parskip    { .3\baselineskip }
+        \dim_set:Nn \topsep     { .2\baselineskip }
+        \dim_set:Nn \partopsep  { 0pt             }
+        \dim_set:Nn \prevdepth  { .3\baselineskip }
+    },
+\end{source}
+At the end of the contents, we add some spacing, again for consistent vertical
+alignment.
+\begin{source}
+    after~upper = \@@_prevdepth_adjustment:,
+\end{source}
+Spacing before and after the box, when not used with \code{float}:\footnote{This
+setting is supposed to be the \pkg{tcolorbox} default; however, though in some
+versions, this default does not work (cf.\@
+\url{https://github.com/T-F-S/tcolorbox/issues/182}).}
+\begin{source}
+    beforeafter~skip~balanced = 0.5\baselineskip plus 2pt,
+\end{source}
+Now we set up basic spacing for the contents. The spacing above and below the
+title is the same as for the top row of a \pkg{booktabs} tabular. For the
+``body'' of the box, we add some extra space.
+\begin{source}
+    boxsep              = 0pt,
+    toptitle            =      \belowrulesep,
+    bottomtitle         =      \aboverulesep,
+    top                 = 1.75 \belowrulesep,
+    bottom              = 1.75 \aboverulesep,
+    left                = 1.50 \belowrulesep,
+    right               = 1.50 \belowrulesep,
+\end{source}
+The title has a separate part called the \emph{description} (in \pkg{tcolorbox}
+theorem terms). We give the title one font (bold), and then reset that to
+\cs{normalfont} when we get to the description.
+\begin{source}
+    fonttitle           = \bfseries,
+    description~font    = \normalfont,
+\end{source}
+The spacing above and below the title is adjusted as for the body. We want to
+separate the initial part of the title (e.g., ``Algorithm 3.2'') from the
+description by an \cs{enskip} (\code{.5em} horizontal space). However, a single
+normal space is hard-coded into \pkg{tcolorbox}, so we'll subtract the width of
+that. (We make sure to do this with \cs{normalfont}, to not get the units warped
+by an extended bold, for example.)
+% Cf. https://tex.stackexchange.com/questions/229640/
+\begin{source}
+    before~title        =
+        \dim_set:Nn \prevdepth  { .3\baselineskip },
+    after~title         = \@@_prevdepth_adjustment:,
+    separator~sign      = {
+        \normalfont
+        \skip_horizontal:n{ .5em - \fontdimen2\font\space }
+    },
+\end{source}
+Finally, some basic styling. The values \code{.4pt} and \code{.2pt} correspond
+to the \pkg[https://ctan.org/pkg/pgf]{tikz} line thicknesses \code{thin} and
+\code{very thin}.
+\begin{source}
+    sharp~corners,
+    colback             = white,
+    colbacktitle        = white,
+    coltitle            = black,
+    colframe            = black,
+    boxrule             = .4pt,
+    titlerule           = .2pt,
+},
+\end{source}
+The remaining box styles are based on \code{boxruled}, but rely on other skins
+(\cs{empty} and \cs{tile}), which remove the default frame drawing, as some of
+the frame are removed. (It would be possible to simply set the relevant widths
+to zero, but this tends to leave perceptible hairlines in most PDF
+viewers---probably because the fram is drawn by \emph{filling} rather than
+\emph{drawing}.)
+\begin{source}
+ruled/.style = {
+    pseudo/boxruled,
+    empty,
+\end{source}
+Even though we've removed the default frame, we do want some rules. First the
+various rule thicknesses (and some horizontal spacing) are set. The ones
+that are missing have their thicknesses set to zero, for spacing/positioning
+purposes. The titlerule is drawn normally, but for the top and bottom rules, we
+need to use the \code{borderline} mechanism.
+\begin{source}
+    boxrule             = 0pt,
+    toprule             = \heavyrulewidth,
+    titlerule           = \lightrulewidth,
+    bottomrule          = \heavyrulewidth,
+    left                = 0pt,
+    right               = 0pt,
+    titlerule~style     = draw,
+    borderline~horizontal = {\heavyrulewidth}{0pt}{black},
+},
+\end{source}
+The \code{boxed} style is similar, with the titlerule removed, and with the
+borderline drawn on all sides. Finally, we want to ``simulate'' the title just
+being the first paragraph of the contents, so we zero out the spacing after the
+title, and make the top spacing equal to the the normal \cs{parskip} (which we
+set to \code{.3\cs{baselineskip}} in \code{before upper}).
+\begin{source}
+boxed/.style = {
+    pseudo/boxruled,
+    empty,
+    titlerule           = 0pt,
+    borderline          = {.4pt}{0pt}{black},
+    bottomtitle         = 0pt,
+    top                 = .3\baselineskip,
+},
+\end{source}
+The \code{tworuled} style is based on \code{boxed} (including the spacing
+adjustment between title and body), but removes the previously drawn
+borderlines, adjusts the thicknesses, and draws new horizontal lines.
+\begin{source}
+tworuled/.style = {
+    pseudo/boxed,
+    no~borderline,
+    left                = 0pt,
+    right               = 0pt,
+    boxrule             = 0pt,
+    toprule             = \heavyrulewidth,
+    bottomrule          = \heavyrulewidth,
+    borderline~horizontal = {\heavyrulewidth}{0pt}{black},
+},
+\end{source}
+Finally, the \code{filled} style uses the \code{tile} skin, which has no
+frame, and is designed for filling. In addition to the colors, there's a slight
+spacing adjustment.\footnote{The \code{tile} skin also sets things like
+\code*{sharp corners} and \code{fonttitle}, so some of what we inherit from
+\code{boxruled} is a bit redundant, here.}
+\begin{source}
+filled/.style = {
+    pseudo/boxruled,
+    tile,
+    colback             = black!11,
+    colbacktitle        = black!22,
+    left                = 2 \belowrulesep,
+    right               = 2 \belowrulesep,
+}
+\end{source}
+And that ends the \pkg{tcolorbox} definitions:
+\begin{source}
+} % \pgfqkeys
+\end{source}
+
 \printbibliography
 
 \end{document}
