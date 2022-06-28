@@ -997,7 +997,7 @@ caption.}
 The \pkg{pseudo} box styles can be used used directly to style \code{tcolorbox}
 environments, possiby with additional \pkg{tcolorbox} options for customization:
 {
-\pseudoset{kw}
+% \pseudoset{kw}
 \begin{texexp}
 % In preamble:
 % \usepackage[cmyk]{xcolor}
@@ -1005,14 +1005,12 @@ environments, possiby with additional \pkg{tcolorbox} options for customization:
 
 \begin{tcolorbox}[pseudo/filled, colback=lighttan]
     \begin{pseudo}*
-        \hd{Search}(v, i)                       \\
-        $v.\lambda = i$                         \\
-        for \nf each neighbor $u$ of $v$        \\+
-            if $0 < u.\lambda < i$              \\+
-                \pr{Search}(u, i)               \\--
-        for \nf each neighbor $u$ of $v$        \\+
-            if $ u.\lambda \== 0$               \\+
-                \pr{Search}(u, i + 1)
+        \hd{Bor\r{u}vka}(V, E, w, T) \\
+        \kw{while} $E$ is not empty \\+
+            \kw{for} each $u\in V$  \\+
+                add light edge $uv \in E$ to $T$ \\-
+            \kw{for} each $e \in T$ \\+
+                contract $e$
     \end{pseudo}
 \end{tcolorbox}
 \end{texexp}
