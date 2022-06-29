@@ -67,7 +67,11 @@
 \DeclareMathOperator{\MyFunc}{my-func}
 
 \usepackage{varioref}
-\usepackage{cleveref}
+\usepackage[sort&compress,capitalize]{cleveref}
+
+\crefname{equation}{Eq.}{eqs.}
+\crefname{figure}{Fig.}{figs.}
+\crefname{section}{Sect.}{sects.}
 
 \usepackage{booktabs}
 
@@ -365,13 +369,13 @@
 
 \newtcbtheorem[
         number within = section,
-        crefname = {algorithm}{algorithms}
+        crefname = {Algorithm}{algorithms}
     ]%
     {algorithm}{Algorithm}{pseudo/ruled}{alg}
 
 \newtcbtheorem[
         use counter from=algorithm,
-        crefname={algorithm}{algorithms}
+        crefname={Algorithm}{algorithms}
     ]%
     % {internalpseudobox}{Algorithm}{float}{pbx}
     {internalpseudobox}{Algorithm}{}{pbx}
@@ -411,6 +415,7 @@ The only option usable here at the moment is \refk{kw} (used in the example
 above), as the \cs{usepackage} command is a bit too eager in expanding its
 arguments, but there are several options that may be provided to the
 \refc{pseudoset} command, to configure things (see \cref{sec:cmdandkeyref}).
+For a more complete example, see \cref{alg:euclid}.
 
 {
 \pseudodefinestyle{fullwidth}{
@@ -1050,7 +1055,7 @@ effect.}
 \begin{texexp}[listing only]
 \newtcbtheorem[
         number within = section,
-        crefname = {algorithm}{algorithms}
+        crefname = {Algorithm}{algorithms}
     ]%
     {algorithm}{Algorithm}{pseudo/ruled, float}{alg}
 \end{texexp}
