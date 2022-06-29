@@ -56,6 +56,19 @@
 
 \usepackage{pseudo}
 
+% ! Duplicate of the one inside the texexp in the HOWTO section:
+\pseudodefinestyle{fullwidth}{
+    begin-tabular =
+    \tabularx{\linewidth}[t]{@{}
+        r                                      % Labels
+        >{\leavevmode\pseudosetup}             % Indent, font, ...
+        X                                      % Code (flexible)
+        >{\leavevmode\small\color{gray}}       % Comment styling
+        p{0.5\linewidth}                       % Comments (fixed)
+        @{}},
+    end-tabular=\endtabularx,
+}
+
 \usepackage{noindentafter}
 
 \usepackage{url}
@@ -392,6 +405,7 @@ not all too opinionated manner. You don't need to use separate commands for
 different constructs; the indentation level is controlled in a manner similar
 to in a \code{tabbing} environment:
 
+\label{p:intro-euclid}
 {
 \pseudoset{kw}
 \begin{texexp}
@@ -418,23 +432,13 @@ arguments, but there are several options that may be provided to the
 For a more complete example, see \cref{alg:euclid}.
 
 {
-\pseudodefinestyle{fullwidth}{
-    begin-tabular =
-    \tabularx{\linewidth}[t]{@{}
-        r                                      % Labels
-        >{\leavevmode\pseudosetup}             % Indent, font, ...
-        X                                      % Code (flexible)
-        >{\leavevmode\small\color{gray}}       % Comment styling
-        p{0.50\linewidth}                      % Comments (fixed)
-        % p{0.45\linewidth}                      % Comments (fixed)
-        @{}},
-    end-tabular=\endtabularx,
-}
-\begin{algorithm}{Euclid's algorithm, \pr{Euclid}(a, b)}{euclid}
+\pseudoset{kw}
+% Duplicated in example, below, without [float]:
+\begin{algorithm}[float]{Euclid's algorithm, \pr{Euclid}(a, b)}{euclid}
 \textbf{Input:} Two positive integers, $a$ and $b$.
 
 \textbf{Output:} The greatest common divisor of $a$ and $b$.
-\begin{pseudo}[kw, indent-mark, fullwidth]%*
+\begin{pseudo}[indent-mark, fullwidth]%*
     while $a \neq b$ & If equal, both are gcd \\+
         if $a > b$ & Reduce greatest with multiple of smallest \\+
             $a = a - b$ & $a$ is largest \\-
@@ -444,6 +448,45 @@ For a more complete example, see \cref{alg:euclid}.
 The running time is quadratic in the number of bits in the input.
 \end{algorithm}
 }
+
+\subsection*{Microtutorial: How to produce \cref{alg:euclid}}
+
+The actual pseudocode in \cref{alg:euclid} is typeset in the same way as on
+\vpageref{p:intro-euclid}. The vertical lines are produced by the
+\refk{indent-mark} option, and the comments are just a separate column of a
+\code{tabularx}, which is used instead of the built-in \code{tabular}, as
+explained in \cref{sec:tabularx}. (I.e., the \code{fullwidth} style that is
+defined in \cref{sec:tabularx} is used in this example.) To get the surrounding
+ruled box, a \pkg{tcolorbox} is used, with the style \code{pseudo/ruled}. This
+has been set up with a predefined box environment, \code{algorithm}, which is
+defined in \cref{sec:floats} (\pageref{p:pseudo-ruled-def}). The \refc{pr}
+command and its relatives (as well as most other functionality) are discussed in
+\cref{sec:overview}, with individual descriptions given in
+\cref{sec:reference}.\footnote{The actual implementations, with explanations,
+are found in \cref{sec:impl}.} The source of \cref{alg:euclid}, then, is the
+following:
+
+\begin{texexp}[listing only]
+\begin{algorithm}{Euclid's algorithm, \pr{Euclid}(a, b)}{euclid}
+
+\textbf{Input:} Two positive integers, $a$ and $b$.
+
+\textbf{Output:} The greatest common divisor of $a$ and $b$.
+
+\begin{pseudo}[indent-mark, fullwidth]
+
+    while $a \neq b$      &  If equal, both are gcd           \\+
+        if $a > b$        &  Reduce max with multiple of min  \\+
+            $a = a - b$   &  $a$ is largest                   \\-
+        else $b = b - a$  &  $b$ is largest                   \\-
+    return $a$            &  Both are gcd, so return one
+
+\end{pseudo}
+
+The running time is quadratic in the number of bits in the input.
+
+\end{algorithm}
+\end{texexp}
 
 \subsection*{Alternatives}
 
@@ -521,6 +564,7 @@ from some of my examples, later). For more advice on working around an older
 distribution, see also \cref{sec:older}.
 
 \section{Overview}
+\label{sec:overview}
 
 The main component of the \pkg{pseudo} package is the \refe{pseudo}
 environment, which is, in a sense, a hybrid of \code{enumerate},
@@ -1026,6 +1070,7 @@ You can also new environments with \cs{newtcolorbox},\footnote{See the
 probably be to define a (possibly floating) theorem-style environment, using
 \cs{newtcbtheorem} (probably in the preamble):
 
+\label{p:pseudo-ruled-def}
 \begin{texexp}[listing only]
 \newtcbtheorem{algorithm}{Algorithm}{pseudo/ruled}{alg}
 \end{texexp}
@@ -1061,7 +1106,7 @@ effect.}
 \end{texexp}
 %
 Once our environment has been defined with \cs{newtcbtheorem}, it can be used as
-follows:
+follows (here with floating turned off locally):
 
 % Disappears when it's in a texexp, because the tcolorboxes check if they're
 % first inside another box:
@@ -2751,18 +2796,6 @@ You can use other tabular packages such as \pkg{tabularx} via
 wish to extend the \refe{pseudo} environment to fill out the entire line, and
 set up a new column for comments. You could achieve that as follows:
 
-% ! Duplicate of the one inside texexp, so it can be reused later.
-\pseudodefinestyle{fullwidth}{
-    begin-tabular =
-    \tabularx{\linewidth}[t]{@{}
-        r                                      % Labels
-        >{\pseudosetup}                        % Indent, font, ...
-        X                                      % Code (flexible)
-        >{\leavevmode\small\color{gray}}       % Comment styling
-        p{0.45\linewidth}                      % Comments (fixed)
-        @{}},
-    end-tabular=\endtabularx
-}
 \begin{texexp}
 \pseudodefinestyle{fullwidth}{
     begin-tabular =
@@ -2771,7 +2804,7 @@ set up a new column for comments. You could achieve that as follows:
         >{\pseudosetup}                        % Indent, font, ...
         X                                      % Code (flexible)
         >{\leavevmode\small\color{gray}}       % Comment styling
-        p{0.45\linewidth}                      % Comments (fixed)
+        p{0.5\linewidth}                       % Comments (fixed)
         @{}},
     end-tabular = \endtabularx,
     setup-append = \pseudoeq
