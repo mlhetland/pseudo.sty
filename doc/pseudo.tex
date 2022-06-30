@@ -209,6 +209,43 @@
     See also \refc{#1}.  (Note that \cs{pseudo#1} is used internally here.)%
 }
 
+\NewExpandableDocumentCommand \tcolorboxstylepre { } {%
+    A style defined for use with \pkg{tcolorbox} (i.e., not with
+    \cs{pseudoset}).
+
+    \smallskip
+
+    A simple, manually numbered example:
+}
+
+\NewExpandableDocumentCommand \tcolorboxstylepost { } {%
+    To create a floating box, use the \pkg{tcolorbox} key \cs{float}. In
+    general, it is probably better to create such boxes with \cs{newtcbtheorem}.
+    For more information on using \pkg{tcolorbox} styles, see \cref{sec:floats}.
+
+}
+
+\NewExpandableDocumentCommand \tcolorboxstylenosource { m } {%
+\begin{docKey}{pseudo/#1}{}{\pkg{tcolorbox} style}
+    A style defined for use with \pkg{tcolorbox} (i.e., not with
+    \cs{pseudoset}).
+
+    \smallskip
+
+    A simple example:
+
+\begin{tcolorbox}[pseudo/#1,
+    title={Algorithm 1\enskip \pr{Hello}(x)}]
+    \begin{pseudo}
+        \kw{print} \st{Hello,} $x$
+    \end{pseudo}
+\end{tcolorbox}
+
+    See the \refk{pseudo/boxed} reference entry and \cref{sec:floats} for more
+    information.
+\end{docKey}
+}
+
 \lstdefinestyle{tcblatex}{language={[LaTeX]TeX},
     columns=fullflexible,
     keepspaces=true,
@@ -2405,6 +2442,26 @@ Second line
     the label column is removed from the preamble, and the prefix is reduced
     to only \refk{bol}.
 \end{docEnvironment}
+
+\begin{docKey}{pseudo/boxed}{}{\pkg{tcolorbox} style}
+    \tcolorboxstylepre
+
+\begin{texexp}
+\begin{tcolorbox}[pseudo/boxed,
+    title={Algorithm 1\enskip \pr{Hello}(x)}]
+    \begin{pseudo}
+        \kw{print} \st{Hello,} $x$
+    \end{pseudo}
+\end{tcolorbox}
+\end{texexp}
+
+    \tcolorboxstylepost
+\end{docKey}
+%
+\tcolorboxstylenosource{boxruled}
+\tcolorboxstylenosource{filled}
+\tcolorboxstylenosource{ruled}
+\tcolorboxstylenosource{tworuled}
 
 \begin{docCommand}{pseudobol}{}
     \setandused{bol}{pseudoprefix}
