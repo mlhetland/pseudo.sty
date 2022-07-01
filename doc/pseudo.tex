@@ -494,7 +494,7 @@ The actual pseudocode in \cref{alg:euclid} is typeset in the same way as on
 \code{tabularx}, which is used instead of the built-in \code{tabular}, as
 explained in \cref{sec:tabularx}. (I.e., the \code{fullwidth} style that is
 defined in \cref{sec:tabularx} is used in this example.) To get the surrounding
-ruled box, a \pkg{tcolorbox} is used, with the style \code{pseudo/ruled}. This
+ruled box, a \pkg{tcolorbox} is used, with the style \refk{pseudo/ruled}. This
 has been set up with a predefined box environment, \code{algorithm}, which is
 defined in \cref{sec:floats} (\pageref{p:pseudo-ruled-def}). The \refc{pr}
 command and its relatives (as well as most other functionality) are discussed in
@@ -1067,7 +1067,7 @@ The styles defined by \pkg{pseudo} are versions of the commonly used
 \emph{boxed} and \emph{ruled} styles, as found in, e.g., \pkg{float}, as well as
 the \emph{boxruled} and \emph{tworuled} styles found in \pkg{algorithm2e}. In
 addition, there's a \emph{filled} style, with a colored background. If you wish
-to customize and extend the box style, \code{pseudo/boxruled} is probably the
+to customize and extend the box style, \refk{pseudo/boxruled} is probably the
 best starting point, as the other styles disable the default frame drawing.
 
 The ruled style is one of the more common ones in  use in publications. This is
@@ -1115,7 +1115,7 @@ probably be to define a (possibly floating) theorem-style environment, using
 \noindent
 Here \code{algorithm} is the name we've chosen for our new environment,
 \code{Algorithm} is the label to be used when numbering (i.e., ``Algorithm~1,''
-etc.), \code{pseudo/ruled} is the ruled box style, and \code{alg} is is a prefix
+etc.), \refk{pseudo/ruled} is the ruled box style, and \code{alg} is is a prefix
 that will be used in automatically labeling our boxes.
 
 If you want a \emph{floating} box (like figures and tables, for example), simply
@@ -1181,7 +1181,7 @@ Sarbazi-Azad and Grune.
 \Cref{pbx:boxed,pbx:boxruled,pbx:tworuled,pbx:filled} are typeset with the
 remaining box styles.
 
-\begin{internalpseudobox}[pseudo/boxed]{\code{pseudo/boxed}}{boxed}
+\begin{internalpseudobox}[pseudo/boxed]{\refk{pseudo/boxed}}{boxed}
 \begin{pseudo}[kw]
     $i = 1$ \\
     while $i < n$\\+
@@ -1192,7 +1192,7 @@ remaining box styles.
 \end{pseudo}
 \end{internalpseudobox}
 
-\begin{internalpseudobox}[pseudo/boxruled]{\code{pseudo/boxruled}}{boxruled}
+\begin{internalpseudobox}[pseudo/boxruled]{\refk{pseudo/boxruled}}{boxruled}
 \begin{pseudo}[kw]
     $i = 1$ \\
     while $i < n$\\+
@@ -1203,7 +1203,7 @@ remaining box styles.
 \end{pseudo}
 \end{internalpseudobox}
 
-\begin{internalpseudobox}[pseudo/tworuled]{\code{pseudo/tworuled}}{tworuled}
+\begin{internalpseudobox}[pseudo/tworuled]{\refk{pseudo/tworuled}}{tworuled}
 \begin{pseudo}[kw]
     $i = 1$ \\
     while $i < n$\\+
@@ -1214,7 +1214,7 @@ remaining box styles.
 \end{pseudo}
 \end{internalpseudobox}
 
-\begin{internalpseudobox}[pseudo/filled]{\code{pseudo/filled}}{filled}
+\begin{internalpseudobox}[pseudo/filled]{\refk{pseudo/filled}}{filled}
 \begin{pseudo}[kw]%*
     $i = 1$ \\
     while $i < n$\\+
@@ -1276,10 +1276,10 @@ puncutation (\code{separator sign} and \code{terminator sign}) etc., may also be
 configured, either for all the boxes of this type (directly in the call to
 \cs{newtcolorbox}) or for any individual box, as with the \code{title} key in
 the previous example. The style that is closest to a plain, default
-\code{tcolorbox} is \code{pseudo/boxruled}, which may be a good starting-point
+\code{tcolorbox} is \refk{pseudo/boxruled}, which may be a good starting-point
 for this kind of configuration. However, if you just wish to add some minor
 tweaks to one of the existing \code{pseudo} styles (e.g., changing the colors of
-\code{pseudo/filled}), starting with that style may be easier.
+\refk{pseudo/filled}), starting with that style may be easier.
 
 The contents of one of these boxes need not be restricted to pseudocode---the
 spacing is set up to handle plain text as well. For example, you may want to
@@ -4474,7 +4474,7 @@ the appropriate name\-space
 \begin{source}
 \pgfqkeys {tcb/pseudo} {
 \end{source}
-The first style (\code{pseudo/boxruled}) is the basis for the others.
+The first style (\refk{pseudo/boxruled}) is the basis for the others.
 \begin{source}
 boxruled/.style = {
 \end{source}
