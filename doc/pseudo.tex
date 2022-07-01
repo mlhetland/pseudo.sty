@@ -3831,7 +3831,7 @@ changing or scaling the values as appropriate.
                      width  \l_@@_indent_mark_wd_tl,
 
     indent-mark-width  .tl_set:N    = \l_@@_indent_mark_wd_tl,
-    indent-mark-width  .initial:n   = .6pt, % TikZ semithick
+    indent-mark-width  .initial:n   = \c_@@_semithick_dim,
 
     indent-mark-color .tl_set:N     = \l_@@_indent_color_tl,
     indent-mark-color .initial:n    = lightgray,
@@ -3970,7 +3970,7 @@ and spacing.
     pos             .initial:n      = t,
 
     prevdepth       .tl_set:N       = \l_@@_prevdepth_tl,
-    prevdepth       .initial:n      = .3\baselineskip,
+    prevdepth       .initial:n      = .3 \baselineskip,
 
     begin-tabular   .tl_set:N       = \l_@@_begin_tabular_tl,
     begin-tabular   .initial:n      =
@@ -4452,6 +4452,20 @@ overwrite these.
     \dim_const:Nn \lightrulewidth     { .05em }
 }
 \end{source}
+We also define some line widths based on those used by
+\pkg[https://ctan.org/pkg/pgf]{tikz}.
+% ultra thin   0.1pt
+% very thin    0.2pt
+% thin         0.4pt
+% semithick    0.6pt
+% thick        0.8pt
+% very thick   1.2pt
+% ultra thick  1.6pt
+\begin{source}
+\dim_const:Nn \c_@@_very_thin_dim  {0.2pt}
+\dim_const:Nn \c_@@_thin_dim       {0.4pt}
+\dim_const:Nn \c_@@_semithick_dim  {0.6pt}
+\end{source}
 We'll be adjusting the spacing after the contents based on the value of
 \cs{prevdepth}. If \cs{prevdepth} is negative, this is suppressed. Otherwise, we
 add vertical space to the \cs{prevdepth}, to take us to (at least)
@@ -4461,8 +4475,8 @@ the body, we define a macro:
 \cs_new:Npn \@@_prevdepth_adjustment: {
     \par % Ensure vertical mode
     \dim_compare:nNnF \prevdepth < \c_zero_dim {
-        \dim_compare:nNnT \prevdepth < { .3\baselineskip } {
-            \skip_vertical:n { .3\baselineskip - \prevdepth }
+        \dim_compare:nNnT \prevdepth < { .3 \baselineskip } {
+            \skip_vertical:n { .3 \baselineskip - \prevdepth }
             \skip_vertical:N \c_zero_dim % Hide previous skip
         }
     }
@@ -4495,10 +4509,10 @@ appends code to \code*{before upper}. For example, one could change the
 \cs{prevdepth}.}
 \begin{source}
     before~upper = {
-        \dim_set:Nn \parskip    { .3\baselineskip }
-        \dim_set:Nn \topsep     { .2\baselineskip }
-        \dim_set:Nn \partopsep  { 0pt             }
-        \dim_set:Nn \prevdepth  { .3\baselineskip }
+        \dim_set:Nn \parskip    { .3 \baselineskip }
+        \dim_set:Nn \topsep     { .2 \baselineskip }
+        \dim_set:Nn \partopsep  { 0pt              }
+        \dim_set:Nn \prevdepth  { .3 \baselineskip }
     },
 \end{source}
 At the end of the contents, we add some spacing, again for consistent vertical
@@ -4511,19 +4525,19 @@ setting is supposed to be the \pkg{tcolorbox} default; however, though in some
 versions, this default does not work (cf.\@
 \url{https://github.com/T-F-S/tcolorbox/issues/182}).}
 \begin{source}
-    beforeafter~skip~balanced = 0.5\baselineskip plus 2pt,
+    beforeafter~skip~balanced = 0.5 \baselineskip plus 2pt,
 \end{source}
 Now we set up basic spacing for the contents. The spacing above and below the
 title is the same as for the top row of a \pkg{booktabs} tabular. For the
-``body'' of the box, we add some extra space.
+``body'' of the box (and the left/right), we add some extra space.
 \begin{source}
     boxsep              = 0pt,
-    toptitle            =      \belowrulesep,
-    bottomtitle         =      \aboverulesep,
-    top                 = 1.75 \belowrulesep,
-    bottom              = 1.75 \aboverulesep,
-    left                = 1.50 \belowrulesep,
-    right               = 1.50 \belowrulesep,
+    toptitle            =   \belowrulesep,
+    bottomtitle         =   \aboverulesep,
+    top                 = 2 \belowrulesep,
+    bottom              = 2 \aboverulesep,
+    left                = 2 \belowrulesep,
+    right               = 2 \belowrulesep,
 \end{source}
 The title has a separate part called the \emph{description} (in \pkg{tcolorbox}
 theorem terms). We give the title one font (bold), and then reset that to
@@ -4541,24 +4555,22 @@ by an extended bold, for example.)
 % Cf. https://tex.stackexchange.com/questions/229640/
 \begin{source}
     before~title        =
-        \dim_set:Nn \prevdepth  { .3\baselineskip },
+        \dim_set:Nn \prevdepth  { .3 \baselineskip },
     after~title         = \@@_prevdepth_adjustment:,
     separator~sign      = {
         \normalfont
-        \skip_horizontal:n{ .5em - \fontdimen2\font\space }
+        \skip_horizontal:n { .5em - \fontdimen2\font\space }
     },
 \end{source}
-Finally, some basic styling. The values \code{.4pt} and \code{.2pt} correspond
-to the \pkg[https://ctan.org/pkg/pgf]{tikz} line thicknesses \code{thin} and
-\code{very thin}.
+Finally, some basic styling.
 \begin{source}
     sharp~corners,
     colback             = white,
     colbacktitle        = white,
     coltitle            = black,
     colframe            = black,
-    boxrule             = .4pt,
-    titlerule           = .2pt,
+    boxrule             = \c_@@_thin_dim,
+    titlerule           = \c_@@_very_thin_dim,
 },
 \end{source}
 The remaining box styles are based on \code{boxruled}, but rely on other skins
@@ -4590,17 +4602,20 @@ need to use the \code{borderline} mechanism.
 \end{source}
 The \code{boxed} style is similar, with the titlerule removed, and with the
 borderline drawn on all sides. Finally, we want to ``simulate'' the title just
-being the first paragraph of the contents, so we zero out the spacing after the
-title, and make the top spacing equal to the the normal \cs{parskip} (which we
-set to \code{.3\cs{baselineskip}} in \code{before upper}).
+being the first paragraph of the contents, so we set the space above the title
+\emph{almost} equal to the space used elsewhere above the content, zero out the
+spacing after the title, and make the top spacing equal to the the normal
+\cs{parskip} (which we set to \code{.3\cs{baselineskip}} in \code{before
+upper}).
 \begin{source}
 boxed/.style = {
     pseudo/boxruled,
     empty,
     titlerule           = 0pt,
-    borderline          = {.4pt}{0pt}{black},
+    borderline          = {\c_@@_thin_dim}{0pt}{black},
+    toptitle            = 1.5 \belowrulesep,
     bottomtitle         = 0pt,
-    top                 = .3\baselineskip,
+    top                 = 0.3 \baselineskip,
 },
 \end{source}
 The \code{tworuled} style is based on \code{boxed} (including the spacing
@@ -4622,15 +4637,18 @@ Finally, the \code{filled} style uses the \code{tile} skin, which has no
 frame, and is designed for filling. In addition to the colors, there's a slight
 spacing adjustment.\footnote{The \code{tile} skin also sets things like
 \code*{sharp corners} and \code{fonttitle}, so some of what we inherit from
-\code{boxruled} is a bit redundant, here.}
+\code{boxruled} is a bit redundant, here.} Since we have no border, we increase
+the spacing a bit (though not at the top, to prevet a ``top-heavy'' look,
+especially when dropping the title).
 \begin{source}
 filled/.style = {
     pseudo/boxruled,
     tile,
     colback             = black!11,
     colbacktitle        = black!22,
-    left                = 2 \belowrulesep,
-    right               = 2 \belowrulesep,
+    bottom              = 2 \aboverulesep + \c_@@_thin_dim,
+    left                = 2 \belowrulesep + \c_@@_thin_dim,
+    right               = 2 \belowrulesep + \c_@@_thin_dim,
 }
 \end{source}
 And that ends the \pkg{tcolorbox} definitions:

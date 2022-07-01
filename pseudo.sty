@@ -294,7 +294,7 @@
                      depth  \box_dp:N \@arstrutbox
                      width  \l__pseudo_indent_mark_wd_tl,
     indent-mark-width  .tl_set:N    = \l__pseudo_indent_mark_wd_tl,
-    indent-mark-width  .initial:n   = .6pt,
+    indent-mark-width  .initial:n   = \c__pseudo_semithick_dim,
     indent-mark-color .tl_set:N     = \l__pseudo_indent_color_tl,
     indent-mark-color .initial:n    = lightgray,
     indent-level    .int_set:N      = \l__pseudo_initial_indent_level_int,
@@ -383,7 +383,7 @@
     pos             .tl_set:N       = \pseudopos,
     pos             .initial:n      = t,
     prevdepth       .tl_set:N       = \l__pseudo_prevdepth_tl,
-    prevdepth       .initial:n      = .3\baselineskip,
+    prevdepth       .initial:n      = .3 \baselineskip,
     begin-tabular   .tl_set:N       = \l__pseudo_begin_tabular_tl,
     begin-tabular   .initial:n      =
         \begin{tabular}[\pseudopos]{\pseudopreamble},
@@ -608,11 +608,14 @@
     \dim_const:Nn \heavyrulewidth     { .08em }
     \dim_const:Nn \lightrulewidth     { .05em }
 }
+\dim_const:Nn \c__pseudo_very_thin_dim  {0.2pt}
+\dim_const:Nn \c__pseudo_thin_dim       {0.4pt}
+\dim_const:Nn \c__pseudo_semithick_dim  {0.6pt}
 \cs_new:Npn \__pseudo_prevdepth_adjustment: {
     \par
     \dim_compare:nNnF \prevdepth < \c_zero_dim {
-        \dim_compare:nNnT \prevdepth < { .3\baselineskip } {
-            \skip_vertical:n { .3\baselineskip - \prevdepth }
+        \dim_compare:nNnT \prevdepth < { .3 \baselineskip } {
+            \skip_vertical:n { .3 \baselineskip - \prevdepth }
             \skip_vertical:N \c_zero_dim
         }
     }
@@ -621,36 +624,36 @@
 boxruled/.style = {
     floatplacement = tbp,
     before~upper = {
-        \dim_set:Nn \parskip    { .3\baselineskip }
-        \dim_set:Nn \topsep     { .2\baselineskip }
-        \dim_set:Nn \partopsep  { 0pt             }
-        \dim_set:Nn \prevdepth  { .3\baselineskip }
+        \dim_set:Nn \parskip    { .3 \baselineskip }
+        \dim_set:Nn \topsep     { .2 \baselineskip }
+        \dim_set:Nn \partopsep  { 0pt              }
+        \dim_set:Nn \prevdepth  { .3 \baselineskip }
     },
     after~upper = \__pseudo_prevdepth_adjustment:,
-    beforeafter~skip~balanced = 0.5\baselineskip plus 2pt,
+    beforeafter~skip~balanced = 0.5 \baselineskip plus 2pt,
     boxsep              = 0pt,
-    toptitle            =      \belowrulesep,
-    bottomtitle         =      \aboverulesep,
-    top                 = 1.75 \belowrulesep,
-    bottom              = 1.75 \aboverulesep,
-    left                = 1.50 \belowrulesep,
-    right               = 1.50 \belowrulesep,
+    toptitle            =   \belowrulesep,
+    bottomtitle         =   \aboverulesep,
+    top                 = 2 \belowrulesep,
+    bottom              = 2 \aboverulesep,
+    left                = 2 \belowrulesep,
+    right               = 2 \belowrulesep,
     fonttitle           = \bfseries,
     description~font    = \normalfont,
     before~title        =
-        \dim_set:Nn \prevdepth  { .3\baselineskip },
+        \dim_set:Nn \prevdepth  { .3 \baselineskip },
     after~title         = \__pseudo_prevdepth_adjustment:,
     separator~sign      = {
         \normalfont
-        \skip_horizontal:n{ .5em - \fontdimen2\font\space }
+        \skip_horizontal:n { .5em - \fontdimen2\font\space }
     },
     sharp~corners,
     colback             = white,
     colbacktitle        = white,
     coltitle            = black,
     colframe            = black,
-    boxrule             = .4pt,
-    titlerule           = .2pt,
+    boxrule             = \c__pseudo_thin_dim,
+    titlerule           = \c__pseudo_very_thin_dim,
 },
 ruled/.style = {
     pseudo/boxruled,
@@ -668,9 +671,10 @@ boxed/.style = {
     pseudo/boxruled,
     empty,
     titlerule           = 0pt,
-    borderline          = {.4pt}{0pt}{black},
+    borderline          = {\c__pseudo_thin_dim}{0pt}{black},
+    toptitle            = 1.5 \belowrulesep,
     bottomtitle         = 0pt,
-    top                 = .3\baselineskip,
+    top                 = 0.3 \baselineskip,
 },
 tworuled/.style = {
     pseudo/boxed,
@@ -687,7 +691,8 @@ filled/.style = {
     tile,
     colback             = black!11,
     colbacktitle        = black!22,
-    left                = 2 \belowrulesep,
-    right               = 2 \belowrulesep,
+    bottom              = 2 \aboverulesep + \c__pseudo_thin_dim,
+    left                = 2 \belowrulesep + \c__pseudo_thin_dim,
+    right               = 2 \belowrulesep + \c__pseudo_thin_dim,
 }
 }
