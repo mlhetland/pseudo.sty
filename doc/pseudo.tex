@@ -9,6 +9,8 @@
 
 \usepackage{tabularx}
 
+\usepackage{tabto}
+
 \usepackage{float}
 \usepackage[small]{caption}
 
@@ -470,25 +472,32 @@ For a more complete example, see \cref{alg:euclid}.
 
 {
 \pseudoset{kw}
+\TabPositions{1.5cm}
 % Duplicated in example, below, without [float]:
 \begin{algorithm}[float]{Euclid's algorithm, \pr{Euclid}(a, b)}{euclid}
-\textbf{Input:} Two positive integers, $a$ and $b$.
 
-\textbf{Output:} The greatest common divisor of $a$ and $b$.
-\begin{pseudo}[indent-mark, fullwidth]%*
-    while $a \neq b$ & If equal, both are gcd \\+
-        if $a > b$ & Reduce greatest with multiple of smallest \\+
-            $a = a - b$ & $a$ is largest \\-
-        else $b = b - a$ & $b$ is largest \\-
-    return $a$ & Both are gcd, so return one
+\textbf{Input:}  \tab Two positive integers, $a$ and $b$.
+
+\textbf{Output:} \tab The greatest common divisor of $a$ and $b$.
+
+\begin{pseudo}[indent-mark, fullwidth]
+
+    while $a \neq b$      &  If equal, both are gcd           \\+
+        if $a > b$        &  Reduce max with multiple of min  \\+
+            $a = a - b$   &  $a$ is largest                   \\-
+        else $b = b - a$  &  $b$ is largest                   \\-
+    return $a$            &  Both are gcd, so return one
+%
 \end{pseudo}
+
 The running time is quadratic in the number of bits in the input.
+
 \end{algorithm}
 }
 
 \subsection*{Microtutorial: How to produce \cref{alg:euclid}}
 
-The actual pseudocode in \cref{alg:euclid} is typeset in the same way as on
+The pseudocode in \cref{alg:euclid} is typeset in the same way as on
 \vpageref{p:intro-euclid}. The vertical lines are produced by the
 \refk{indent-mark} option, and the comments are just a separate column of a
 \code{tabularx}, which is used instead of the built-in \code{tabular}, as
@@ -500,24 +509,26 @@ defined in \cref{sec:floats} (\pageref{p:pseudo-ruled-def}). The \refc{pr}
 command and its relatives (as well as most other functionality) are discussed in
 \cref{sec:overview}, with individual descriptions given in
 \cref{sec:reference}.\footnote{The actual implementations, with explanations,
-are found in \cref{sec:impl}.} The source of \cref{alg:euclid}, then, is the
-following:
+are found in \cref{sec:impl}.} The input and output descriptions are aligned
+using \cs{par} from the \pkg{tabto} package (cf.\@ \cref{sec:tabstops})
 
 \begin{texexp}[listing only]
+% In preamble:
+% \usepackage{tabto}
+% \TabPositions{1.5cm}
+
 \begin{algorithm}{Euclid's algorithm, \pr{Euclid}(a, b)}{euclid}
 
-\textbf{Input:} Two positive integers, $a$ and $b$.
+\textbf{Input:}  \tab Two positive integers, $a$ and $b$.
 
-\textbf{Output:} The greatest common divisor of $a$ and $b$.
+\textbf{Output:} \tab The greatest common divisor of $a$ and $b$.
 
 \begin{pseudo}[indent-mark, fullwidth]
-
     while $a \neq b$      &  If equal, both are gcd           \\+
         if $a > b$        &  Reduce max with multiple of min  \\+
             $a = a - b$   &  $a$ is largest                   \\-
         else $b = b - a$  &  $b$ is largest                   \\-
     return $a$            &  Both are gcd, so return one
-
 \end{pseudo}
 
 The running time is quadratic in the number of bits in the input.
@@ -1283,8 +1294,10 @@ tweaks to one of the existing \code{pseudo} styles (e.g., changing the colors of
 
 The contents of one of these boxes need not be restricted to pseudocode---the
 spacing is set up to handle plain text as well. For example, you may want to
-specify inputs and outputs:\footnote{Common alternatives to ``Input/Output'' are
-``Require/Ensure'' and ``Data/Result.''}
+specify inputs and outputs.\footnote{Common alternatives to ``Input/Output'' are
+``Require/Ensure'' and ``Data/Result.''} (If you want to align such
+specification, as in \cref{alg:euclid} \vpageref{alg:euclid}, you can use the
+\pkg{tabto} package; see \cref{sec:tabstops}.)
 
 \vspace{0.5\baselineskip plus 2pt}
 {
@@ -2898,7 +2911,9 @@ For \refk{hpad} to work, you should use \code{>\braces{\cs{pseudohpad}}} and
 to use \cs{pseudolabelalign}, rather than \code{r}.
 \makeatother
 
+
 \subsection{\dots\,get tab stops?}
+\label{sec:tabstops}
 
 Some packages, such as \pkg{clrscode3e}, use an actual \code{tabbing}
 environment internally. While this may be a bit brittle (e.g., creating problems
@@ -2923,7 +2938,6 @@ use \cs{noindent}, here. You could replace
 \code{\cs{noindent}\cs{rlap}\braces{\dots}} with
 \code{\cs{makebox}[0pt][l]\braces{\dots}}. This isn't an issue in
 \code{pseudo} code lines, however.}
-
 
 \begin{texexp}
 \noindent\rlap{This is some text}%
@@ -2950,6 +2964,49 @@ See also the discussion of the \refc{ct} command for ideas on typesetting
 comments. If you wish to align things across different indentation levels,
 you'll have to add or subtract multiples of \cs{pseudoindentlength} (see
 \refc{pseudoindent}).
+
+Another option for aligning comments or the like is to use a custom \cs{tabular}
+or \cs{tabular}-like environment, where the aligned material is placed in a
+column of its own. This is the technique used in \cref{alg:gnome}, for example.
+For more on this approach, see \cref{sec:tabularx}.
+
+If you want alignment or tabbing \emph{outside} the \refe{pseudo} environment,
+for example, to align the input and output descriptions inside a
+\code{tcolorbox} (cf.\@ \cref{sec:floats}), an excellent alternative is the
+\pkg{tabto} package.
+%
+You could also use other constructs, such as a \code{tabular}, \code{tabbing} or
+\code{description}. An advantage of the \pkg{tabto} solution is that you retain
+the paragraph spacing set up by the \pkg{tcolorbox} styles defined by
+\pkg{pseudo}.
+
+You can simply define the tab stops globally, using \cs{TabPositions} in your
+preamble, or you can do it as part of the box setup, e.g.,. using \code*{before
+upper app = \cs{TabPositions}\braces{1.5cm}} when defining your \pkg{tcolorbox}
+environment with \cs{newtcbtheorem} (or, as in the following simplified example,
+just supply it directly as an option to the box environment).
+
+\begin{texexp}
+\begin{tcolorbox}[pseudo/filled,
+    before upper app={\TabPositions{1.5cm}}]
+
+\textbf{Data}
+    \tab A graph $G=(V,E)$ with weight function $w:E\to\mathbf{R}$
+
+    \tab A start node $s\in V$
+
+\textbf{Require}
+    \tab No negative cycle in $G$ is reachable from $s$
+
+\textbf{Result}
+    \tab An matrix $D$ of distances between the vertices in $V$
+
+\begin{pseudo}
+\dots
+\end{pseudo}
+\end{tcolorbox}
+\end{texexp}
+
 
 \subsection{\dots\,use horizontal lines?}
 \label{sec:horizontallines}
