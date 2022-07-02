@@ -103,9 +103,7 @@
         \group_begin:
         \color{\l__pseudo_indent_color_tl}
         \int_step_inline:nn { \g__pseudo_indent_level_int } {
-            \smash{\hbox_overlap_right:n {
-                \l__pseudo_indent_mark_tl
-            }}
+            \l__pseudo_indent_mark_tl
             \skip_horizontal:n{ \pseudoindentlength }
         }
         \group_end:
@@ -290,9 +288,8 @@
     indent-mark     .tl_set:N       = \l__pseudo_indent_mark_tl,
     indent-mark     .initial:x      = \c_novalue_tl,
     indent-mark     .default:n      =
-        \tex_vrule:D height \box_ht:N \@arstrutbox
-                     depth  \box_dp:N \@arstrutbox
-                     width  \l__pseudo_indent_mark_wd_tl,
+        \tex_vrule:D width \l__pseudo_indent_mark_wd_tl
+        \skip_horizontal:n {-\l__pseudo_indent_mark_wd_tl},
     indent-mark-width  .tl_set:N    = \l__pseudo_indent_mark_wd_tl,
     indent-mark-width  .initial:n   = \c__pseudo_semithick_dim,
     indent-mark-color .tl_set:N     = \l__pseudo_indent_color_tl,

@@ -684,10 +684,13 @@ mark at every indenation step:
 \end{pseudo}
 \end{texexp}
 The default is a vertical line, but anything else may be supplied as an
-argument. The color may be modified using \refk{indent-mark-color}:
+argument. To avoid adding to the indentation, you can wrap this argument in
+\cs{rlap}.\footnote{If your mark is very tall, and you don't wish it to increase
+the line height, you could also wrap it in \cs{smash}.} The color may be
+modified using \refk{indent-mark-color}:
 \begin{texexp}
 \begin{pseudo}[
-    indent-mark=$\triangleright$, indent-mark-color=teal]
+    indent-mark=\rlap{$\triangleright$}, indent-mark-color=teal]
     while $x\leq n$                             \\+
         $x = x + 1$                             \\
         if $f(x) < y$                           \\+
@@ -697,9 +700,9 @@ argument. The color may be modified using \refk{indent-mark-color}:
 \end{pseudo}
 \end{texexp}
 %
-The default indent mark scales with the \refk{line-height}, to avoid gaps in the
-vertical lines. The width of the (default) mark can be set with
-\refk{indent-mark-width}:
+The default indent mark scales with the line height, to avoid gaps in the
+vertical lines, and its width has no impact on the indentation. The width of the
+(default) mark can be set with \refk{indent-mark-width}:
 \begin{texexp}
 \begin{pseudo}[
     indent-mark, indent-mark-width=3pt, line-height=1.5]
@@ -2059,16 +2062,18 @@ This is some text interrupting the code.
 \end{pseudo}
 }
 
-A mark used to indicate the start of each step of indentation. The
-following example uses \verb|indent-mark=$\cdot$|:
+A mark used to indicate the start of each step of indentation. Any horizontal
+space taken up by this mark is added to the indentation; to prevent this, wrap
+the mark in \cs{rlap} (and, if necessary, in \cs{smash}, to handle
+\emph{vertical} space). The following example uses
+\verb|indent-mark=\rlap{$\cdot$}|:
 
-\algoexample{indent-mark=$\cdot$}
+\algoexample{indent-mark=\rlap{$\cdot$}}
 %
-By default, the indent mark is a vertical line with the same height and depth as
-each row of the tabular used to typeset the pseudocode (i.e., it scales with
-\refk{line-height}), so each indented block is indicated by a single unbroken
-vertical line. The following example uses the \refk{indent-mark} key with no
-argument:
+By default, the indent mark is a vertical line that scales with the line height,
+so each indented block is indicated by a single unbroken vertical line. It also
+``undoes'' its own width, so it doesn't impact the indentation. The following
+example uses the \refk{indent-mark} key with no argument:
 
 \algoexample{indent-mark}
 %
@@ -3484,7 +3489,10 @@ expanded in the \refe{pseudo} environment.
 The indent size is subsequently used by the indent command, which takes the
 number of indentation steps as its only argument. If no \refk{indent-mark} is
 set, it just inserts an appropriate horizontal space. Otherwise, it iterates
-over the indent levels, inserting one indent marker for each leve.
+over the indent levels, inserting one indent marker for each level. Note that to
+avoid affecting the indent, the \refk{indent-mark} should have no width (i.e.,
+it should ``undo'' the width of any text it contains, using \cs{rlap}, a
+negative \cs{hspace} or the like).
 \begin{source}
 \cs_new:Npn \@@_indent:N #1 {
     \tl_if_novalue:VTF \l_@@_indent_mark_tl {
@@ -3493,9 +3501,7 @@ over the indent levels, inserting one indent marker for each leve.
         \group_begin:
         \color{\l_@@_indent_color_tl}
         \int_step_inline:nn { \g_@@_indent_level_int } {
-            \smash{\hbox_overlap_right:n {
-                \l_@@_indent_mark_tl
-            }}
+            \l_@@_indent_mark_tl
             \skip_horizontal:n{ \pseudoindentlength }
         }
         \group_end:
@@ -3868,24 +3874,13 @@ typesetting the pseudocode.
     indent-mark     .tl_set:N       = \l_@@_indent_mark_tl,
     indent-mark     .initial:x      = \c_novalue_tl,
 \end{source}
-The default \refk{indent-mark} is a vertical with width set by
-\refk{indent-mark-width}. The height and depth are normally
-\code{.7\cs{baselineskip}} and \code{.3\cs{baselineskip}}, though these are
-scaled by \code{line-height}. This is simply handled by measuring the array
-strut (as given by \code{\@arstrutbox}),\footnote{Ideally, we should be using
-\cs{rule:nnn}, here, but that is a fairly recent command, and not
-necessarily available.} which will only work for tabular environments (as set by
-\refk{begin-tabular} and \refk{end-tabular}) that use \code{@arstrutbox}. If
-there is trouble with this, a simple fix would be to set \refk{indent-mark} to
-\code*{\cs{vrule} height .7\cs{baselineskip} depth .3\cs{baselineskip} width
-.6pt},\footnote{Or
-\code*{\cs{rule}[-.3\cs{baselineskip}]\braces{.6pt}\braces{\cs{baselineskip}}}.}
-changing or scaling the values as appropriate.
+The default \refk{indent-mark} is a vertical rule with width set by
+\refk{indent-mark-width}, followed by a negative horizontal space of the same
+magnitude.
 \begin{source}
     indent-mark     .default:n      =
-        \tex_vrule:D height \box_ht:N \@arstrutbox
-                     depth  \box_dp:N \@arstrutbox
-                     width  \l_@@_indent_mark_wd_tl,
+        \tex_vrule:D width \l_@@_indent_mark_wd_tl
+        \skip_horizontal:n {-\l_@@_indent_mark_wd_tl},
 
     indent-mark-width  .tl_set:N    = \l_@@_indent_mark_wd_tl,
     indent-mark-width  .initial:n   = \c_@@_semithick_dim,
