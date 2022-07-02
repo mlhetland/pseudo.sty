@@ -212,10 +212,9 @@
 }
 
 \NewExpandableDocumentCommand \tcolorboxstylepre { } {%
+    \parindent1.5em
     A style defined for use with \pkg{tcolorbox} (i.e., not with
     \cs{pseudoset}).
-
-    \smallskip
 
     A simple, manually numbered example:
 }
@@ -229,10 +228,9 @@
 
 \NewExpandableDocumentCommand \tcolorboxstylenosource { m } {%
 \begin{docKey}{pseudo/#1}{}{\pkg{tcolorbox} style}
+    \parindent1.5em
     A style defined for use with \pkg{tcolorbox} (i.e., not with
     \cs{pseudoset}).
-
-    \smallskip
 
     A simple example:
 
@@ -620,8 +618,8 @@ environment, which is, in a sense, a hybrid of \code{enumerate},
 placed in a tabular row (for ease of highlighting and automatic column width
 calculation), with functionality for increasing and decreasing indentation
 similar to the \code{tabbing} commands \cs{+} and \cs{-} (in \pkg{pseudo},
-combined with the row separator \refc{\bslash}). Here, for example, is
-Euclid's algorithm for finding the gcd of $a$ and $b$:
+combined with the row separator \refc{\bslash}). Here, once again, is Euclid's
+algorithm for finding the gcd of $a$ and $b$:
 
 \begin{texexp}
 \begin{pseudo}
@@ -1544,6 +1542,9 @@ alphabetical order), you'll find definitions of a couple of counters here
     specification and the line options. This means that you may, for example,
     place the overlay specification at the beginning of the following line in
     the source.
+
+    See also the \refk{extra-space} key, which may be used to insert extra
+    vertical space as part of the line break introduced by \refc{\bslash}.
 \end{docCommand}
 
 \begin{docCommand}{arabic*}{}
@@ -1862,6 +1863,36 @@ See also \refk{bol-append}, \refk{setup-append} and \refk{dim-color}.
 \end{docKey}
 \begin{docKey}{eqs-sep}{\,=\,\meta{muskip}}{\initialkeyvalue{\code{0.63mu}}}
     The amount of space inserted between the two \code{=} signs in \cs{eqs}.
+\end{docKey}
+
+\begin{docKey}{extra-space}{\,=\,\meta{length}}{\initialkeyvalue{\code{0pt}}}
+    \parindent1.5em
+    Additional space to be added by \refc{\bslash}, below the baseline of the
+    current row. For example:
+
+\begin{texexp}
+\begin{pseudo}[indent-mark, extra-space=2ex]
+    a                                           \\+
+        b                                       \\+
+            c
+\end{pseudo}
+\end{texexp}
+Note the difference from \refk{line-height}: Here the space is added below, just
+like with the \emph{normal} \cs{\bslash} command, when its optional argument is
+used, whereas with \refk{line-height} the height and depth of the line are both
+scaled. Also, unlike with \refk{line-height}, with \refk{extra-space}, nothing
+is added to the last line unless it actually ends with a \refc{\bslash} command.
+
+The most likely use-case for this command is to add space after specific lines,
+rather than for \emph{every} line, as in the previous example. For example:
+\begin{texexp}
+\begin{pseudo}
+    one group that is           \\
+    logically connected         \\ [extra-space=1.5ex]
+    another group that is       \\
+    separate from the first
+\end{pseudo}
+\end{texexp}
 \end{docKey}
 
 \begin{docCommand}{fn}{\marg{name}\colOpt{(\meta{arguments})}}
@@ -3963,6 +3994,9 @@ magnitude.
     line-height     .tl_set:N       = \l_@@_line_height_tl,
     line-height     .initial:n      = 1,
 
+    extra-space     .tl_set:N       = \l_@@_extra_space_tl,
+    extra-space     .initial:n      = 0pt,
+
     start           .tl_set:N       = \l_@@_start_tl,
     start           .initial:n      = 1,
 \end{source}
@@ -4260,11 +4294,17 @@ A new line is begun only if we're not at the end of the (or, at least of
 \emph{some}) environment. (We could have put the \cs{tabularnewline} outside,
 but then we'd have a conditional at the beginning of the next line, which
 would mess up \cs{bottomrule} or the like. We need to keep \verb|\@@_bol:|
-alone at the start of the line.)
+alone at the start of the line.) We call \cs{tabularnewline} either way, in
+particular for it to use any extra space provided to \refk{extra-space}.
 \begin{source}
-    \peek_meaning_ignore_spaces:NF \end {
+    \tl_set:Nx \l_tmpa_tl {
+        \exp_not:N \tabularnewline [ \l_@@_extra_space_tl ]
+    }
+    \peek_meaning_ignore_spaces:NTF \end {
+        \l_tmpa_tl
+    } {
         \pseudoeol
-        \tabularnewline
+        \l_tmpa_tl
         \@@_bol:
     }
 }

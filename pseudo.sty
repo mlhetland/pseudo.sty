@@ -347,6 +347,8 @@
     },
     line-height     .tl_set:N       = \l__pseudo_line_height_tl,
     line-height     .initial:n      = 1,
+    extra-space     .tl_set:N       = \l__pseudo_extra_space_tl,
+    extra-space     .initial:n      = 0pt,
     start           .tl_set:N       = \l__pseudo_start_tl,
     start           .initial:n      = 1,
     preamble        .code:n         =
@@ -489,9 +491,14 @@
 }
 \NewDocumentCommand \__pseudo_eol_tail { s d<> +O{ } } {
     \__pseudo_eol_handle_args:nnn{#1}{#2}{#3}
-    \peek_meaning_ignore_spaces:NF \end {
+    \tl_set:Nx \l_tmpa_tl {
+        \exp_not:N \tabularnewline [ \l__pseudo_extra_space_tl ]
+    }
+    \peek_meaning_ignore_spaces:NTF \end {
+        \l_tmpa_tl
+    } {
         \pseudoeol
-        \tabularnewline
+        \l_tmpa_tl
         \__pseudo_bol:
     }
 }
