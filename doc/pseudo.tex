@@ -3383,14 +3383,14 @@ single column type. To avoid getting an error when overwriting this definition
 through the configuration, we'll also need to be able to \emph{un}-define column
 types:
 \begin{source}
-\cs_new:Nn \@@_undef_col:n {
+\cs_new:Npn \@@_undef_col:n #1 {
     \tl_set_eq:cN { NC@find@ \token_to_str:N #1 } \scan_stop:
 }
 \end{source}
 Note that the implementation specifically targets the \pkg{array} package. The
 following command then will either define or \emph{re}-define a column type:
 \begin{source}
-\cs_new:Nn \@@_def_col:nn {
+\cs_new:Npn \@@_def_col:nn #1 #2 {
     \@@_undef_col:n { #1 }
     \newcolumntype  { #1 } { #2 }
 }
@@ -3401,21 +3401,21 @@ This command creates a new command with a \code{pseudo} prefix, and defines
 the prefixless version as well, \emph{if the name is available} (i.e.,
 undefined):
 \begin{source}
-\cs_new:Nn \@@_meta_new_cmd:NNnn {
+\cs_new:Npn \@@_meta_new_cmd:NNnn #1 #2 #3 #4 {
     \tl_set:Nn \l_tmpa_tl {pseudo \cs_to_str:N #2}
     \exp_args:Nc
         #1 \l_tmpa_tl #3 {#4}
     \cs_if_free:NT #2 {\cs_gset_eq:Nc #2 \l_tmpa_tl}
 }
 
-\cs_new:Nn \@@_new_cmd:Nnn {
+\cs_new:Npn \@@_new_cmd:Nnn #1 #2 #3 {
     \@@_meta_new_cmd:NNnn
     \NewDocumentCommand #1 {{#2}} {
         #3
     }
 }
 
-\cs_new:Nn \@@_new_ecmd:Nnn {
+\cs_new:Npn \@@_new_ecmd:Nnn #1 #2 #3 {
     \@@_meta_new_cmd:NNnn
     % \NewExpandableDocumentCommand #1 {{#2}} {
     % Replaced for compatibility:
@@ -3426,7 +3426,7 @@ undefined):
 \end{source}
 This is for defining commands that declare styled shortcuts:
 \begin{source}
-\cs_new:Nn \@@_new_dec:nn {
+\cs_new:Npn \@@_new_dec:nn #1 #2 {
     \tl_set:Nn \l_tmpa_tl { DeclarePseudo #1 }
     \exp_args:Nc
     \DeclareDocumentCommand \l_tmpa_tl { mm } {
@@ -3452,7 +3452,7 @@ arguments to \refc{\bslash}, we'll gobble up one character at a time, each
 time performing some action. We also supply code to be performed once we're
 done.
 \begin{source}
-\cs_new:Nn \@@_per_char:nnn {
+\cs_new:Npn \@@_per_char:nnn #1 #2 #3 {
     \peek_charcode_remove:NTF { #1 } {
         #2 % body
         \@@_per_char:nnn{#1}{#2}{#3}
@@ -3467,7 +3467,7 @@ step of indentation) is either set directly through \refk{indent-length}, or
 indirectly through \refk{indent-text}. The latter is there the default is
 provided, but \refk{indent-text} is only used if there is no \refk{indent-length}.
 \begin{source}
-\cs_new:Nn \@@_set_indent_length: {
+\cs_new:Npn \@@_set_indent_length: {
 
     \quark_if_no_value:VTF \l_@@_indent_length_tl {
         \hbox_set:Nn \l_tmpa_box { \l_@@_indent_text_tl }
@@ -3486,7 +3486,7 @@ number of indentation steps as its only argument. If no \refk{indent-mark} is
 set, it just inserts an appropriate horizontal space. Otherwise, it iterates
 over the indent levels, inserting one indent marker for each leve.
 \begin{source}
-\cs_new:Nn \@@_indent:N {
+\cs_new:Npn \@@_indent:N #1 {
     \tl_if_novalue:VTF \l_@@_indent_mark_tl {
         \skip_horizontal:n{ \pseudoindentlength * #1 }
     } {
@@ -3512,16 +3512,16 @@ already exists, we need to undefine it first. (Here we're relying on the
 internal \LaTeX\ convention of using \verb|c@| as a prefix to counter names.)
 
 \begin{source}
-\cs_new:Nn \@@_drop_ctr:n {
+\cs_new:Npn \@@_drop_ctr:n #1 {
     \cs_undefine:c { c@ #1 }
 }
 
-\cs_new:Nn \@@_copy_ctr:nn {
+\cs_new:Npn \@@_copy_ctr:nn #1 #2 {
     \@@_drop_ctr:n { #1 }
     \newaliascnt   { #1 } { #2 }
 }
 
-\cs_new:Nn \@@_star_setup: {
+\cs_new:Npn \@@_star_setup: {
 
     \cs_if_exist:cT { c@ * } {
         \@@_copy_ctr:nn { @@_orig_* } { * }
@@ -3532,7 +3532,7 @@ internal \LaTeX\ convention of using \verb|c@| as a prefix to counter names.)
 
 }
 
-\cs_new:Nn \@@_star_reset: {
+\cs_new:Npn \@@_star_reset: {
     \cs_if_exist:cT { c@ @@_orig_* } {
         \@@_copy_ctr:nn { * } { @@_orig_* }
         \cs_undefine:c { c@ @@_orig_* }
@@ -3548,7 +3548,7 @@ again increment it, this time with \cs{refstepcounter}. However, we only do so
 if the counter actually \emph{was} incremented, i.e., if it's different from
 the last one we saved.
 \begin{source}
-\cs_new:Nn \@@_save_label: {
+\cs_new:Npn \@@_save_label: {
 
     \int_set:Nn \l_tmpa_int {\arabic{pseudoline}}
 
@@ -3575,7 +3575,7 @@ the original name to the meaning it had when we entered the scope.
 In saving a macro, we also supply a name for the original, which may then be
 used to refer to it until it's restored.
 \begin{source}
-\cs_new:Nn \@@_gsave_as:NN {
+\cs_new:Npn \@@_gsave_as:NN #1 #2 {
     \cs_gset_eq:NN #2 #1
     \group_insert_after:N \cs_gset_eq:NN
     \group_insert_after:N #1
@@ -3600,7 +3600,7 @@ which we don't really need.)
 While we're at it, we'll define the initial value for \refc{kwfont}, which is
 generally non-extended bold, if that's available, but extended bold otherwise:
 \begin{source}
-\cs_new:Nn \@@_b_or_bx: {
+\cs_new:Npn \@@_b_or_bx: {
 
     % Note: We're relying on the warning text in \@defaultsubs
     % being defined by \selectfont if the desired font isn't
@@ -3643,7 +3643,7 @@ separating the command and its optional argument. With current versions of
 \pkg{xparse}, this can be achieved with the \verb|!| argument type, but for
 compatibility with older \TeX\ distributions, I'll deal with it ``manually.''
 \begin{source}
-\cs_new:Nn \@@_fmt_pr:n {
+\cs_new:Npn \@@_fmt_pr:n #1 {
     \textnormal{\prfont{ #1 }}
 }
 
@@ -3671,7 +3671,7 @@ compatibility with older \TeX\ distributions, I'll deal with it ``manually.''
 The \refc{fn} command is similar, but alternatively permits arguments in
 square brackets.
 \begin{source}
-\cs_new:Nn \@@_fmt_fn:n {
+\cs_new:Npn \@@_fmt_fn:n #1 {
     \textnormal{\fnfont{ #1 }}
 }
 \@@_new_cmd:Nnn \fn { m } {
@@ -3780,7 +3780,7 @@ two-dot interval notation}, whose implementation mirrors Knuth's \cs{dts}
 command from Concrete Mathematics (see \pkg{gkpmac.tex}).
 
 \begin{source}
-\cs_new:Nn \@@_dts: {
+\cs_new:Npn \@@_dts: {
     \mathinner {
         \ldotp
         \ldotp
@@ -4109,7 +4109,7 @@ equivalent, and both will trigger the default of \code{foo}, even though the
 latter of the two really shouldn't.\footnote{See
 \url{https://github.com/latex3/latex3/issues/67}.}
 \begin{source}
-\cs_new:Nn \@@_keys_set_overlay:nnn {
+\cs_new:Npn \@@_keys_set_overlay:nnn #1 #2 #3 {
     \bool_if:NT \c_@@_beamer_bool {
         \only<#1>{ \keys_set:nn { #2 } { #3 } }
     }
@@ -4185,7 +4185,7 @@ latter of the two really shouldn't.\footnote{See
 than when they're available as optional arguments to other commands), we
 supply a command for setting them.
 \begin{source}
-\cs_new:Nn \@@_set:n { \keys_set:nn { pseudo } { #1 } }
+\cs_new:Npn \@@_set:n #1 { \keys_set:nn { pseudo } { #1 } }
 \end{source}
 %
 \subsection{The row separator}
@@ -4211,11 +4211,11 @@ modifying the indentation level and setting any locally meaningful keys.
 the indentation level---essentially just incrementing, decrementing and
 setting it to zero.
 \begin{source}
-\cs_new:Nn \@@_inc_indent: {
+\cs_new:Npn \@@_inc_indent: {
     \int_gincr:N \g_@@_indent_level_int
 }
 
-\cs_new:Nn \@@_dec_indent: {
+\cs_new:Npn \@@_dec_indent: {
 \end{source}
 If the user happens to dedent too much, we might as well be a bit forgiving,
 and clamp the indent level to non-negative values:
@@ -4236,7 +4236,7 @@ inserted, after which controll is passed to \verb|\@@_bol:| in order to begin
 a new line---unless we're at the end of the environment.
 
 \begin{source}
-\cs_new:Nn \@@_eol_handle_args:nnn {
+\cs_new:Npn \@@_eol_handle_args:nnn #1 #2 #3 {
     \@@_keys_set_overlay:nnn { #2 } { pseudo } { hl }
     \keys_set:nn { pseudo } { #3 }
 \end{source}
@@ -4276,7 +4276,7 @@ alone at the start of the line.)
 \end{source}
 And here is the actual \verb|\@@_eol:| command:
 \begin{source}
-\cs_new:Nn \@@_eol: {
+\cs_new:Npn \@@_eol: {
 
     \@@_per_char:nnn { + } {
         \@@_inc_indent:
@@ -4292,7 +4292,7 @@ And here is the actual \verb|\@@_eol:| command:
 %
 The \verb|\@@_bol:| command (currently) just inserts the \refk{prefix}:
 \begin{source}
-\cs_new:Nn \@@_bol: {
+\cs_new:Npn \@@_bol: {
     \g_@@_cur_prefix_tl
 }
 \end{source}

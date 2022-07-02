@@ -21,7 +21,7 @@
 % SOFTWARE.
 %
 \def \pseudoversion {1.1.3}
-\def \pseudodate    {2022/07/01}
+\def \pseudodate    {2022/07/02}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -46,32 +46,32 @@
 \cs_generate_variant:Nn \quark_if_no_value:nTF    { VTF   }
 \cs_generate_variant:Nn \tl_if_novalue:nTF        { VTF   }
 \cs_generate_variant:Nn \tl_set:Nn                { Ne    }
-\cs_new:Nn \__pseudo_undef_col:n {
+\cs_new:Npn \__pseudo_undef_col:n #1 {
     \tl_set_eq:cN { NC@find@ \token_to_str:N #1 } \scan_stop:
 }
-\cs_new:Nn \__pseudo_def_col:nn {
+\cs_new:Npn \__pseudo_def_col:nn #1 #2 {
     \__pseudo_undef_col:n { #1 }
     \newcolumntype  { #1 } { #2 }
 }
-\cs_new:Nn \__pseudo_meta_new_cmd:NNnn {
+\cs_new:Npn \__pseudo_meta_new_cmd:NNnn #1 #2 #3 #4 {
     \tl_set:Nn \l_tmpa_tl {pseudo \cs_to_str:N #2}
     \exp_args:Nc
         #1 \l_tmpa_tl #3 {#4}
     \cs_if_free:NT #2 {\cs_gset_eq:Nc #2 \l_tmpa_tl}
 }
-\cs_new:Nn \__pseudo_new_cmd:Nnn {
+\cs_new:Npn \__pseudo_new_cmd:Nnn #1 #2 #3 {
     \__pseudo_meta_new_cmd:NNnn
     \NewDocumentCommand #1 {{#2}} {
         #3
     }
 }
-\cs_new:Nn \__pseudo_new_ecmd:Nnn {
+\cs_new:Npn \__pseudo_new_ecmd:Nnn #1 #2 #3 {
     \__pseudo_meta_new_cmd:NNnn
     \def #1 {#2} {
         #3
     }
 }
-\cs_new:Nn \__pseudo_new_dec:nn {
+\cs_new:Npn \__pseudo_new_dec:nn #1 #2 {
     \tl_set:Nn \l_tmpa_tl { DeclarePseudo #1 }
     \exp_args:Nc
     \DeclareDocumentCommand \l_tmpa_tl { mm } {
@@ -80,7 +80,7 @@
         }
     }
 }
-\cs_new:Nn \__pseudo_per_char:nnn {
+\cs_new:Npn \__pseudo_per_char:nnn #1 #2 #3 {
     \peek_charcode_remove:NTF { #1 } {
         #2
         \__pseudo_per_char:nnn{#1}{#2}{#3}
@@ -88,7 +88,7 @@
         #3
     }
 }
-\cs_new:Nn \__pseudo_set_indent_length: {
+\cs_new:Npn \__pseudo_set_indent_length: {
     \quark_if_no_value:VTF \l__pseudo_indent_length_tl {
         \hbox_set:Nn \l_tmpa_box { \l__pseudo_indent_text_tl }
         \dim_set:Nn \pseudoindentlength { \box_wd:N \l_tmpa_box }
@@ -96,7 +96,7 @@
         \dim_set:Nn \pseudoindentlength \l__pseudo_indent_length_tl
     }
 }
-\cs_new:Nn \__pseudo_indent:N {
+\cs_new:Npn \__pseudo_indent:N #1 {
     \tl_if_novalue:VTF \l__pseudo_indent_mark_tl {
         \skip_horizontal:n{ \pseudoindentlength * #1 }
     } {
@@ -112,27 +112,27 @@
     }
     \ignorespaces
 }
-\cs_new:Nn \__pseudo_drop_ctr:n {
+\cs_new:Npn \__pseudo_drop_ctr:n #1 {
     \cs_undefine:c { c@ #1 }
 }
-\cs_new:Nn \__pseudo_copy_ctr:nn {
+\cs_new:Npn \__pseudo_copy_ctr:nn #1 #2 {
     \__pseudo_drop_ctr:n { #1 }
     \newaliascnt   { #1 } { #2 }
 }
-\cs_new:Nn \__pseudo_star_setup: {
+\cs_new:Npn \__pseudo_star_setup: {
     \cs_if_exist:cT { c@ * } {
         \__pseudo_copy_ctr:nn { __pseudo_orig_* } { * }
     }
     \__pseudo_copy_ctr:nn { * } { pseudoline }
     \group_insert_after:N \__pseudo_star_reset:
 }
-\cs_new:Nn \__pseudo_star_reset: {
+\cs_new:Npn \__pseudo_star_reset: {
     \cs_if_exist:cT { c@ __pseudo_orig_* } {
         \__pseudo_copy_ctr:nn { * } { __pseudo_orig_* }
         \cs_undefine:c { c@ __pseudo_orig_* }
     }
 }
-\cs_new:Nn \__pseudo_save_label: {
+\cs_new:Npn \__pseudo_save_label: {
     \int_set:Nn \l_tmpa_int {\arabic{pseudoline}}
     \int_compare:nF {\l_tmpa_int = \g__pseudo_last_saved_line_int} {
         \addtocounter{pseudoline}{-1}
@@ -143,7 +143,7 @@
 \DeclareDocumentCommand \pseudosavelabel { } {
     \__pseudo_save_label:
 }
-\cs_new:Nn \__pseudo_gsave_as:NN {
+\cs_new:Npn \__pseudo_gsave_as:NN #1 #2 {
     \cs_gset_eq:NN #2 #1
     \group_insert_after:N \cs_gset_eq:NN
     \group_insert_after:N #1
@@ -154,7 +154,7 @@
 \__pseudo_new_cmd:Nnn \kw { m } { \textnormal {\kwfont { #1 } } }
 \__pseudo_new_cmd:Nnn \cn { m } { \textnormal {\cnfont { #1 } } }
 \__pseudo_new_cmd:Nnn \id { m } { \textnormal {\idfont { #1 } } }
-\cs_new:Nn \__pseudo_b_or_bx: {
+\cs_new:Npn \__pseudo_b_or_bx: {
     \group_begin:
     \cs_if_exist:NT \@defaultsubs {
         \__pseudo_gsave_as:NN \@defaultsubs \__pseudo_defaultsubs
@@ -168,7 +168,7 @@
     \group_end:
     \__pseudo_b_or_bx:
 }
-\cs_new:Nn \__pseudo_fmt_pr:n {
+\cs_new:Npn \__pseudo_fmt_pr:n #1 {
     \textnormal{\prfont{ #1 }}
 }
 \NewDocumentCommand \__pseudo_parse_paren_args { +d() } {
@@ -189,7 +189,7 @@
         \__pseudo_parse_paren_args
     }
 }
-\cs_new:Nn \__pseudo_fmt_fn:n {
+\cs_new:Npn \__pseudo_fmt_fn:n #1 {
     \textnormal{\fnfont{ #1 }}
 }
 \__pseudo_new_cmd:Nnn \fn { m } {
@@ -246,7 +246,7 @@
     }
 }
 \cs_gset_eq:NN \__pseudo_eq: \=
-\cs_new:Nn \__pseudo_dts: {
+\cs_new:Npn \__pseudo_dts: {
     \mathinner {
         \ldotp
         \ldotp
@@ -421,7 +421,7 @@
         pause .meta:n = { eol-append = \pause }
     }
 }
-\cs_new:Nn \__pseudo_keys_set_overlay:nnn {
+\cs_new:Npn \__pseudo_keys_set_overlay:nnn #1 #2 #3 {
     \bool_if:NT \c__pseudo_beamer_bool {
         \only<#1>{ \keys_set:nn { #2 } { #3 } }
     }
@@ -468,16 +468,16 @@
         \group_end:
     }
 }
-\cs_new:Nn \__pseudo_set:n { \keys_set:nn { pseudo } { #1 } }
-\cs_new:Nn \__pseudo_inc_indent: {
+\cs_new:Npn \__pseudo_set:n #1 { \keys_set:nn { pseudo } { #1 } }
+\cs_new:Npn \__pseudo_inc_indent: {
     \int_gincr:N \g__pseudo_indent_level_int
 }
-\cs_new:Nn \__pseudo_dec_indent: {
+\cs_new:Npn \__pseudo_dec_indent: {
     \int_compare:nNnT \g__pseudo_indent_level_int > 0 {
         \int_gdecr:N \g__pseudo_indent_level_int
     }
 }
-\cs_new:Nn \__pseudo_eol_handle_args:nnn {
+\cs_new:Npn \__pseudo_eol_handle_args:nnn #1 #2 #3 {
     \__pseudo_keys_set_overlay:nnn { #2 } { pseudo } { hl }
     \keys_set:nn { pseudo } { #3 }
     \tl_gset_eq:NN \pseudolabel   \l__pseudo_label_tl
@@ -498,7 +498,7 @@
         \__pseudo_bol:
     }
 }
-\cs_new:Nn \__pseudo_eol: {
+\cs_new:Npn \__pseudo_eol: {
     \__pseudo_per_char:nnn { + } {
         \__pseudo_inc_indent:
     } {
@@ -508,7 +508,7 @@
         \__pseudo_eol_tail
     } }
 }
-\cs_new:Nn \__pseudo_bol: {
+\cs_new:Npn \__pseudo_bol: {
     \g__pseudo_cur_prefix_tl
 }
 \NewDocumentCommand \pseudohpad { } {
