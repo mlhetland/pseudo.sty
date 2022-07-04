@@ -21,7 +21,7 @@
 % SOFTWARE.
 %
 \def \pseudoversion {1.1.3}
-\def \pseudodate    {2022/07/02}
+\def \pseudodate    {2022/07/04}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -454,7 +454,7 @@
             \int_compare_p:n { \l_tmpa_int == \l_tmpb_int == 1 }
             &&
             \tl_if_empty_p:N \l_tmpa_tl
-        }{
+        } {
             \tl_if_blank:nF{#1} {
                 \tl_put_right:Nn \l_tmpb_tl {= #1}
             }
@@ -462,7 +462,7 @@
                 \l__pseudo_overlay_tl { pseudo } \l_tmpb_tl
         } {
             \msg_error:nnx
-                { pseudo } { unknown-key } { \l_keys_path_tl }
+                { pseudo } { unknown-key } { \l_keys_path_str }
         }
         \group_end:
     }

@@ -4191,7 +4191,7 @@ latter of the two really shouldn't.\footnote{See
             \int_compare_p:n { \l_tmpa_int == \l_tmpb_int == 1 }
             &&
             \tl_if_empty_p:N \l_tmpa_tl
-        }{
+        } {
             % Match
             \tl_if_blank:nF{#1} {
                 \tl_put_right:Nn \l_tmpb_tl {= #1}
@@ -4201,7 +4201,7 @@ latter of the two really shouldn't.\footnote{See
         } {
             % No match
             \msg_error:nnx
-                { pseudo } { unknown-key } { \l_keys_path_tl }
+                { pseudo } { unknown-key } { \l_keys_path_str }
         }
 
         \group_end:
