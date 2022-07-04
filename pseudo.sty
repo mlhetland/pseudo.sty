@@ -43,6 +43,7 @@
 \dim_new:N  \pseudoindentlength
 \int_new:N  \g__pseudo_indent_level_int
 \int_new:N  \l__pseudo_initial_indent_level_int
+\bool_new:N \l__pseudo_in_eol_bool
 \cs_generate_variant:Nn \quark_if_no_value:nTF    { VTF   }
 \cs_generate_variant:Nn \tl_if_novalue:nTF        { VTF   }
 \cs_generate_variant:Nn \tl_set:Nn                { Ne    }
@@ -455,16 +456,26 @@
             &&
             \tl_if_empty_p:N \l_tmpa_tl
         } {
-            \tl_if_blank:nF{#1} {
+            \tl_if_blank:nF{ #1 } {
                 \tl_put_right:Nn \l_tmpb_tl {= #1}
             }
             \__pseudo_keys_set_overlay:VnV
                 \l__pseudo_overlay_tl { pseudo } \l_tmpb_tl
         } {
-            \msg_error:nnx
-                { pseudo } { unknown-key } { \l_keys_path_str }
+            \bool_if:nTF {
+                \bool_lazy_and_p:nn
+                    { \l__pseudo_in_eol_bool      }
+                    { \tl_if_blank_p:n{ #1 } }
+            } {
+                \tl_set_rescan:Nno \l__pseudo_extra_space_tl { } { \l_keys_key_str }
+            } {
+                \msg_error:nnx
+                    { pseudo } { unknown-key } { \l_keys_path_str }
+            }
         }
-        \group_end:
+        \exp_args:NNNV
+            \group_end:
+            \tl_set:Nn \l__pseudo_extra_space_tl \l__pseudo_extra_space_tl
     }
 }
 \cs_new:Npn \__pseudo_set:n #1 { \keys_set:nn { pseudo } { #1 } }
@@ -477,6 +488,7 @@
     }
 }
 \cs_new:Npn \__pseudo_eol_handle_args:nnn #1 #2 #3 {
+    \bool_set_true:N \l__pseudo_in_eol_bool
     \__pseudo_keys_set_overlay:nnn { #2 } { pseudo } { hl }
     \keys_set:nn { pseudo } { #3 }
     \tl_gset_eq:NN \pseudolabel   \l__pseudo_label_tl

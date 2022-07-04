@@ -698,18 +698,24 @@ modified using \refk{indent-mark-color}:
 \end{pseudo}
 \end{texexp}
 %
-The default indent mark scales with the line height, to avoid gaps in the
-vertical lines, and its width has no impact on the indentation. The width of the
-(default) mark can be set with \refk{indent-mark-width}:
+The default indent mark scales with the line height, which can be adjusted with
+\refk{line-height} and \refk{extra-space}, to avoid gaps in the vertical lines,
+and its width has no impact on the indentation. The width of the (default) mark
+can be set with \refk{indent-mark-width}:
 \begin{texexp}
 \begin{pseudo}[
     indent-mark, indent-mark-width=3pt, line-height=1.5]
     the                                         \\+
-        lines                                   \\+
+        lines                                   \\+[3ex]
             are                                 \\-
         scaled
 \end{pseudo}
 \end{texexp}
+%
+Note here how some extra space is specified using the optional argument
+\code{3ex} with \refc{\bslash}. This is equivalent to explicitly setting the
+key \refk{extra-space} (i.e., in this case,
+\code{\cs{\bslash}+[extra-space=2ex]}).
 
 If you want, you can certainly create shortcuts, e.g., with simple macro
 definitions like \verb|\def\While{\kw{while}}|, or with declaration commands such
@@ -1543,8 +1549,19 @@ alphabetical order), you'll find definitions of a couple of counters here
     place the overlay specification at the beginning of the following line in
     the source.
 
-    See also the \refk{extra-space} key, which may be used to insert extra
-    vertical space as part of the line break introduced by \refc{\bslash}.
+    The \refc{\bslash} command is special in that it also permits a keyless
+    value to be used among its option; this will then be taken to implicitly use
+    the key \refk{extra-space}, which adds extra vertical space below as part of
+    the line break. This means you can supply a length argument in the same way
+    as with the ordinary \cs{\bslash} command:
+
+\begin{texexp}
+\begin{pseudo}
+    no extra space after this line              \\
+    but there's extra space after this line     \\[2ex]
+    so this line is a bit lonely
+\end{pseudo}
+\end{texexp}
 \end{docCommand}
 
 \begin{docCommand}{arabic*}{}
@@ -1867,6 +1884,7 @@ See also \refk{bol-append}, \refk{setup-append} and \refk{dim-color}.
 
 \begin{docKey}{extra-space}{\,=\,\meta{length}}{\initialkeyvalue{\code{0pt}}}
     \parindent1.5em
+    \noindent
     Additional space to be added by \refc{\bslash}, below the baseline of the
     current row. For example:
 
@@ -1893,6 +1911,10 @@ rather than for \emph{every} line, as in the previous example. For example:
     separate from the first
 \end{pseudo}
 \end{texexp}
+In fact, \refk{extra-space} is so closely tied to \refc{\bslash}, that you can
+supply a keyless value as one of its options, and \refk{extra-space} will be
+\emph{assumed}. So, for example, in the previous example, you could simply have
+used \code{\cs{\bslash}[1.5ex]}.
 \end{docKey}
 
 \begin{docCommand}{fn}{\marg{name}\colOpt{(\meta{arguments})}}
@@ -2736,6 +2758,8 @@ See also \refk{indent-level}.
 \end{docKey}
 
 \begin{docKey}{unknown}{}{}
+    \parindent1.5em
+    \noindent
     Unknown keys are checked for \pkg{beamer} overlay specifications. That is,
     if an unknown key has the form
 
@@ -2746,6 +2770,7 @@ See also \refk{indent-level}.
 
     \medskip
 
+    \noindent
     then it does not trigger an error, but, if \pkg{beamer} is used, is
     rewritten to:
 
@@ -2757,6 +2782,7 @@ See also \refk{indent-level}.
 
     \medskip
 
+    \noindent
     If \pkg{beamer} is \emph{not} used, the key is simply ignored. Note that
     because of current limitations on how keys are handled,
     % Cf. https://github.com/latex3/latex3/issues/67
@@ -2772,6 +2798,13 @@ See also \refk{indent-level}.
     \code*{\refc{pseudoset}\braces{\meta{name}}}
     rather than
     \code*{\refc{pseudoset}\braces{\meta{name} = }}.
+
+    If an unknown key does \emph{not} take the form of a key with an overlay
+    specification, a second special case is also handled: If we're processing
+    arguments for \refc{\bslash}, and the key does not have an associated
+    (non-blank) value, we treat the key instead as a \emph{value}, whose
+    implicit key is \refk{extra-space}. This means that you can specify extra
+    space in the ordinary way, with \code{\cs{\bslash}[1.5ex]}, etc.
 \end{docKey}
 
 \section{But how do I\,\dots}
@@ -3400,7 +3433,13 @@ which the current line is indented. The initial indent level may be set using
 \int_new:N  \g_@@_indent_level_int
 \int_new:N  \l_@@_initial_indent_level_int
 \end{source}
-%
+
+When handling unknown keys, we have special-casing of \refc{\bslash}, so we need
+to know if that's the command we're in:
+\begin{source}
+\bool_new:N \l_@@_in_eol_bool
+\end{source}
+
 \subsection{Utilities}
 
 \paragraph{Variants.} First, let's just generate a couple of expansion
@@ -4192,19 +4231,42 @@ latter of the two really shouldn't.\footnote{See
             &&
             \tl_if_empty_p:N \l_tmpa_tl
         } {
-            % Match
-            \tl_if_blank:nF{#1} {
+\end{source}
+We've matched a key with an overlay specification. If it's got a (non-blank)
+value, we include that in the key-setting code we're building in
+\cs{l\_tmpb\_tl}, and then we set the key, with the appropriate overlay
+specification.
+\begin{source}
+            \tl_if_blank:nF{ #1 } {
                 \tl_put_right:Nn \l_tmpb_tl {= #1}
             }
             \@@_keys_set_overlay:VnV
                 \l_@@_overlay_tl { pseudo } \l_tmpb_tl
         } {
-            % No match
-            \msg_error:nnx
-                { pseudo } { unknown-key } { \l_keys_path_str }
+\end{source}
+We have \emph{not} matched an overlay specification, so we just have an unknown
+key. However, we have another special case to consider: If we're processing
+arguments to \refc{\bslash}, we also permit a keyless value to be used to
+specify extra space (normally done using \refk{extra-space}). If the unknown
+key doesn't have an attached (non-blank) value, we treat the key itself as a
+value, and use it as extra space. If this, too, fails, we emit an error message.
+\begin{source}
+            \bool_if:nTF {
+                \bool_lazy_and_p:nn
+                    { \l_@@_in_eol_bool      }
+                    { \tl_if_blank_p:n{ #1 } }
+            } {
+                \tl_set_rescan:Nno \l_@@_extra_space_tl { } { \l_keys_key_str }
+            } {
+                \msg_error:nnx
+                    { pseudo } { unknown-key } { \l_keys_path_str }
+            }
         }
 
-        \group_end:
+        % Make sure any extra space carries over outside the group:
+        \exp_args:NNNV
+            \group_end:
+            \tl_set:Nn \l_@@_extra_space_tl \l_@@_extra_space_tl
 
     }
 }
@@ -4261,11 +4323,13 @@ interacting macros. The implementation of \refc{\bslash} is
 \verb|@@_eol:|, but that is just a thin wrapper that counts pluses and
 minuses, before handing the control over to \verb|@@_eol_tail|. This is where
 the remaining argument parsing takes place, and the \cs{tabularnewline} is
-inserted, after which controll is passed to \verb|\@@_bol:| in order to begin
-a new line---unless we're at the end of the environment.
+inserted, after which control is passed to \verb|\@@_bol:| in order to begin a
+new line---unless we're at the end of the environment.
 
 \begin{source}
 \cs_new:Npn \@@_eol_handle_args:nnn #1 #2 #3 {
+    % Make extra-space default key for keyless value:
+    \bool_set_true:N \l_@@_in_eol_bool
     \@@_keys_set_overlay:nnn { #2 } { pseudo } { hl }
     \keys_set:nn { pseudo } { #3 }
 \end{source}
