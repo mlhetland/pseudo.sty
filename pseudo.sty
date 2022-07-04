@@ -245,13 +245,14 @@
     }
 }
 \cs_gset_eq:NN \__pseudo_eq: \=
-\cs_new:Npn \__pseudo_dts: {
+\NewDocumentCommand \dts { } {
+    \nolinebreak
     \mathinner {
         \ldotp
         \ldotp
     }
+    \nolinebreak
 }
-\NewDocumentCommand \dts { } { \__pseudo_dts: }
 \cs_gset_eq:NN \c__pseudo_dot_cs \.
 \DeclareDocumentCommand \. { m } {
     \tl_if_eq:nnTF { #1 } { . } {
@@ -259,6 +260,11 @@
     } {
         \c__pseudo_dot_cs{#1}
     }
+}
+\NewDocumentCommand \rng { } {
+    \nolinebreak
+    \mathinner { : }
+    \nolinebreak
 }
 \keys_define:nn { pseudo/package } {
     kw              .bool_gset:N    = \g__pseudo_kw_bool,

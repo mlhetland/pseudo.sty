@@ -839,12 +839,17 @@ if $b \== 0$                                    \\+
 \noindent
 As can be seen in this example, \cs{==} (or \refc{eqs}) is a notational
 convenience defined by \pkg{pseudo}, along with interval dots \cs{..}\@ (or
-\refc{dts}). Other special symbols may be found in other packages. For
-example, if you want to use $\coloneqq$ for assignment, you can use
-\cs{coloneqq} from \pkg{mathtools} (perhaps with
-\verb|\let\gets\coloneqq|).\footnote{Tip: If you want to use a left-arrow
-for assignment, but think it's a bit large in Computer Modern or Latin
-Modern, you can use the
+\refc{dts}) and the alternative range operator \refc{rng}:
+\begin{texexp}
+Do you prefer $A[1 \.. n]$ or $A[1 \rng n]$?
+\end{texexp}
+
+\noindent
+Other special symbols may be found in other packages. For example, if you want
+to use $\coloneqq$ for assignment, you can use \cs{coloneqq} from
+\pkg{mathtools} (perhaps with \verb|\let\gets\coloneqq|).\footnote{Tip: If you
+want to use a left-arrow for assignment, but think it's a bit large in Computer
+Modern or Latin Modern, you can use the
 \pkg[https://ctan.org/tex-archive/fonts/old-arrows]{old-arrows} package,
 so \code*{x \cs{gets} y} yields $x\gets y$.}
 
@@ -1488,7 +1493,7 @@ alphabetical order), you'll find definitions of a couple of counters here
 \begin{docCommand}{..}{}
     This is a shortcut that hijacks the normal \cs{.}\@ accent command, so
     that if it is called with \code{.}\@ as an argument, the result is
-    \cs{dts}. In other words, the command \cs{..}\@ is really the call
+    \refc{dts}. In other words, the command \cs{..}\@ is really the call
     \code{\cs{.}\braces{.}}. For any other arguments, the original \cs{.}\@ is
     used, so while \code{\$1\cs{..}n\$} produces $1\..n$, \code{\cs{.}o} still
     yields~\.o.
@@ -1497,7 +1502,7 @@ alphabetical order), you'll find definitions of a couple of counters here
 \begin{docCommand}{==}{}
     \pseudoeq % Having some trouble bc/o floats, or something?
     This is a shortcut that hijacks the normal \cs{=} accent command, so that
-    if it is called with \code{=} as an argument, the result is \cs{eqs}. In
+    if it is called with \code{=} as an argument, the result is \refc{eqs}. In
     other words, the command \cs{==} is really the call
     \code{\cs{=}\braces{=}}. For any other arguments, the original \cs{=} is
     used, so while \code{\$x\cs{==}y\$} produces $x\==y$, \code{\cs{=}o} still
@@ -1840,7 +1845,8 @@ See also \refk{bol-append}, \refk{setup-append} and \refk{dim-color}.
     A two-dot ellipsis, for use in the Wirth interval notation $1\..n$,
     typeset as \citeauthor{Graham:1994} did in
     \citetitle{Graham:1994}~\citep{Graham:1994}. Its definition is the same as
-    in \pkg{gkpmac}. Also accessible via the \refc{..} shortcut.
+    in \pkg{gkpmac}. Also accessible via the \refc{..} shortcut. See also
+    \refc{rng}.
 \end{docCommand}
 
 \begin{docKey}{end-tabular}{}{\initialkeyvalue{\code{\cs{end}\braces{tabular}}}}
@@ -2668,6 +2674,17 @@ goto \tn{\ref{li:ref}}
 \end{pseudo}
 \end{texexp}
 \end{docKey}
+
+\begin{docCommand}{rng}{}
+    Used to typeset a range, slice or subarray, or simply to indicate the
+    indices of an array, similar to \refc{dts}, but using a colon rather than
+    two dots placed horizontally. Uses the same spacing as \refc{dts}, as
+    opposed to a plain \code{:}, which adds more space (more suitable, for
+    example, to set-builder notation).
+    \begin{texexp}
+        Compare $A[1\rng n]$ to $A[1:n]$.
+    \end{texexp}
+\end{docCommand}
 
 \begin{docKey}{setup}{\,=\,\meta{commands}}{no default}
     The setup part of each pseudocode line: Save the line counter
@@ -3853,17 +3870,19 @@ For convenience and source-code clarity, the following shortcut (i.e.,
 Similarly, there's the
 \href{https://proofwiki.org/wiki/Definition:Real_Interval/Notation/Wirth}{Pascal
 two-dot interval notation}, whose implementation mirrors Knuth's \cs{dts}
-command from Concrete Mathematics (see \pkg{gkpmac.tex}).
+command from Concrete Mathematics (see \pkg{gkpmac.tex}), with the addition of
+\cs{nolinebreak}, taken from
+\pkg[https://www.cs.dartmouth.edu/~thc/]{clrscode4}.
 
 \begin{source}
-\cs_new:Npn \@@_dts: {
+\NewDocumentCommand \dts { } {
+    \nolinebreak
     \mathinner {
         \ldotp
         \ldotp
     }
+    \nolinebreak
 }
-
-\NewDocumentCommand \dts { } { \@@_dts: }
 \end{source}
 %
 There's a shortcut (\cs{..}) defined for this as well (this time hijacking
@@ -3880,6 +3899,17 @@ There's a shortcut (\cs{..}) defined for this as well (this time hijacking
 }
 \end{source}
 %
+Finally, we define a different syntax for numeric ranges like these (or
+\emph{slices} or \emph{subarrays}). This command is based on the \cs{subarr}
+command of \pkg[https://www.cs.dartmouth.edu/~thc/]{clrscode4}.
+\begin{source}
+\NewDocumentCommand \rng { } {
+    \nolinebreak
+    \mathinner { : }
+    \nolinebreak
+}
+\end{source}
+
 \subsection{Options}
 \label{sec:options}
 
