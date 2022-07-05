@@ -213,6 +213,7 @@
 
 \NewExpandableDocumentCommand \tcolorboxstylepre { } {%
     \parindent1.5em
+    \noindent
     A style defined for use with \pkg{tcolorbox} (i.e., not with
     \cs{pseudoset}).
 
@@ -229,6 +230,7 @@
 \NewExpandableDocumentCommand \tcolorboxstylenosource { m } {%
 \begin{docKey}{pseudo/#1}{}{\pkg{tcolorbox} style}
     \parindent1.5em
+    \noindent
     A style defined for use with \pkg{tcolorbox} (i.e., not with
     \cs{pseudoset}).
 
@@ -573,6 +575,7 @@ following packages:
     \pkg{algxpar},
     \pkg[https://ctan.org/tex-archive/macros/latex/contrib/clrscode]{clrscode},
     \pkg{clrscode3e},
+    \pkg[https://www.cs.dartmouth.edu/~thc/]{clrscode4e},
     \pkg[https://github.com/esneider/latex-pseudocode]{latex-pseudocode},
     \pkg{newalg},
     \pkg[https://ctan.org/tex-archive/macros/latex/contrib/program]{program},
@@ -825,7 +828,8 @@ order to prevent your code from ending up in the numbering column, you must
 insert a column separator manually. A version of the \refc{pr} command, called
 \refc{hd} (or \cs{pseudohd}, where \refc{hd} stands for \emph{header}) instead
 wraps a procedure call in a \code{multicolumn}, so it can be used, for
-example, as an unnumbered header line:
+example, as an unnumbered header line:\footnote{See also \refk{hd-space}, if you
+want some extra space after the header.}
 
 \begin{texexp}
 \begin{pseudo}[kw]*
@@ -1107,18 +1111,21 @@ The \pkg{pseudo} box styles can be used used directly to style \code{tcolorbox}
 environments, possiby with additional \pkg{tcolorbox} options for customization:
 {
 % \pseudoset{kw}
+\label{ex:clrscode4ish}
 \begin{texexp}
 % In preamble:
 % \usepackage[cmyk]{xcolor}
-\definecolor{lighttan}{cmyk}{0,0.05,0.17,0} % from clrscode4e.sty
+% Partial clrscode4e.sty emulation:
+\definecolor{lighttan}{cmyk}{0,0.05,0.17,0}
+\pseudoset{label=\small\arabic*, hd-space}
 
 \begin{tcolorbox}[pseudo/filled, colback=lighttan]
     \begin{pseudo}*
-        \hd{Bor\r{u}vka}(V, E, w, T) \\
-        \kw{while} $E$ is not empty \\+
-            \kw{for} each $u\in V$  \\+
-                add light edge $uv \in E$ to $T$ \\-
-            \kw{for} each $e \in T$ \\+
+        \hd{Bor\r{u}vka}(V, E, w, T)            \\
+        \kw{while} $E$ is not empty             \\+
+            \kw{for} each $u\in V$              \\+
+                add light $uv \in E$ to $T$     \\-
+            \kw{for} each $e \in T$             \\+
                 contract $e$
     \end{pseudo}
 \end{tcolorbox}
@@ -1921,6 +1928,9 @@ In fact, \refk{extra-space} is so closely tied to \refc{\bslash}, that you can
 supply a keyless value as one of its options, and \refk{extra-space} will be
 \emph{assumed}. So, for example, in the previous example, you could simply have
 used \code{\cs{\bslash}[1.5ex]}.
+
+If you want spacing only after the heading (created with \refc{hd}), you can set
+that using the \refk{hd-space} key.
 \end{docKey}
 
 \begin{docCommand}{fn}{\marg{name}\colOpt{(\meta{arguments})}}
@@ -1974,6 +1984,8 @@ We're not in math mode, but the argument of \Ln[A] is.
 \end{docKey}
 
 \begin{docCommand}{hd}{\marg{name}(\meta{arguments})}
+    \parindent1.5em
+    \noindent
     Typesets a procedure signature, like \refc{pr}, but is intended for use as
     a \emph{header} for a procedure, rather than a procedure call. The
     difference is that \cs{hd} wraps its contents in a \cs{multicolumn},
@@ -1993,9 +2005,11 @@ We're not in math mode, but the argument of \Ln[A] is.
 \end{pseudo}
 \end{texexp}
 
-    Note that the arguments are mandatory; in order to function properly,
-    \cs{hd} must be \emph{expandable}, and therefore cannot end with an
-    optional argument, the way \refc{pr} does.
+    \noindent
+    The \refk{hd-space} key can be used to configure \refk{hd} so it sets the
+    \refk{extra-space} key. Note that the signature arguments are mandatory; in
+    order to function properly, \cs{hd} must be \emph{expandable}, and therefore
+    cannot end with an optional argument, the way \refc{pr} does.
     \pseudoshortcutted{hd}
 \end{docCommand}
 
@@ -2008,6 +2022,17 @@ We're not in math mode, but the argument of \Ln[A] is.
     introduce more columns in \refk{preamble}, you might want to increase the
     number of columns in \refk{hd-preamble} as well, or at least remove the
     right-hand \refc{pseudohpad}.
+\end{docKey}
+
+\begin{docKey}{hd-space}{\,=\,\meta{length}}{default \code{0.41386ex}, initial
+    value \code{0pt}}
+    The value \refk{extra-space} is set to (before any value set manually as
+    part of \refc{\bslash}) after the use of \refc{hd}. This is useful if one
+    wants some extra space only after the header. The default is based on
+    \pkg[https://www.cs.dartmouth.edu/~thc/]{clrscode4e},\footnote{And older
+    versions, for that matter.} and, so getting spacing header spacing similar
+    to that package requires only \code{\cs{pseudoset}\braces{hd-space}}. (See,
+    e.g., the example \vpageref{ex:clrscode4ish}.)
 \end{docKey}
 
 \begin{docKey}{hl}{}{\novaluekey}
@@ -2268,6 +2293,12 @@ vs.\
 
 \begin{docKey}{label}{\,=\,\meta{commands}}{%
     \initialkeyvalue{\code{\refc{arabic*}}}}%
+    \parindent1.5em
+    \noindent
+    Used to format the line label/number. For example, to emulate
+    \pkg[https://www.cs.dartmouth.edu/~thc/]{clrscode4e} rather than
+    \pkg{clrscode3e}, you'd use \code*{label = \cs{small}\cs{arabic}*}. You can
+    also add punctuation or the like, as in \pkg{enumitem}:
 \begin{texexp}
 \pseudoset{kw, label=\footnotesize\arabic*:}
 
@@ -2276,14 +2307,12 @@ print \st{Hello, label!} \label{li:label}       \\
 goto \tn{\ref{li:label}}
 \end{pseudo}
 \end{texexp}
-
+    \noindent
     Note that \cs{label} should be used in the actual code line, as here, and
     not in the number cell (which is generally not explicitly written,
     anyway).
 
-    \medskip
-
-    As kan be seen from the example, \cs{ref} is unaffected by
+    As can be seen from the example, \cs{ref} is unaffected by
     \refKey*{label}, and in many cases that's what you want---as apposed to,
     say, ``\kw{goto} {\footnotesize 1:}''. In some cases, however (especially
     when using one of the other formatting commands, such as \cs{alph} or
@@ -3785,6 +3814,7 @@ argument can not be optional (unlike for \refc{pr}).
     \multicolumn{2}
         {\pseudohdpreamble}
         {\@@_fmt_pr:n{#1}\ensuremath{(#2)}}
+        \tl_set_eq:NN \l_@@_extra_space_tl \l_@@_hd_space_tl % XXX Explain
 }
 \end{source}
 Finally, \refc{st} and \refc{ct} add quotes and comment delimiters,
@@ -3872,7 +3902,7 @@ Similarly, there's the
 two-dot interval notation}, whose implementation mirrors Knuth's \cs{dts}
 command from Concrete Mathematics (see \pkg{gkpmac.tex}), with the addition of
 \cs{nolinebreak}, taken from
-\pkg[https://www.cs.dartmouth.edu/~thc/]{clrscode4}.
+\pkg[https://www.cs.dartmouth.edu/~thc/]{clrscode4e}.
 
 \begin{source}
 \NewDocumentCommand \dts { } {
@@ -3901,7 +3931,7 @@ There's a shortcut (\cs{..}) defined for this as well (this time hijacking
 %
 Finally, we define a different syntax for numeric ranges like these (or
 \emph{slices} or \emph{subarrays}). This command is based on the \cs{subarr}
-command of \pkg[https://www.cs.dartmouth.edu/~thc/]{clrscode4}.
+command of \pkg[https://www.cs.dartmouth.edu/~thc/]{clrscode4e}.
 \begin{source}
 \NewDocumentCommand \rng { } {
     \nolinebreak
@@ -4065,6 +4095,16 @@ magnitude.
 
     extra-space     .tl_set:N       = \l_@@_extra_space_tl,
     extra-space     .initial:n      = 0pt,
+
+    hd-space        .tl_set:N       = \l_@@_hd_space_tl,
+    hd-space        .initial:n      = 0pt,
+\end{source}
+The default value here emulates the spacing used in
+\pkg[https://www.cs.dartmouth.edu/~thc/]{clrscode4e}, though with a different
+mechanism:\footnote{They insert
+\code{\cs{rule}[-1.25ex]\braces{0pt}\braces{0pt}} as part of the header.}
+\begin{source}
+    hd-space        .default:n      = 0.41386ex,
 
     start           .tl_set:N       = \l_@@_start_tl,
     start           .initial:n      = 1,
