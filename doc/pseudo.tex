@@ -3806,7 +3806,8 @@ square brackets.
 The \refc{hd} command is similar to \refc{pr} command, except that it spans
 two columns (effectively ignoring the labeling column). Because it needs to be
 expandable in order to insert the multicolumn, the final, parenthesis-enclosed
-argument can not be optional (unlike for \refc{pr}).
+argument can not be optional (unlike for \refc{pr}). Note also that \refc{hd}
+sets \refk{extra-space} (or the underlying \code{tl}) based on \refk{hd-space}.
 \begin{source}
 % \@@_new_ecmd:Nnn \hd { m +r() } {
 % Now uses \def syntax:
@@ -3814,7 +3815,7 @@ argument can not be optional (unlike for \refc{pr}).
     \multicolumn{2}
         {\pseudohdpreamble}
         {\@@_fmt_pr:n{#1}\ensuremath{(#2)}}
-        \tl_set_eq:NN \l_@@_extra_space_tl \l_@@_hd_space_tl % XXX Explain
+        \tl_set_eq:NN \l_@@_extra_space_tl \l_@@_hd_space_tl
 }
 \end{source}
 Finally, \refc{st} and \refc{ct} add quotes and comment delimiters,
