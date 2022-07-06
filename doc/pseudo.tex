@@ -432,6 +432,8 @@
     % {internalpseudobox}{Algorithm}{float}{pbx}
     {internalpseudobox}{Algorithm}{}{pbx}
 
+\usepackage{ellipsis}
+
 \begin{document}
 \maketitle
 
@@ -514,7 +516,7 @@ are found in \cref{sec:impl}.} The input and output descriptions are aligned
 using \cs{tab} from the \pkg{tabto} package (cf.\@ \cref{sec:tabstops}).
 
 \begin{texexp}[listing only]
-% In preamble:
+% In document preamble:
 % \usepackage{tabto}
 % \TabPositions{1.5cm}
 
@@ -1116,7 +1118,7 @@ environments, possiby with additional \pkg{tcolorbox} options for customization:
 % \pseudoset{kw}
 \label{ex:clrscode4ish}
 \begin{texexp}
-% In preamble:
+% In document preamble:
 % \usepackage[cmyk]{xcolor}
 % Partial clrscode4e.sty emulation:
 \definecolor{lighttan}{cmyk}{0,0.05,0.17,0}
@@ -1654,7 +1656,7 @@ alphabetical order), you'll find definitions of a couple of counters here
     will also turn off setting \cs{prevdepth} (cf.\@ \refk{prevdepth}).
 
 \begin{texexp}
-% In preamble:
+% In document preamble:
 % \usepackage{tikz}
 \begin{tikzpicture}
     \draw (0,0) node [draw] {%
@@ -2909,7 +2911,7 @@ everywhere). If you wish to define your own, you could use \cs{operatorname}
 or \cs{DeclareMathOperator}. For example:
 
 \begin{texexp}
-% In preamble:
+% In document preamble:
 % \usepackage{amsmath}
 % \DeclareMathOperator{\MyFunc}{my-func}
 \begin{pseudo}[kw]
@@ -2942,7 +2944,7 @@ simpler solution is to just use \refc{DeclarePseudoNormal}. Here's an example
 based on pseudocode from \citet{Knuth:1975}:
 
 \begin{texexp}
-% In preamble:
+% In document preamble:
 % \usepackage{mathtools}
 \let\gets\coloneqq
 
@@ -3440,6 +3442,60 @@ package):
 \end{figure}
 \end{texexp}
 
+\subsection{\dots\,have steps span multiple lines?}
+
+First of all, you can do this by just breaking your lines manually, keeping any
+additional lines belonging to the same step unnumbered, by using the starred
+version of \refc{\bslash} (and skipping the number column with \code{\&}):
+adding unnumbered lines:
+\begin{texexp}
+\begin{pseudo}[line-height=1.1]
+  This step is broken\,\dots                    \\*
+& \dots into multiple lines                     \\
+  This one is not
+\end{pseudo}
+\end{texexp}
+If you want the line breaking to be automated, you can use a \code{p} column,
+specified in \refk{preamble} (perhaps defining a style using
+\refc{pseudodefinestyle}), adapted from the default:\footnote{The default is
+found on p.~\pageref{p:preamble}. However, in the source code there, whitespace
+is insignificant. If writing your own preamble, you should avoid spurious
+whitespace inside \code{>\braces{\dots}} and \code{<\braces{\dots}}.}
+% XXX This is also relevant for the tabularx example.
+% XXX hd-preamble -- not really relevant here, but relevant for tabularx
+\begin{texexp}
+\begin{pseudo}[preamble = {
+        >{\pseudohpad} \pseudolabelalign
+        >{\pseudosetup} p{11.7cm} <{\pseudohpad}
+    },
+    setup-append = \raggedright\pseudoslash,
+    line-height = 1.5]
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
+erat. \\
+At vero eos et accusam et justo duo dolores et ea rebum. Stet
+clita kasd gubergren, no sea takimata sanctus est Lorem ipsum
+dolor sit amet.
+\end{pseudo}
+\end{texexp}
+
+\noindent
+In addition to introducing the \code{p} column, I've added \cs{raggedright} to
+the setup (with \refk{setup-append}, with \cs{pseudoslash} to restore
+\refc{\bslash}, because \cs{raggedright} redefines it).
+
+One disadvantage of the \code{p} column is that you need to know its exact
+width. A better solution is probably to replace the default \code{tabular} with
+a \code{tabularx}, as discussed in \cref{sec:tabularx}, and use an \code{X}
+column, i.e.:
+\begin{texexp}[listing only]
+    begin-tabular = \tabularx{\linewidth}[t]{
+        >{\pseudohpad} \pseudolabelalign
+        >{\pseudosetup} X <{\pseudohpad}
+    },
+    end-tabular = \endtabularx,
+    setup-append = \pseudoeq,
+\end{texexp}
 
 \section{Implementation}
 \label{sec:impl}
