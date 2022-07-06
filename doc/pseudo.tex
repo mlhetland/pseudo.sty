@@ -480,7 +480,7 @@ For a more complete example, see \cref{alg:euclid}.
 
 \textbf{Output:} \tab The greatest common divisor of $a$ and $b$.
 
-\begin{pseudo}[indent-mark, fullwidth]
+\begin{pseudo}[label=\small\arabic*, indent-mark, fullwidth]
 
     while $a \neq b$      &  If equal, both are gcd           \\+
         if $a > b$        &  Reduce max with multiple of min  \\+
@@ -498,19 +498,20 @@ The running time is quadratic in the number of bits in the input.
 \subsection*{Microtutorial: How to produce \cref{alg:euclid}}
 
 The pseudocode in \cref{alg:euclid} is typeset in the same way as on
-\vpageref{p:intro-euclid}. The vertical lines are produced by the
-\refk{indent-mark} option, and the comments are just a separate column of a
-\code{tabularx}, which is used instead of the built-in \code{tabular}, as
-explained in \cref{sec:tabularx}. (I.e., the \code{fullwidth} style that is
-defined in \cref{sec:tabularx} is used in this example.) To get the surrounding
+\vpageref{p:intro-euclid}. The line numbers are styled using the \refk{label}
+key, the vertical lines are produced by the \refk{indent-mark} option, and the
+comments are just a separate column of a \code{tabularx}, which is used instead
+of the built-in \code{tabular}, as explained in
+\cref{sec:tabularx}.\footnote{That is, the \code{fullwidth} style that is
+defined \vpageref{p:fullwidth} is used in this example.} To get the surrounding
 ruled box, a \pkg{tcolorbox} is used, with the style \refk{pseudo/ruled}. This
 has been set up with a predefined box environment, \code{algorithm}, which is
-defined in \cref{sec:floats} (\pageref{p:pseudo-ruled-def}). The \refc{pr}
+defined in \cref{sec:floats} (\vpageref{p:pseudo-ruled-def}). The \refc{pr}
 command and its relatives (as well as most other functionality) are discussed in
-\cref{sec:overview}, with individual descriptions given in
+\cref{sec:overview}, with individual definitions given in
 \cref{sec:reference}.\footnote{The actual implementations, with explanations,
 are found in \cref{sec:impl}.} The input and output descriptions are aligned
-using \cs{par} from the \pkg{tabto} package (cf.\@ \cref{sec:tabstops})
+using \cs{tab} from the \pkg{tabto} package (cf.\@ \cref{sec:tabstops}).
 
 \begin{texexp}[listing only]
 % In preamble:
@@ -523,7 +524,7 @@ using \cs{par} from the \pkg{tabto} package (cf.\@ \cref{sec:tabstops})
 
 \textbf{Output:} \tab The greatest common divisor of $a$ and $b$.
 
-\begin{pseudo}[indent-mark, fullwidth]
+\begin{pseudo}[label=\small\arabic*, indent-mark, fullwidth]
     while $a \neq b$      &  If equal, both are gcd           \\+
         if $a > b$        &  Reduce max with multiple of min  \\+
             $a = a - b$   &  $a$ is largest                   \\-
@@ -2984,6 +2985,7 @@ You can use other tabular packages such as \pkg{tabularx} via
 wish to extend the \refe{pseudo} environment to fill out the entire line, and
 set up a new column for comments. You could achieve that as follows:
 
+\label{p:fullwidth}
 \begin{texexp}
 \pseudodefinestyle{fullwidth}{
     begin-tabular =
