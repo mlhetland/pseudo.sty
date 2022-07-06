@@ -426,7 +426,7 @@
     {algorithm}{Algorithm}{pseudo/ruled}{alg}
 
 \newtcbtheorem[
-        use counter from=algorithm,
+        use counter from = algorithm,
         crefname={Algorithm}{algorithms}
     ]%
     % {internalpseudobox}{Algorithm}{float}{pbx}
@@ -1057,19 +1057,20 @@ just search \href{https://ctan.org}{\textsc{ctan}} for
 Just using the \refe{pseudo} environment is sufficient for typesetting
 pseudocode as part of the body text. If you wish to place your pseudocode in a
 float, you can easily use a package such as
-\pkg{float}.\footnote{Or you could do a quick
-\href{https://ctan.org}{\textsc{ctan}} search for
+\pkg[https://ctan.org/tex-archive/macros/latex/contrib/float]{float}.\footnote{Or
+you could do a quick \href{https://ctan.org}{\textsc{ctan}} search for
 ``\href{https://ctan.org/search/?phrase=float}{float}'', or a look at the
 \href{https://ctan.org/recommendations/float}{recommendations} related to
-the \pkg{float} package, will give you many options, with varying
-functionality.} You could also use the float environments supplied with packages
-such as \pkg{algorithms}, \pkg{algorithmicx} and
-\pkg{algorithm2e}.\footnote{The definition of \refc{==} doesn't properly carry
-    over into floats. It's properly redefined inside \refe{pseudo}, so you
-    probably won't notice, but if you wish to use the symbol outside the
-    \refe{pseudo} environment, but in a float (e.g., inside \cs{caption}),
-you'll need to either call \refc{pseudoeq} to re-establish \pkg{pseudo}'s
-redefinition of \cs{=} or simply use \refc{eqs} instead of \refc{==}.}
+the \pkg[https://ctan.org/tex-archive/macros/latex/contrib/float]{float}
+package, will give you many options, with varying functionality.} You could also
+use the float environments supplied with packages such as \pkg{algorithms},
+\pkg{algorithmicx} and \pkg{algorithm2e}.\footnote{The definition of \refc{==}
+doesn't properly carry over into floats. It's properly redefined inside
+\refe{pseudo}, so you probably won't notice, but if you wish to use the symbol
+outside the \refe{pseudo} environment, but in a float (e.g., inside
+\cs{caption}), you'll need to either call \refc{pseudoeq} to re-establish
+\pkg{pseudo}'s redefinition of \cs{=} or simply use \refc{eqs} instead of
+\refc{==}.}
 
 The \pkg{pseudo} package does provide some specialized setup,
 however, using \pkg{tcolorbox}. This also lets you typeset non-float pseudocode
@@ -1091,7 +1092,8 @@ It does not matter whether you import
 two libraries \code{skins} and \code{theorems}, as in the example above.
 
 The styles defined by \pkg{pseudo} are versions of the commonly used
-\emph{boxed} and \emph{ruled} styles, as found in, e.g., \pkg{float}, as well as
+\emph{boxed} and \emph{ruled} styles, as found in, e.g.,
+\pkg[https://ctan.org/tex-archive/macros/latex/contrib/float]{float}, as well as
 the \emph{boxruled} and \emph{tworuled} styles found in \pkg{algorithm2e}. In
 addition, there's a \emph{filled} style, with a colored background. If you wish
 to customize and extend the box style, \refk{pseudo/boxruled} is probably the
@@ -1104,8 +1106,8 @@ tables directly, \pkg{pseudo} aims to match the style of \pkg{booktabs}, with
 spacing and line thicknesses taken from its constants such as \cs{aboverulesep},
 \cs{heavyrulewidth}, etc.\@ (with defaults provided if \pkg{booktabs} has not
 been imported).\footnote{In \pkg{booktabs}, the contents between the top rules
-is the header row, whereas in the \emph{Concrete Mathematics} style, it's the
-caption.}
+make up the header row, whereas in the \emph{Concrete Mathematics} style, it's
+the caption.}
 
 The \pkg{pseudo} box styles can be used used directly to style \code{tcolorbox}
 environments, possiby with additional \pkg{tcolorbox} options for customization:
@@ -1280,7 +1282,7 @@ must be expanded slightly, to permit arguments, e.g.:
 
 \begin{texexp}[listing only]
 \newtcolorbox{pseudobox}[1][]{pseudo/filled, #1}
-\end{texexp}%
+\end{texexp}
 \newtcolorbox{pseudobox}[1][]{pseudo/filled, #1}% For later use
 %
 Here we've added a single argument (\code{[1]}), with an empty default
@@ -1342,6 +1344,7 @@ The running time of the algorithm is quadratic.
 \end{algorithm}
 \end{texexp}
 }
+
 
 \section{Reference}
 \label{sec:reference}
@@ -2006,7 +2009,7 @@ We're not in math mode, but the argument of \Ln[A] is.
 \end{texexp}
 
     \noindent
-    The \refk{hd-space} key can be used to configure \refk{hd} so it sets the
+    The \refk{hd-space} key can be used to configure \refc{hd} so it sets the
     \refk{extra-space} key. Note that the signature arguments are mandatory; in
     order to function properly, \cs{hd} must be \emph{expandable}, and therefore
     cannot end with an optional argument, the way \refc{pr} does.
@@ -3366,6 +3369,75 @@ arguments. If you'd like, though, you can just use \cs{multicolumn} yourself
 \dots\ and no parentheses!
 \end{pseudo}
 \end{texexp}
+
+\subsection{\dots\,place algorithm boxes side by side?}
+
+In the simplest case, maybe you just want to place two of them side by side in
+the text (i.e., not as floats). Let's say you've defined an environment as
+follows:
+
+% Duplicated:
+\newtcbtheorem{procedure}{Procedure}{pseudo/filled}{}
+\begin{texexp}[listing only]
+\newtcbtheorem{procedure}{Procedure}{pseudo/filled}{}
+\end{texexp}
+
+Two of these cannot directly be placed side by side, because each will insert
+paragraph breaks and spacing before and after itself. However, this code can be
+disabled by using the \pkg{tcolorbox} keys \code{before} and \code{after} (along
+with \code{width}, to make sure there's room. If we also want the boxes to have
+the same height, we can use the key \code*{equal height group} (with some
+arbitrary name):
+
+\begin{texexp}
+\begin{procedure}[after={}, width=.49\linewidth,
+    equal height group=A]{}{}
+\begin{pseudo}
+Foo \\ Bar \\ Baz
+\end{pseudo}
+\end{procedure}
+\hfill
+\begin{procedure}[before={}, width=.49\linewidth,
+    equal height group=A]{}{}
+\begin{pseudo}
+Frozz \\ Bozz
+\end{pseudo}
+\end{procedure}
+\end{texexp}
+
+\noindent
+If the boxes are floats (i.e., either defined or used with the \pkg{tcolorbox}
+key \code{float}, you can still use the \code*{equal height group} key. This is
+useful, for example, in a twocolumn layout, if the boxes are at the top (or
+bottom), one in each column.
+
+Finally, if your boxes are floats in general, you're using a single-column
+layout, and you want two boxes to float \emph{together}, side by side (e.g.,
+because the pseudocode itself takes up little horizontal space), you can use the
+first technique (setting \code{width}, \code{before} and \code{after}) along
+with the \pkg{tcolorbox} key \code{nofloat}, and then place the boxes inside
+some other float (such as a normal \LaTeX\@ \code{figure}, or a custom one using
+the \pkg[https://ctan.org/tex-archive/macros/latex/contrib/float]{float}
+package):
+
+\begin{texexp}[listing only]
+\begin{figure}
+\begin{procedure}[nofloat, after={}, width=.49\linewidth,
+    equal height group=A]{}{}
+\begin{pseudo}
+    % ...
+\end{pseudo}
+\end{procedure}
+\hfill
+\begin{procedure}[nofloat, after={}, width=.49\linewidth,
+    equal height group=A]{}{}
+\begin{pseudo}
+    % ...
+\end{pseudo}
+\end{procedure}
+\end{figure}
+\end{texexp}
+
 
 \section{Implementation}
 \label{sec:impl}
