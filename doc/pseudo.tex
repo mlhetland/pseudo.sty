@@ -2955,10 +2955,10 @@ based on pseudocode from \citet{Knuth:1975}:
 \begin{pseudo*}
 procedure \id{printstatistics}\;                            \\
 begin integer $j$\;                                         \\+
-    $\id{write}(\st{Closed sets for rank}, r, \st{:})$\;    \\
+    \fn{write}(\st{Closed sets for rank}, r, \st{:})\;      \\
     $j \gets L[h]$\;                                        \\
     while $j \neq h$ do                                     \\+
-        begin $\id{writeon}(S[j])$\; $j\gets L[j]$ end\;    \\--
+        begin \fn{writeon}(S[j])\; $j\gets L[j]$ end\;      \\--
 end\;
 \end{pseudo*}
 \end{texexp}
