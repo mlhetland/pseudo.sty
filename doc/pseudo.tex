@@ -1315,7 +1315,8 @@ the previous example. The style that is closest to a plain, default
 \code{tcolorbox} is \refk{pseudo/boxruled}, which may be a good starting-point
 for this kind of configuration. However, if you just wish to add some minor
 tweaks to one of the existing \code{pseudo} styles (e.g., changing the colors of
-\refk{pseudo/filled}), starting with that style may be easier.
+\refk{pseudo/filled}), starting with that style may be easier. (For some hints
+on configuring the boxes, see \cref{sec:boxconfig}.)
 
 The contents of one of these boxes need not be restricted to pseudocode---the
 spacing is set up to handle plain text as well. For example, you may want to
@@ -3462,8 +3463,6 @@ specified in \refk{preamble} (perhaps defining a style using
 found on p.~\pageref{p:preamble}. However, in the source code there, whitespace
 is insignificant. If writing your own preamble, you should avoid spurious
 whitespace inside \code{>\braces{\dots}} and \code{<\braces{\dots}}.}
-% XXX This is also relevant for the tabularx example.
-% XXX hd-preamble -- not really relevant here, but relevant for tabularx
 \begin{texexp}
 \begin{pseudo}[preamble = {
         >{\pseudohpad} \pseudolabelalign
@@ -3508,6 +3507,103 @@ the old behavior (which, frankly, was really a bug), you can get that as
 follows:
 \begin{texexp}
 \pseudoset{pos = {}, prevdepth = 0pt}
+\end{texexp}
+
+
+\subsection{\dots\,configure my \code{tcolorbox}es?}
+\label{sec:boxconfig}
+
+If you use the \pkg{pseudo} styles for \code{tcolorbox}es (see
+\cref{sec:floats}), you might still wish to do some tweaking, or even redefine
+most of the styling. This is done using the \pkg{tcolorbox} configuration
+system, not that of \pkg{pseudo}, so it's worth consulting the \pkg{tcolorbox}
+documentation (and, perhaps, the source of the \pkg{pseudo} box styles, in
+\cref{sec:floatsrc}). In the following, I go through some examples of things you
+might want to adjust. First, let's define a rather unstyled environment which we
+can modify locally.\footnote{If you want the styling to apply to the environment
+in general, simply insert it as the third argument. See the \pkg{tcolorbox}
+documentation for more about \cs{newtcbtheorem}.}
+
+% Duplicated:
+\newtcbtheorem{example}{Example}{}{}
+\begin{texexp}[listing only]
+\newtcbtheorem{example}{Example}{}{}
+\end{texexp}
+
+\paragraph{A different separator.} By default, the \pkg{pseudo} box styles use
+an \cs{enskip} to separate the label part from the description, but you might
+want to use something else, such as a colon or a period. You can get this by
+using the \code*{separator sign} key:
+\begin{texexp}
+\begin{example}[pseudo/ruled, separator sign = :]{\dots}{}
+    \dots
+\end{example}
+\end{texexp}
+
+\paragraph{A different parskip.} You might want more or less spacing between the
+paragraphs of any plain text outside your pseudocode. You do this by setting
+\cs{parskip}, which is normally set as part of the \code*{before upper} key in
+the \code{pseudo/\dots} styles. Rather than overwrite the \code*{before upper}
+code, you can \emph{append} to it, using \code*{before upper app}:
+\begin{texexp}
+\begin{example}[pseudo/boxed,
+    before upper app = \parskip\baselineskip]{\dots}{}
+    The parskip
+
+    is bigger!
+\end{example}
+\end{texexp}
+You \emph{could} set \cs{topsep} and \cs{partopsep} in the same manner, but you
+could also just set those for pseudocode specifically, using the \pkg{pseudo}
+keys \refk{topsep} and \refk{partopsep} (perhaps as part of a style used in
+every float box, defined with \refc{pseudodefinestyle}).
+
+\bigskip
+
+\paragraph{Different line widths.} If you start with \refk{pseudo/boxruled},
+this is easy enough---you can just use the standard \pkg{tcolorbox} keys to
+adjust the line widths.
+\begin{texexp}
+\begin{example}[pseudo/boxruled,
+    boxrule = 4pt, titlerule = 2pt]{\dots}{}
+    Now \emph{that's} a \emph{box}!
+\end{example}
+\end{texexp}
+The problem with the other ruled or boxed styles is that they use the
+\code{empty} skin, which removes the box drawing.\footnote{The reason they don't
+just set the appropriate line widths to zero is that this generally still
+results in visible hairlines in many PDF viewers.}
+They then instead rely on various \code{borderline} commands. These are
+cumulative, so if you want to replace some of them, you first need to clear the
+deck with \code*{no borderline}, and then re-do them all. So, for example, let's
+say you want a thin bottom rule for your ruled style, more similar to the
+original \emph{Concrete Mathematics} style \citep{Graham:1994}. You could do
+that as follows:
+\begin{texexp}
+\begin{example}[pseudo/ruled,
+    no borderline,
+    borderline north = {\heavyrulewidth}{0pt}{black},
+    borderline south = {\lightrulewidth}{0pt}{black}]{\dots}{}
+\dots
+\end{example}
+\end{texexp}
+The title rule can still be changed by just using the \code{titlerule} key, as
+in the previous example.
+
+\bigskip
+
+\paragraph{Different colors.} Again, customizing \code{pseudo/boxruled} is easy
+enough; you can set the line colors using the \code{colframe}, and the fill
+colors using \code{colback} and \code{colbacktitle}. The latter two keys also
+work well with the \code{pseudo/filled} style (as shown in the example
+\vpageref{ex:clrscode4ish}). To modify the line colors in the other styles,
+you'll need borderline commands, again. For example:
+\begin{texexp}
+\begin{example}[pseudo/tworuled,
+    no borderline,
+    borderline horizontal = {\heavyrulewidth}{0pt}{lightgray}]{\dots}{}
+\dots
+\end{example}
 \end{texexp}
 
 
@@ -4810,6 +4906,7 @@ The starred version of the environment is just a wrapper that uses the custom
 \end{source}
 
 \subsection{Boxes and floats}
+\label{sec:floatsrc}
 
 Some spacing and width values are taken from \pkg{booktabs}, to partly emulate
 its table appearance. If \pkg{booktabs} is not loaded, we'll just define these
@@ -5026,6 +5123,7 @@ And that ends the \pkg{tcolorbox} definitions:
 \begin{source}
 } % \pgfqkeys
 \end{source}
+
 
 \section{Deprecations}
 
