@@ -3498,6 +3498,19 @@ column, i.e.:
     setup-append = \RestorePseudoEq,
 \end{texexp}
 
+
+\subsection{\dots\,get the old spacing?}
+
+The current version of the \refe{pseudo} environment ensures the spacing above
+and below is adjusted, so the baselines of the previous and following lines are
+positioned equally, regardless of their depths or heights. If you'd rather have
+the old behavior (which, frankly, was really a bug), you can get that as
+follows:
+\begin{texexp}
+\pseudoset{pos = {}, prevdepth = 0pt}
+\end{texexp}
+
+
 \section{Implementation}
 \label{sec:impl}
 
