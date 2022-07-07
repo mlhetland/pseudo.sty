@@ -284,7 +284,7 @@
     after app={\par\medskip\noindent},
     % Because listings messes with the equals sign:
     before lower app={
-        \RestorePseudoEqs
+        \RestorePseudoEq
     },
     #1
 }
@@ -1072,7 +1072,7 @@ use the float environments supplied with packages such as \pkg{algorithms},
 doesn't properly carry over into floats. It's properly redefined inside
 \refe{pseudo}, so you probably won't notice, but if you wish to use the symbol
 outside the \refe{pseudo} environment, but in a float (e.g., inside
-\cs{caption}), you'll need to either call \refc{RestorePseudoEqs} to
+\cs{caption}), you'll need to either call \refc{RestorePseudoEq} to
 re-establish \pkg{pseudo}'s redefinition of \cs{=} or simply use \refc{eqs}
 instead of \refc{==}.}
 
@@ -1514,7 +1514,7 @@ alphabetical order), you'll find definitions of a couple of counters here
 \end{docCommand}
 
 \begin{docCommand}{==}{}
-    \RestorePseudoEqs % Having some trouble bc/o floats, or something?
+    \RestorePseudoEq % Having some trouble bc/o floats, or something?
     This is a shortcut that hijacks the normal \cs{=} accent command, so that
     if it is called with \code{=} as an argument, the result is \refc{eqs}. In
     other words, the command \cs{==} is really the call
@@ -1526,7 +1526,7 @@ alphabetical order), you'll find definitions of a couple of counters here
     original meaning (as is currently the case if you try to use it within a
     custom float, as in \cref{sec:floats}, or a standard one such as
     \code{figure}). In this case, you can restore the \pkg{pseudo} meaning (and
-    the \refc{==} shortcut) by using \refc{RestorePseudoEqs}. In some cases, you
+    the \refc{==} shortcut) by using \refc{RestorePseudoEq}. In some cases, you
     may want to just use \refc{eqs} instead.
 \end{docCommand}
 
@@ -2705,7 +2705,7 @@ goto \tn{\ref{li:ref}}
     purposes (such as \cs{raggedleft} or the like).
 \end{docCommand}
 
-\begin{docCommand}{RestorePseudoEqs}{}
+\begin{docCommand}{RestorePseudoEq}{}
     Similar to \refc{RestorePseudoBackslash}. Switches the definition of \cs{=}
     to the one used by \pkg{pseudo}. Useful if \cs{=} reverts to its original
     definition in some context (see \refc{==}).
@@ -3000,7 +3000,7 @@ set up a new column for comments. You could achieve that as follows:
         p{0.5\linewidth}                       % Comments (fixed)
         @{}},
     end-tabular = \endtabularx,
-    setup-append = \RestorePseudoEqs
+    setup-append = \RestorePseudoEq
 }
 \begin{pseudo}[kw, fullwidth, line-height=1.1]*
     \hd{Counting-Sort}(A, k) & Find positions by counting \\
@@ -3016,7 +3016,7 @@ next line; you'll need to insert \cs{leavevmode} or the like to prevent that.
 This is true also of normal \code{tabular} environments. Also note
 that \code{tabularx} environments with \code{X} columns don't interact nicely
 with \cs{=}; so if you wish to use \refc{==}, you can reassert the definition
-by adding \code{>\braces{\refc{RestorePseudoEqs}}} before each
+by adding \code{>\braces{\refc{RestorePseudoEq}}} before each
 column.\footnote{You can also, of course, just use \refc{eqs} instead.}
 
 See the \pkg{tabularx} documentation (page~4) for an explanation of why we can't
@@ -3495,7 +3495,7 @@ column, i.e.:
         >{\pseudosetup} X <{\pseudohpad}
     },
     end-tabular = \endtabularx,
-    setup-append = \RestorePseudoEqs,
+    setup-append = \RestorePseudoEq,
 \end{texexp}
 
 \section{Implementation}
@@ -4027,7 +4027,7 @@ For convenience and source-code clarity, the following shortcut (i.e.,
     }
 }
 
-\cs_gset_eq:NN \@@_eq: \= % Stored for \RestorePseudoEqs
+\cs_gset_eq:NN \@@_eq: \= % Stored for \RestorePseudoEq
 \end{source}
 Similarly, there's the
 \href{https://proofwiki.org/wiki/Definition:Real_Interval/Notation/Wirth}{Pascal
@@ -4624,7 +4624,7 @@ similar to the \cs{arraycr} command of the \pkg{array} package.)
 We also have a command for restoring our definition of \cs{=} if it has been
 overwritten:
 \begin{source}
-\NewDocumentCommand \RestorePseudoEqs { } {
+\NewDocumentCommand \RestorePseudoEq { } {
     \cs_gset_eq:NN \= \@@_eq:
 }
 \end{source}
@@ -4661,7 +4661,7 @@ various macros already described.
     \@@_gsave_as:NN \= \c_@@_saved_eq_cs
 
     % \RestorePseudoBackslash is inside the tabular
-    \RestorePseudoEqs
+    \RestorePseudoEq
 
     \int_set:Nn \g_@@_last_saved_line_int {\arabic{pseudoline}}
     \@@_star_setup:
@@ -5036,8 +5036,8 @@ compatibility. These will issue a deprecation warning when used.
 }
 
 \NewDocumentCommand \pseudoeq { } {
-    \@@_use_instead:nn \pseudoeq \RestorePseudoEqs
-    \RestorePseudoEqs
+    \@@_use_instead:nn \pseudoeq \RestorePseudoEq
+    \RestorePseudoEq
 }
 \end{source}
 

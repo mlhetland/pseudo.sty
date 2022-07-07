@@ -546,7 +546,7 @@
 \NewDocumentCommand \RestorePseudoBackslash { } {
     \cs_gset_eq:NN \\ \__pseudo_eol:
 }
-\NewDocumentCommand \RestorePseudoEqs { } {
+\NewDocumentCommand \RestorePseudoEq { } {
     \cs_gset_eq:NN \= \__pseudo_eq:
 }
 \NewDocumentCommand \pseudoset { +m }
@@ -562,7 +562,7 @@
     \group_begin:
     \__pseudo_gsave_as:NN \\ \c__pseudo_saved_cr_cs
     \__pseudo_gsave_as:NN \= \c__pseudo_saved_eq_cs
-    \RestorePseudoEqs
+    \RestorePseudoEq
     \int_set:Nn \g__pseudo_last_saved_line_int {\arabic{pseudoline}}
     \__pseudo_star_setup:
     \IfNoValueF { #1 } {
@@ -734,6 +734,6 @@ filled/.style = {
     \RestorePseudoBackslash
 }
 \NewDocumentCommand \pseudoeq { } {
-    \__pseudo_use_instead:nn \pseudoeq \RestorePseudoEqs
-    \RestorePseudoEqs
+    \__pseudo_use_instead:nn \pseudoeq \RestorePseudoEq
+    \RestorePseudoEq
 }
