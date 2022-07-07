@@ -21,7 +21,7 @@
 % SOFTWARE.
 %
 \def \pseudoversion {1.1.3}
-\def \pseudodate    {2022/07/06}
+\def \pseudodate    {2022/07/07}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -543,10 +543,10 @@
 \NewDocumentCommand \pseudoindent { } {
     \__pseudo_indent:N { \g__pseudo_indent_level_int }
 }
-\NewDocumentCommand \pseudoslash { } {
+\NewDocumentCommand \RestorePseudoBackslash { } {
     \cs_gset_eq:NN \\ \__pseudo_eol:
 }
-\NewDocumentCommand \pseudoeq { } {
+\NewDocumentCommand \RestorePseudoEqs { } {
     \cs_gset_eq:NN \= \__pseudo_eq:
 }
 \NewDocumentCommand \pseudoset { +m }
@@ -562,7 +562,7 @@
     \group_begin:
     \__pseudo_gsave_as:NN \\ \c__pseudo_saved_cr_cs
     \__pseudo_gsave_as:NN \= \c__pseudo_saved_eq_cs
-    \pseudoeq
+    \RestorePseudoEqs
     \int_set:Nn \g__pseudo_last_saved_line_int {\arabic{pseudoline}}
     \__pseudo_star_setup:
     \IfNoValueF { #1 } {
@@ -594,7 +594,7 @@
     \addtocounter{pseudoline}{-1}
     \tl_use:N \l__pseudo_begin_tabular_tl
     \tex_noalign:D {
-        \pseudoslash
+        \RestorePseudoBackslash
         \int_gset_eq:NN \g__pseudo_indent_level_int
                         \l__pseudo_initial_indent_level_int
         \__pseudo_eol_handle_args:nnn{#2}{#3}{#4}
@@ -721,4 +721,19 @@ filled/.style = {
     left                = 2 \belowrulesep + \c__pseudo_thin_dim,
     right               = 2 \belowrulesep + \c__pseudo_thin_dim,
 }
+}
+\msg_new:nnn { pseudo } { useinstead } {
+    The~#1 command~is~deprecated; \\ use~#2 instead.
+}
+\cs_new:Npn \__pseudo_use_instead:nn #1 #2 {
+    \msg_warning:nnnn { pseudo } { useinstead } { #1 } { #2 }
+    \tl_gset_eq:NN #1 #2
+}
+\NewDocumentCommand \pseudoslash { } {
+    \__pseudo_use_instead:nn \pseudoslash \RestorePseudoBackslash
+    \RestorePseudoBackslash
+}
+\NewDocumentCommand \pseudoeq { } {
+    \__pseudo_use_instead:nn \pseudoeq \RestorePseudoEqs
+    \RestorePseudoEqs
 }

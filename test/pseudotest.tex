@@ -1,4 +1,4 @@
-\documentclass[a4paper]{article}
+\documentclass{article}
 
 \def\id{my previous definition}
 
@@ -358,6 +358,18 @@ Beta  \\+[1cm]
 Gamma
 \end{pseudo}
 
+
+% Should emit a single warning:
+% \pseudoslash
+% \pseudoslash
+% \pseudoslash
+
+% Should emit a single warning:
+% \pseudoeq
+% \pseudoeq
+% \pseudoeq
+
+
 % Things that could also be tested:
 % begin-tabular
 % bol
@@ -369,7 +381,7 @@ Gamma
 % preamble
 % prefix
 % pseudoeq
-% pseudoslash
+% RestorePseudoBackslash
 % setup
 % setup-append
 % setup-prepend
