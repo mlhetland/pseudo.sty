@@ -234,7 +234,6 @@
     \noindent
     A style defined for use with \pkg{tcolorbox} (i.e., not with
     \cs{pseudoset}).
-
     A simple example:
 
 \begin{tcolorbox}[pseudo/#1,
@@ -244,6 +243,7 @@
     \end{pseudo}
 \end{tcolorbox}
 
+    \noindent
     See the \refk{pseudo/boxed} reference entry and \cref{sec:floats} for more
     information.
 \end{docKey}
@@ -1111,7 +1111,9 @@ spacing and line thicknesses taken from its constants such as \cs{aboverulesep},
 \cs{heavyrulewidth}, etc.\@ (with defaults provided if \pkg{booktabs} has not
 been imported).\footnote{In \pkg{booktabs}, the contents between the top rules
 make up the header row, whereas in the \emph{Concrete Mathematics} style, it's
-the caption.}
+the caption.} The \refk{pseudo/booktabs} style uses the same pattern of thin and
+thick lines as \pkg{booktabs} tables, while \refk{pseudo/ruled} uses a thin line
+at the bottom, as in the \emph{Concrete Mathematics} style.
 
 The \pkg{pseudo} box styles can be used used directly to style \code{tcolorbox}
 environments, possiby with additional \pkg{tcolorbox} options for customization:
@@ -1136,10 +1138,10 @@ environments, possiby with additional \pkg{tcolorbox} options for customization:
     \end{pseudo}
 \end{tcolorbox}
 \end{texexp}
-}
-Beyond customizing the boxes, you can customize the pseudocode inside the boxes
-(separately from pseudocode elsewhere) by defining the \pkg{pseudo} style
-\refk{every-float}.
+}%
+Beyond the boxes themselves, you can customize the pseudocode inside them
+(separately from pseudocode elsewhere) by defining the \refk{every-float} style
+with \refc{pseudodefinestyle}.
 
 You can also create new environments with \cs{newtcolorbox},\footnote{See the
 \pkg{tcolorbox} for details and alternatives.} but the most common use-case will
@@ -1217,10 +1219,11 @@ Sarbazi-Azad and Grune.
 % The internalpseudobox environment is defined in the preamble, so crefname
 % works.
 \noindent
-\Cref{pbx:boxed,pbx:boxruled,pbx:tworuled,pbx:filled} are typeset with the
-remaining box styles.
+\Cref{pbx:booktabs,pbx:boxed,pbx:boxruled,pbx:tworuled,pbx:filled} are typeset
+with the remaining box styles.
 
-\begin{internalpseudobox}[pseudo/boxed]{\refk{pseudo/boxed}}{boxed}
+\NewDocumentCommand \boxstylesample { m } {
+\begin{internalpseudobox}[pseudo/#1]{\refk{pseudo/#1}}{#1}
 \begin{pseudo}[kw]
     $i = 1$ \\
     while $i < n$\\+
@@ -1230,39 +1233,13 @@ remaining box styles.
             $i = i - 1$
 \end{pseudo}
 \end{internalpseudobox}
+}
 
-\begin{internalpseudobox}[pseudo/boxruled]{\refk{pseudo/boxruled}}{boxruled}
-\begin{pseudo}[kw]
-    $i = 1$ \\
-    while $i < n$\\+
-        if \nf $i\== 1$ or $A[i-1] \leq A[i]$ \\+
-            $i = i + 1$ \\-
-        else \nf swap $A[i-1]$ and $A[i]$ \\+
-            $i = i - 1$
-\end{pseudo}
-\end{internalpseudobox}
-
-\begin{internalpseudobox}[pseudo/tworuled]{\refk{pseudo/tworuled}}{tworuled}
-\begin{pseudo}[kw]
-    $i = 1$ \\
-    while $i < n$\\+
-        if \nf $i\== 1$ or $A[i-1] \leq A[i]$ \\+
-            $i = i + 1$ \\-
-        else \nf swap $A[i-1]$ and $A[i]$ \\+
-            $i = i - 1$
-\end{pseudo}
-\end{internalpseudobox}
-
-\begin{internalpseudobox}[pseudo/filled]{\refk{pseudo/filled}}{filled}
-\begin{pseudo}[kw]%*
-    $i = 1$ \\
-    while $i < n$\\+
-        if \nf $i\== 1$ or $A[i-1] \leq A[i]$ \\+
-            $i = i + 1$ \\-
-        else \nf swap $A[i-1]$ and $A[i]$ \\+
-            $i = i - 1$
-\end{pseudo}
-\end{internalpseudobox}
+\boxstylesample{booktabs}
+\boxstylesample{boxed}
+\boxstylesample{boxruled}
+\boxstylesample{tworuled}
+\boxstylesample{filled}
 
 Unnumbered boxes may be constructed with \cs{newtcolorbox}, using the same
 styles. These boxes, by default, have no title part---only the main
@@ -2592,6 +2569,7 @@ Second line
     \tcolorboxstylepost
 \end{docKey}
 %
+\tcolorboxstylenosource{booktabs}
 \tcolorboxstylenosource{boxruled}
 \tcolorboxstylenosource{filled}
 \tcolorboxstylenosource{ruled}
@@ -3595,25 +3573,24 @@ just set the appropriate line widths to zero is that this generally still
 results in visible hairlines in many PDF viewers.}
 They then instead rely on various \code{borderline} commands. These are
 cumulative, so if you want to replace some of them, you first need to clear the
-deck with \code*{no borderline}, and then re-do them all. So, for example, let's
-say you want a thin bottom rule for your ruled style, more similar to the
-original \emph{Concrete Mathematics} style \citep{Graham:1994}. You could do
-that as follows:
+deck with \code*{no borderline}, and then re-do them all. For example, maybe you
+want a version of \refk{pseudo/tworuled} with light rules:
 \begin{texexp}
-\begin{example}[pseudo/ruled,
+\begin{example}[pseudo/tworuled,
     no borderline,
+    toprule = \lightrulewidth,
     bottomrule = \lightrulewidth,
-    borderline north = {\heavyrulewidth}{0pt}{black},
-    borderline south = {\lightrulewidth}{0pt}{black}]{\dots}{}
+    borderline horizontal = {\lightrulewidth}{0pt}{black}]{\dots}{}
 \dots
 \end{example}
 \end{texexp}
-The title rule can still be changed by just using the \code{titlerule} key, as
-in the previous example, if desired. Note that even though the box rules aren't
-\emph{drawn}, they can still be used for spacing---which the borderlines don't
-handle. In \code{pseudo/ruled}, \code{bottomrule} is set to \cs{heavyrulewidth},
-so since we're replacing the bottom borderline to a thinner one, we need adjust
-this as well.
+Note that even though the box rules aren't \emph{drawn}, they can still be used
+for spacing---which the borderlines don't handle. In \code{pseudo/tworuled},
+\code{toprule} and \code{bottomrule} are set to \cs{heavyrulewidth}, so since
+we're replacing the horizontal borderlines with lighter ones, we need adjust
+these as well. (If you do something similar with \refk{pseudo/ruled}, the width
+of the title rule can still be changed by using the \code{titlerule} key, as in
+the previous example.)
 
 \bigskip
 
@@ -3622,15 +3599,19 @@ enough; you can set the line colors using the \code{colframe}, and the fill
 colors using \code{colback} and \code{colbacktitle}. The latter two keys also
 work well with the \code{pseudo/filled} style (as shown in the example
 \vpageref{ex:clrscode4ish}). To modify the line colors in the other styles,
-you'll need borderline commands, again. For example:
+you'll need borderline commands, again (though with separate styling for the
+title rule). For example:
 \begin{texexp}
-\begin{example}[pseudo/tworuled,
+\begin{example}[pseudo/booktabs,
     no borderline,
-    borderline horizontal = {\heavyrulewidth}{0pt}{lightgray}]{\dots}{}
+    titlerule style = lightgray,
+    borderline horizontal = {\heavyrulewidth}{0pt}{gray}]{\dots}{}
 \dots
 \end{example}
 \end{texexp}
-
+If you want to style the top and bottom line separately, just use
+\code*{borderline north} and \code*{borderline south} separately, rather than
+the collective \code*{borderline horizontal}.
 
 \section{Implementation}
 \label{sec:impl}
@@ -5075,9 +5056,9 @@ Finally, some basic styling.
 },
 \end{source}
 The remaining box styles are based on \code{boxruled}, but rely on other skins
-(\cs{empty} and \cs{tile}), which remove the default frame drawing, as some of
-the frame are removed. (It would be possible to simply set the relevant widths
-to zero, but this tends to leave perceptible hairlines in most PDF
+(\code{empty} and \code{tile}), which remove the default frame drawing, as some
+of the frame are removed. (It would be possible to simply set the relevant
+widths to zero, but this tends to leave perceptible hairlines in most PDF
 viewers---probably because the fram is drawn by \emph{filling} rather than
 \emph{drawing}.)
 \begin{source}
@@ -5098,7 +5079,18 @@ need to use the \code{borderline} mechanism.
     left                = 0pt,
     right               = 0pt,
     titlerule~style     = draw,
-    borderline~horizontal = {\heavyrulewidth}{0pt}{black},
+    borderline~north    = {\heavyrulewidth}{0pt}{black},
+    borderline~south    = {\lightrulewidth}{0pt}{black},
+},
+\end{source}
+The \code{booktabs} is a variation of \code{ruled}, where the bottom rule is
+also thick, to match the style of \code{booktabs} tables.
+\begin{source}
+booktabs/.style = {
+    pseudo/ruled,
+    no~borderline,
+    bottomrule          = \heavyrulewidth,
+    borderline~horizontal = {\heavyrulewidth}{0pt}{black}
 },
 \end{source}
 The \code{boxed} style is similar, with the titlerule removed, and with the

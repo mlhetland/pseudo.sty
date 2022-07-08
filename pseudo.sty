@@ -694,7 +694,14 @@ ruled/.style = {
     left                = 0pt,
     right               = 0pt,
     titlerule~style     = draw,
-    borderline~horizontal = {\heavyrulewidth}{0pt}{black},
+    borderline~north    = {\heavyrulewidth}{0pt}{black},
+    borderline~south    = {\lightrulewidth}{0pt}{black},
+},
+booktabs/.style = {
+    pseudo/ruled,
+    no~borderline,
+    bottomrule          = \heavyrulewidth,
+    borderline~horizontal = {\heavyrulewidth}{0pt}{black}
 },
 boxed/.style = {
     pseudo/boxruled,
