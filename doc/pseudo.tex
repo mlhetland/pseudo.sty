@@ -3582,13 +3582,18 @@ that as follows:
 \begin{texexp}
 \begin{example}[pseudo/ruled,
     no borderline,
+    bottomrule = \lightrulewidth,
     borderline north = {\heavyrulewidth}{0pt}{black},
     borderline south = {\lightrulewidth}{0pt}{black}]{\dots}{}
 \dots
 \end{example}
 \end{texexp}
 The title rule can still be changed by just using the \code{titlerule} key, as
-in the previous example.
+in the previous example, if desired. Note that even though the box rules aren't
+\emph{drawn}, they can still be used for spacing---which the borderlines don't
+handle. In \code{pseudo/ruled}, \code{bottomrule} is set to \cs{heavyrulewidth},
+so since we're replacing the bottom borderline to a thinner one, we need adjust
+this as well.
 
 \bigskip
 
