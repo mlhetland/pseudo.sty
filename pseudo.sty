@@ -646,6 +646,8 @@
         }
     }
 }
+\pseudodefinestyle { every-float } {
+}
 \pgfqkeys {tcb/pseudo} {
 boxruled/.style = {
     floatplacement = tbp,
@@ -654,6 +656,7 @@ boxruled/.style = {
         \dim_set:Nn \topsep     { .2 \baselineskip }
         \dim_set:Nn \partopsep  { 0pt              }
         \dim_set:Nn \prevdepth  { .3 \baselineskip }
+        \pseudoset { every-float }
     },
     after~upper = \__pseudo_prevdepth_adjustment:,
     beforeafter~skip~balanced = 0.5 \baselineskip plus 2pt,

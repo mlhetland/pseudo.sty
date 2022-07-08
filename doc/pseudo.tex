@@ -1137,8 +1137,11 @@ environments, possiby with additional \pkg{tcolorbox} options for customization:
 \end{tcolorbox}
 \end{texexp}
 }
+Beyond customizing the boxes, you can customize the pseudocode inside the boxes
+(separately from pseudocode elsewhere) by defining the \pkg{pseudo} style
+\refk{every-float}.
 
-You can also new environments with \cs{newtcolorbox},\footnote{See the
+You can also create new environments with \cs{newtcolorbox},\footnote{See the
 \pkg{tcolorbox} for details and alternatives.} but the most common use-case will
 probably be to define a (possibly floating) theorem-style environment, using
 \cs{newtcbtheorem} (probably in the preamble):
@@ -1903,6 +1906,23 @@ See also \refk{bol-append}, \refk{setup-append} and \refk{dim-color}.
     The amount of space inserted between the two \code{=} signs in \cs{eqs}.
 \end{docKey}
 
+\begin{docKey}{every-float}{}{\pkg{pseudo} style}
+    This is a style, defined using \refc{pseudodefinestyle}, that is applied to
+    the contents of every \code{tcolorbox} styled using the \code{pseudo/\dots}
+    styles, such as \refk{pseudo/boxed}, \refk{pseudo/ruled}, etc. (Despite the
+    name, it is not limited to boxes defined with the \code{float} key.) The
+    style is initially empty, and acts as a hook for user customization:
+    \begin{texexp}
+    \pseudodefinestyle{every-float}{
+        kwfont = \sffamily
+    }
+    \kw{not modified}
+    \begin{tcolorbox}[pseudo/filled]
+        \kw{modified}
+    \end{tcolorbox}
+    \end{texexp}
+\end{docKey}
+
 \begin{docKey}{extra-space}{\,=\,\meta{length}}{\initialkeyvalue{\code{0pt}}}
     \parindent1.5em
     \noindent
@@ -2099,7 +2119,7 @@ $\textit{foo-bar:baz}$
 \end{texexp}
 
     The decision to use \cs{textit} means that you can't use, say, subscripts
-    or the like as pars of an identifier, or mix in greek letters or other
+    or the like as parts of an identifier, or mix in greek letters or other
     mathematical symbols. Though you can still easily typeset things like
     $\id{foo-$\alpha$}$, you'll have to mix in the math mode more
     explicitly (in this case, \verb|$\id{foo-$\alpha$}$|).
@@ -3555,8 +3575,8 @@ code, you can \emph{append} to it, using \code*{before upper app}:
 \end{texexp}
 You \emph{could} set \cs{topsep} and \cs{partopsep} in the same manner, but you
 could also just set those for pseudocode specifically, using the \pkg{pseudo}
-keys \refk{topsep} and \refk{partopsep} (perhaps as part of a style used in
-every float box, defined with \refc{pseudodefinestyle}).
+keys \refk{topsep} and \refk{partopsep}, perhaps as part of the
+\refk{every-float} style.
 
 \bigskip
 
@@ -4955,6 +4975,13 @@ the body, we define a macro:
     }
 }
 \end{source}
+To permit the styling specifically of \refe{pseudo} environments inside our
+boxes, we define and use a \pkg{pseudo} style that may overridden by the user:
+\begin{source}
+\pseudodefinestyle { every-float } {
+    % Initially empty
+}
+\end{source}
 We now define some \pkg{tcolorbox} box styles. Rather than importing
 \pkg{tcolorbox}, we just use its key management mechanism, \pkg{pgfkeys}, with
 the appropriate name\-space
@@ -4986,6 +5013,7 @@ appends code to \code*{before upper}. For example, one could change the
         \dim_set:Nn \topsep     { .2 \baselineskip }
         \dim_set:Nn \partopsep  { 0pt              }
         \dim_set:Nn \prevdepth  { .3 \baselineskip }
+        \pseudoset { every-float } % User hook
     },
 \end{source}
 At the end of the contents, we add some spacing, again for consistent vertical
