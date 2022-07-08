@@ -4994,6 +4994,7 @@ appends code to \code*{before upper}. For example, one could change the
         \dim_set:Nn \topsep     { .2 \baselineskip }
         \dim_set:Nn \partopsep  { 0pt              }
         \dim_set:Nn \prevdepth  { .3 \baselineskip }
+        \RestorePseudoEq           % Broken in floats
         \pseudoset { every-float } % User hook
     },
 \end{source}
