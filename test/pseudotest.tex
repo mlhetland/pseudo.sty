@@ -7,6 +7,10 @@
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,theorems}
 
+\usepackage{noindentafter}
+\NoIndentAfterEnv{pseudo}
+\NoIndentAfterEnv{pseudo*}
+
 \title{Tests for the \textsf{pseudo} package}
 \author{Magnus Lie Hetland}
 
@@ -71,7 +75,6 @@ The previous definition of \verb|\id| is: \id\\
     bar
 \end{pseudo}
 
-\noindent
 Should be \verb|\fn{test}[A]| followed by \verb|(B)| in normalfont:
 \fn{test}[A](B)
 
@@ -138,7 +141,6 @@ keyword \tn{normal} keyword \nf normal
 first line
 \end{pseudo}
 
-\noindent
 Reference to line~\ref{linetwo}.
 
 \begin{pseudo}[hpad=1cm, hsep=.1cm, indent-length=2cm, indent-level=1]
@@ -162,7 +164,6 @@ Here's a compact piece of pseudocode:
 print \st{42}
 \end{pseudo*}
 
-\noindent
 Automatically compact:
 \fbox{\begin{pseudo*}
 In a box.
@@ -182,7 +183,6 @@ apart
 custom topsep and partopsep
 \end{pseudo}
 
-\noindent
 Adjustments based on depth:
 
 \bigskip
@@ -259,7 +259,6 @@ x \\
 x
 \end{pseudo*}%
 
-\noindent
 x
 \end{minipage}%
 %
@@ -275,7 +274,6 @@ x \\
 x
 \end{pseudo*}%
 
-\noindent
 x
 \end{minipage}%
 %
@@ -291,7 +289,6 @@ x \\
 x
 \end{pseudo*}%
 
-\noindent
 A
 \end{minipage}%
 %
@@ -307,7 +304,6 @@ x \\
 x
 \end{pseudo*}%
 
-\noindent
 (x)
 \end{minipage}%
 %
@@ -323,7 +319,6 @@ x \\
 x
 \end{pseudo*}%
 
-\noindent
 \strut x
 \end{minipage}%
 }
@@ -347,8 +342,9 @@ tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
     Test: $f(x)$
 \end{tcolorbox}
 
-\noindent At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
-kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+\noindent
+At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
 \begin{tcolorbox}[pseudo/filled, float]
 Testing. $x\== y$.

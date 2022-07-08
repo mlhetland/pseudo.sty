@@ -18,8 +18,6 @@
     giveninits,doi=false,url=false,
     natbib,sortcites,hyperref]{biblatex}
 
-\usepackage{noindentafter}
-
 \renewcommand{\subtitlepunct}{\addcolon\addspace}
 \renewbibmacro{in:}{}
 \bibliography{pseudo}
@@ -70,8 +68,6 @@
         @{}},
     end-tabular=\endtabularx,
 }
-
-\usepackage{noindentafter}
 
 \usepackage{url}
 \usepackage{amsopn} % For \newmcodes@ example
@@ -419,6 +415,10 @@
     #1
 }
 \makeatother
+
+% Doesn't work:
+% \usepackage{noindentafter}
+% \NoIndentAfterEnv{source}
 
 \newtcbtheorem[
         number within = section,
@@ -2897,6 +2897,7 @@ indentation after \emph{all} instances of \refe{pseudo}, you could use the
 \begin{texexp}[listing only]
 \usepackage{noindentafter}
 \NoIndentAfterEnv{pseudo}
+\NoIndentAfterEnv{pseudo*}
 \end{texexp}
 
 \noindent
@@ -4386,7 +4387,6 @@ The preamble is laid out as described in \cref{sec:reference}:
         \tl_put_left:Nn \l_@@_setup_tl {#1}
     },
 \end{source}
-\noindent
 The preamble used for multicolumns is treated similarly:
 \label{p:hdpreamble}%
 \begin{source}
@@ -4726,7 +4726,6 @@ for use in the \refk{preamble}, together with \refc{pseudosavelabel} and
     \@@_indent:N { \g_@@_indent_level_int }
 }
 \end{source}
-\noindent
 The \refc{RestorePseudoBackslash} command simply redefines the row separator,
 and is used at the start of the \refe{pseudo} environment. It may be useful for
 the user if some other construct redefines \refc{\bslash} as well. (This is
