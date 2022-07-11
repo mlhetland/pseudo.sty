@@ -923,12 +923,15 @@ manually, you could use the \refk{bol} key, which inserts a command at the
 beginning of the line---or the \refk{hl} key, which is equivalent to
 \code*{\refk{bol-prepend} = \refc{pseudohl}}:
 
+{
+\pseudoset{hl-warn=false}%
 \begin{texexp}
 \begin{pseudo*}
 I'm not highlighted \\[hl]
 But I am!
 \end{pseudo*}
 \end{texexp}
+}
 %
 Initially, the \refc{pseudohl} command that is inserted is simply a
 \cs{rowcolor} that uses \refk{hl-color}, but you're free to redefine this
@@ -2554,6 +2557,7 @@ See also \refk{compact}.
     without the star or the \meta{overlay specification}, you need to supply
     at least an empty pair of brackets for the global options:
 \begin{texexp}
+\pseudoset{hpad} % because we're using hl
 \begin{pseudo}[][hl]
 First line \\
 Second line
