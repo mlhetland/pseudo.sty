@@ -21,7 +21,7 @@
 % SOFTWARE.
 %
 \def \pseudoversion {1.1.3}
-\def \pseudodate    {2022/07/08}
+\def \pseudodate    {2022/07/11}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -660,7 +660,7 @@ boxruled/.style = {
         \pseudoset { every-float }
     },
     after~upper = \__pseudo_prevdepth_adjustment:,
-    beforeafter~skip~balanced = 0.5 \baselineskip plus 2pt,
+    beforeafter~skip~balanced = \l__pseudo_topsep_tl,
     boxsep              = 0pt,
     toptitle            =   \belowrulesep,
     bottomtitle         =   \aboverulesep,

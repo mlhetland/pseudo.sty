@@ -5002,12 +5002,11 @@ alignment.
 \begin{source}
     after~upper = \@@_prevdepth_adjustment:,
 \end{source}
-Spacing before and after the box, when not used with \code{float}:\footnote{This
-setting is supposed to be the \pkg{tcolorbox} default; however, though in some
-versions, this default does not work (cf.\@
-\url{https://github.com/T-F-S/tcolorbox/issues/182}).}
+Now we add spacing before and after the box, when it's not used with
+the \code{float} key. We just mirror the spacing of the \refe{pseudo}
+environment (except without the support for \refk{partopsep}).
 \begin{source}
-    beforeafter~skip~balanced = 0.5 \baselineskip plus 2pt,
+    beforeafter~skip~balanced = \l_@@_topsep_tl,
 \end{source}
 Now we set up basic spacing for the contents. The spacing above and below the
 title is the same as for the top row of a \pkg{booktabs} tabular. For the
