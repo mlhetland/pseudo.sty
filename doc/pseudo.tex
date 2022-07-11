@@ -708,7 +708,8 @@ modified using \refk{indent-mark-color}:
 The default indent mark scales with the line height, which can be adjusted with
 \refk{line-height} and \refk{extra-space}, to avoid gaps in the vertical lines,
 and its width has no impact on the indentation. The width of the (default) mark
-can be set with \refk{indent-mark-width}:
+can be set with \refk{indent-mark-width}:\footnote{You can also shift the
+default mark inward by setting \refk{indent-mark-shift}.}
 \begin{texexp}
 \begin{pseudo}[
     indent-mark, indent-mark-width=3pt, line-height=1.5]
@@ -2148,8 +2149,6 @@ This is some text interrupting the code.
 \end{texexp}
 \end{docKey}
 
-\begin{docKey}{indent-mark}{\,=\,\meta{mark}}{default vertical line, initially
-    empty}
 \def\algoexample#1{%
 \begin{pseudo}[#1]
 \kw{repeat} $n-1$ times \\+
@@ -2161,7 +2160,8 @@ This is some text interrupting the code.
 \kw{return} \cn{true}
 \end{pseudo}
 }
-
+\begin{docKey}{indent-mark}{\,=\,\meta{mark}}{default vertical line, initially
+    empty}
 A mark used to indicate the start of each step of indentation. Any horizontal
 space taken up by this mark is added to the indentation; to prevent this, wrap
 the mark in \cs{rlap} (and, if necessary, in \cs{smash}, to handle
@@ -2177,18 +2177,31 @@ example uses the \refk{indent-mark} key with no argument:
 
 \algoexample{indent-mark}
 %
-This default mark may be configured by using \refk{indent-mark-color} and
-\refk{indent-mark-width}.
+This default mark may be configured by using the keys \refk{indent-mark-color},
+\refk{indent-mark-width} and \refk{indent-mark-shift}.
 \end{docKey}
 
 \begin{docKey}{indent-mark-color}{\,=\,\meta{color}}%
     {\initialkeyvalue{\codefont{lightgray}}}
-    Sets the color to be used by the default \refk{indent-mark}.
+    Sets the color to be used by the default \refk{indent-mark}. See
+    \refk{indent-mark-shift} for an example.
+\end{docKey}
+
+\begin{docKey}{indent-mark-shift}{\,=\,\meta{length}}{default \code{.5em},
+        initial value \code{0pt}}
+    Sets the horizontal shift (from the actual start of an indent step) at which
+    to render the default \refk{indent-mark}. The following example uses the
+    default value, and sets \refk{indent-mark-width} to \code{.4pt} and
+    \refk{indent-mark-color} to \code{black}, to approximate the look of the
+    indent mark in \pkg{algorithm2e}.
+\algoexample{indent-mark, indent-mark-shift, indent-mark-color=black,
+indent-mark-width=.4pt}
 \end{docKey}
 
 \begin{docKey}{indent-mark-width}{\,=\,\meta{width}}%
     {\initialkeyvalue{\codefont{.6pt}}}
-    Sets the width of the default \refk{indent-mark}.
+    Sets the width of the default \refk{indent-mark}. See
+    \refk{indent-mark-shift} for an example.
     %
     The default value of \code{.6pt} corresponds to the
     \pkg[https://ctan.org/pkg/pgf]{tikz} line width \code{semithick}.
@@ -4274,11 +4287,19 @@ The default \refk{indent-mark} is a vertical rule with width set by
 magnitude.
 \begin{source}
     indent-mark     .default:n      =
+        \skip_horizontal:n { \l_@@_indent_mark_shift_tl }
         \tex_vrule:D width \l_@@_indent_mark_wd_tl
-        \skip_horizontal:n {-\l_@@_indent_mark_wd_tl},
+        \skip_horizontal:n {
+            -\l_@@_indent_mark_wd_tl
+            -\l_@@_indent_mark_shift_tl
+        },
 
-    indent-mark-width  .tl_set:N    = \l_@@_indent_mark_wd_tl,
-    indent-mark-width  .initial:n   = \c_@@_semithick_dim,
+    indent-mark-width .tl_set:N     = \l_@@_indent_mark_wd_tl,
+    indent-mark-width .initial:n    = \c_@@_semithick_dim,
+
+    indent-mark-shift .tl_set:N     = \l_@@_indent_mark_shift_tl,
+    indent-mark-shift .initial:n    = 0pt,
+    indent-mark-shift .default:n    = .5em,
 
     indent-mark-color .tl_set:N     = \l_@@_indent_color_tl,
     indent-mark-color .initial:n    = lightgray,

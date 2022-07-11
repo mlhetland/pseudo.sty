@@ -300,10 +300,17 @@
     indent-mark     .tl_set:N       = \l__pseudo_indent_mark_tl,
     indent-mark     .initial:x      = \c_novalue_tl,
     indent-mark     .default:n      =
+        \skip_horizontal:n { \l__pseudo_indent_mark_shift_tl }
         \tex_vrule:D width \l__pseudo_indent_mark_wd_tl
-        \skip_horizontal:n {-\l__pseudo_indent_mark_wd_tl},
-    indent-mark-width  .tl_set:N    = \l__pseudo_indent_mark_wd_tl,
-    indent-mark-width  .initial:n   = \c__pseudo_semithick_dim,
+        \skip_horizontal:n {
+            -\l__pseudo_indent_mark_wd_tl
+            -\l__pseudo_indent_mark_shift_tl
+        },
+    indent-mark-width .tl_set:N     = \l__pseudo_indent_mark_wd_tl,
+    indent-mark-width .initial:n    = \c__pseudo_semithick_dim,
+    indent-mark-shift .tl_set:N     = \l__pseudo_indent_mark_shift_tl,
+    indent-mark-shift .initial:n    = 0pt,
+    indent-mark-shift .default:n    = .5em,
     indent-mark-color .tl_set:N     = \l__pseudo_indent_color_tl,
     indent-mark-color .initial:n    = lightgray,
     indent-level    .int_set:N      = \l__pseudo_initial_indent_level_int,
