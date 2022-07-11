@@ -1,4 +1,4 @@
-\documentclass[a4paper]{article}
+\documentclass{article}
 
 \usepackage[inline]{enumitem}
 
@@ -45,7 +45,7 @@
 \RequirePackage[hang,perpage,symbol*,bottom,stable]{footmisc}
 \renewcommand{\footnotemargin}{1em}
 
-\usepackage[pdfusetitle, hidelinks]{hyperref}
+\usepackage[pdfusetitle, hidelinks, bookmarks=false]{hyperref}
 \usepackage[xparse,
     breakable,
     hooks,
@@ -939,9 +939,11 @@ pseudocode aligned with the surrounding text. However, when using row
 highlighting (e.g., because you are stepping through the code in some
 presentation), that alignment may be less of an issue---and you'd rather widen
 the highlight a bit. The horizontal padding on each side is controlled by the
-\refk{hpad} key. You can either specify a length, or just turn on the default,
-by not supplying an argument. There's a similar option, \refk{hsep}, which
-controls the separation between the two columns.
+\refk{hpad} key.\footnote{In fact, if you use \refk{hl} without \refk{hpad},
+you'll get a warning. You can turn this warning off using \refk{hl-warn}, or by,
+e.g., setting \refk{hpad} to \code{0pt}.} You can either specify a length, or
+just turn on the default, by not supplying an argument. There's a similar
+option, \refk{hsep}, which controls the separation between the two columns.
 
 \begin{texexp}
 \begin{pseudo}[hpad, hsep=1em, indent-length=1em]
@@ -2042,18 +2044,27 @@ We're not in math mode, but the argument of \Ln[A] is.
 
 \begin{docKey}{hl}{}{\novaluekey}
     Prepends \refc{pseudohl} to \refk{bol}. Normally used with \pkg{beamer} (see
-    \cpageref{p:overlays}).
+    \cpageref{p:overlays}). Note that if if \refk{hpad} is set, a warning will
+    be emitted (unless this is overridden by \refk{hl-warn}).
 \end{docKey}
 
 \begin{docKey}{hl-color}{\,=\,\meta{color}}{\initialkeyvalue{\code{black!12}}}
     Sets the color used by \refc{pseudohl} (available as \cs{pseudohlcolor}).
 \end{docKey}
 
+\begin{docKey}{hl-warn}{\,=\,\meta{warn}}{default \code{true}, initial
+    value \code{true}}
+    Permits turns off (by setting \refk{hl-warn} to \code{false}) the warning
+    that is normally emitted if you use \refk{hl} without having used
+    \refk{hpad}.
+\end{docKey}
+
 \begin{docKey}{hpad}{\,=\,\meta{length}}%
     {default \code{0.3em}, initially \code{0em}}
     Horizontal padding on either side of the pseudocode. Useful, among other
     things when highlighting lines, to have some of the highlighting (i.e.,
-    row color) protrude beyond the text.
+    row color) protrude beyond the text. This key also sets \refk{hl-warn} to
+    \code{false}.
 \end{docKey}
 
 \begin{docKey}{hsep}{\,=\,\meta{length}}%
@@ -4223,9 +4234,15 @@ typesetting the pseudocode.
     font            .tl_set:N       = \pseudofont,
     font            .initial:n      = \normalfont,
 
-    hpad            .tl_set:N       = \l_@@_hpad_tl,
-    hpad            .initial:n      = 0.0em,
+    hpad            .meta:n         = {
+        hpad-val = { #1 },
+        hl-warn = false,
+    },
     hpad            .default:n      = 0.3em,
+
+    % For internal use:
+    hpad-val        .tl_set:N       = \l_@@_hpad_tl,
+    hpad-val        .initial:n      = 0.0em,
 
     hsep            .tl_set:N       = \l_@@_hsep_tl,
     hsep            .initial:n      = .75em,
@@ -4274,8 +4291,23 @@ magnitude.
     kw              .meta:n         = { font = \kwfont },
     kw              .value_forbidden:n = true,
 
-    hl              .meta:n         = { bol-prepend = \pseudohl },
+    hl-warn         .bool_set:N     = \l_@@_hl_warn_bool,
+    hl-warn         .initial:n      = true,
+    hl-warn         .default:n      = true,
+
+    % For internal use:
+    hl-warn-code    .code:n         = {
+        \bool_if:nT \l_@@_hl_warn_bool {
+            \msg_warning:nn { pseudo } { hl-without-hpad }
+        }
+    },
+
+    hl              .meta:n         = {
+        hl-warn-code,
+        bol-prepend = \pseudohl
+    },
     hl              .value_forbidden:n = true,
+
 
     bol             .tl_set:N       = \l_@@_bol_tl,
     bol-append      .code:n         = {
@@ -4393,7 +4425,7 @@ The preamble used for multicolumns is treated similarly:
     hd-preamble     .code:n         =
         \@@_def_col:nn{ \pseudohdpreamble }{#1},
     hd-preamble     .initial:n      = {
-        >{\pseudohpad} l <{\pseudohpad}
+        >{ \pseudohpad } l <{ \pseudohpad }
     },
 \end{source}
 The prefix is inserted by the row separator command.
@@ -5149,7 +5181,7 @@ And that ends the \pkg{tcolorbox} definitions:
 \end{source}
 
 
-\section{Deprecations}
+\section{Deprecations and warnings}
 
 Some commands are no longer intended for use, but are included for backward
 compatibility. These will issue a deprecation warning when used.
@@ -5173,6 +5205,12 @@ compatibility. These will issue a deprecation warning when used.
 \NewDocumentCommand \pseudoeq { } {
     \@@_use_instead:nn \pseudoeq \RestorePseudoEq
     \RestorePseudoEq
+}
+\end{source}
+Finally, we define a warning to issue if \refk{hl} is used without \refk{hpad}.
+\begin{source}
+\msg_new:nnn { pseudo } { hl-without-hpad } {
+    hl~used~without~hpad~\msg_line_context:.
 }
 \end{source}
 

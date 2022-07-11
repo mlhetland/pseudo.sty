@@ -275,9 +275,13 @@
 \keys_define:nn { pseudo } {
     font            .tl_set:N       = \pseudofont,
     font            .initial:n      = \normalfont,
-    hpad            .tl_set:N       = \l__pseudo_hpad_tl,
-    hpad            .initial:n      = 0.0em,
+    hpad            .meta:n         = {
+        hpad-val = { #1 },
+        hl-warn = false,
+    },
     hpad            .default:n      = 0.3em,
+    hpad-val        .tl_set:N       = \l__pseudo_hpad_tl,
+    hpad-val        .initial:n      = 0.0em,
     hsep            .tl_set:N       = \l__pseudo_hsep_tl,
     hsep            .initial:n      = .75em,
     left-margin     .tl_set:N       = \l__pseudo_left_margin_tl,
@@ -307,7 +311,18 @@
     kwfont          .initial:n      = \__pseudo_b_or_bx:,
     kw              .meta:n         = { font = \kwfont },
     kw              .value_forbidden:n = true,
-    hl              .meta:n         = { bol-prepend = \pseudohl },
+    hl-warn         .bool_set:N     = \l__pseudo_hl_warn_bool,
+    hl-warn         .initial:n      = true,
+    hl-warn         .default:n      = true,
+    hl-warn-code    .code:n         = {
+        \bool_if:nT \l__pseudo_hl_warn_bool {
+            \msg_warning:nn { pseudo } { hl-without-hpad }
+        }
+    },
+    hl              .meta:n         = {
+        hl-warn-code,
+        bol-prepend = \pseudohl
+    },
     hl              .value_forbidden:n = true,
     bol             .tl_set:N       = \l__pseudo_bol_tl,
     bol-append      .code:n         = {
@@ -384,7 +399,7 @@
     hd-preamble     .code:n         =
         \__pseudo_def_col:nn{ \pseudohdpreamble }{#1},
     hd-preamble     .initial:n      = {
-        >{\pseudohpad} l <{\pseudohpad}
+        >{ \pseudohpad } l <{ \pseudohpad }
     },
     prefix          .tl_set:N       = \pseudoprefix,
     prefix          .initial:n      = {
@@ -747,4 +762,7 @@ filled/.style = {
 \NewDocumentCommand \pseudoeq { } {
     \__pseudo_use_instead:nn \pseudoeq \RestorePseudoEq
     \RestorePseudoEq
+}
+\msg_new:nnn { pseudo } { hl-without-hpad } {
+    hl~used~without~hpad~\msg_line_context:.
 }
