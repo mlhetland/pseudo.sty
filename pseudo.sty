@@ -749,11 +749,11 @@ filled/.style = {
 }
 }
 \msg_new:nnn { pseudo } { useinstead } {
-    The~#1 command~is~deprecated; \\ use~#2 instead.
+    The~#1 command~(used~\msg_line_context:)~is~deprecated;~
+    use~#2 instead.
 }
 \cs_new:Npn \__pseudo_use_instead:nn #1 #2 {
     \msg_warning:nnnn { pseudo } { useinstead } { #1 } { #2 }
-    \tl_gset_eq:NN #1 #2
 }
 \NewDocumentCommand \pseudoslash { } {
     \__pseudo_use_instead:nn \pseudoslash \RestorePseudoBackslash

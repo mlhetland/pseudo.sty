@@ -5189,12 +5189,13 @@ compatibility. These will issue a deprecation warning when used.
 % Not sure why there should be no `~` after the parameters?
 \begin{source}
 \msg_new:nnn { pseudo } { useinstead } {
-    The~#1 command~is~deprecated; \\ use~#2 instead.
+    The~#1 command~(used~\msg_line_context:)~is~deprecated;~
+    use~#2 instead.
 }
 
 \cs_new:Npn \@@_use_instead:nn #1 #2 {
     \msg_warning:nnnn { pseudo } { useinstead } { #1 } { #2 }
-    \tl_gset_eq:NN #1 #2
+    % \tl_gset_eq:NN #1 #2
 }
 
 \NewDocumentCommand \pseudoslash { } {
