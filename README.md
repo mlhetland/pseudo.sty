@@ -97,6 +97,7 @@ Beyond the styling of text, there are also the `\==` and `\..` commands
 dots.
 
 This covers most of the core functionality, but there are also more obscure
-features (such as dimming or highlighting lines) and a host of configuration
-keys for getting the pseudocode looking more like you'd want it to. For
-details, consult [the documentation](doc/pseudo.pdf).
+features (such as dimming or highlighting lines), support for algorithm floats
+(and inline boxes) with customizable numbering and appearance, and a host of
+configuration keys for getting the pseudocode looking more like you'd want it
+to. For details, consult [the documentation](doc/pseudo.pdf).
