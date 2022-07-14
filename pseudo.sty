@@ -21,7 +21,7 @@
 % SOFTWARE.
 %
 \def \pseudoversion {1.1.3}
-\def \pseudodate    {2022/07/12}
+\def \pseudodate    {2022/07/14}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -496,13 +496,16 @@
         } {
             \bool_if:nTF {
                 \bool_lazy_and_p:nn
-                    { \l__pseudo_in_eol_bool      }
-                    { \tl_if_blank_p:n{ #1 } }
+                    { \l__pseudo_in_eol_bool       }
+                    { \tl_if_blank_p:n { #1 } }
             } {
-                \tl_set_rescan:Nno \l__pseudo_extra_space_tl { } { \l_keys_key_str }
+                \tl_set_rescan:Nno
+                    \l__pseudo_extra_space_tl { }
+                    { \l_keys_key_str  }
             } {
                 \msg_error:nnx
-                    { pseudo } { unknown-key } { \l_keys_path_str }
+                    { pseudo } { unknown-key }
+                    { \l_keys_path_str }
             }
         }
         \exp_args:NNNV
@@ -637,13 +640,13 @@
             \dim_set:Nn \prevdepth \l__pseudo_prevdepth_tl
     }
 }
-\pseudodefinestyle{starred}{
-    preamble={
+\pseudodefinestyle{ starred }{
+    preamble = {
         >{\pseudohpad\pseudoindent\pseudofont}
         l
         <{\pseudohpad}
     },
-    prefix={\pseudobol},
+    prefix = {\pseudobol},
 }
 \NewDocumentEnvironment { pseudo* } { +O{} } {
     \begin{pseudo}[starred, #1]
@@ -656,9 +659,9 @@
     \dim_const:Nn \heavyrulewidth     { .08em }
     \dim_const:Nn \lightrulewidth     { .05em }
 }
-\dim_const:Nn \c__pseudo_very_thin_dim  {0.2pt}
-\dim_const:Nn \c__pseudo_thin_dim       {0.4pt}
-\dim_const:Nn \c__pseudo_semithick_dim  {0.6pt}
+\dim_const:Nn \c__pseudo_very_thin_dim     { 0.2pt }
+\dim_const:Nn \c__pseudo_thin_dim          { 0.4pt }
+\dim_const:Nn \c__pseudo_semithick_dim     { 0.6pt }
 \cs_new:Npn \__pseudo_prevdepth_adjustment: {
     \par
     \dim_compare:nNnF \prevdepth < \c_zero_dim {
@@ -668,9 +671,13 @@
         }
     }
 }
-\pseudodefinestyle { every-float } {
+\pseudodefinestyle { in-float } {
 }
-\pgfqkeys {tcb/pseudo} {
+\tl_new:N \l__pseudo_float_init_tl
+\pgfqkeys { /tcb/pseudo } {
+    init/.code = {
+        \tl_set:Nn \l__pseudo_float_init_tl { #1 }
+    },
 boxruled/.style = {
     floatplacement = tbp,
     before~upper = {
@@ -679,7 +686,8 @@ boxruled/.style = {
         \dim_set:Nn \partopsep  { 0pt              }
         \dim_set:Nn \prevdepth  { .3 \baselineskip }
         \RestorePseudoEq
-        \pseudoset { every-float }
+        \pseudoset { in-float }
+        \l__pseudo_float_init_tl
     },
     after~upper = \__pseudo_prevdepth_adjustment:,
     beforeafter~skip~balanced = \l__pseudo_topsep_tl,
@@ -772,4 +780,76 @@ filled/.style = {
 }
 \msg_new:nnn { pseudo } { hl-without-hpad } {
     hl~used~without~hpad~\msg_line_context:.
+}
+\pgfkeysifdefined { /tcb/beforeafter~skip~balanced/.@cmd } { } {
+\pgfqkeys { /tcb } {
+    before~skip~balanced/.style = { before = {
+        \int_compare:nNnF { \lastnodetype } = { -1 } {
+            \par
+            \mode_if_vertical:T {
+                \__pseudo_if_minipage:
+                    \dim_compare:nNnTF \parskip > \c_zero_dim {
+                        \addvspace{ -\parskip }
+                    }
+                \else:
+                    \bool_lazy_or:nnTF {
+                        \dim_compare_p:nNn
+                            \prevdepth < \c_zero_dim
+                    } {
+                        \dim_compare_p:nNn
+                            \prevdepth > { .3 \baselineskip }
+                    } {
+                        \addvspace { \skip_eval:n {
+                            #1 - \parskip
+                        } }
+                    } {
+                        \addvspace { \skip_eval:n {
+                            #1 + .3 \baselineskip
+                            - \prevdepth - \parskip
+                        } }
+                    }
+                \fi:
+                \nointerlineskip
+            }
+        }
+        \dim_set_eq:NN \lineskip \c_zero_dim
+        \noindent
+    } },
+    after~skip~balanced/.style = { after = {
+        \par
+        \mode_if_vertical:T {
+            \dim_set:Nn \prevdepth { .3\baselineskip }
+            \addvspace { \skip_eval:n { #1 - \parskip } }
+        }
+    } },
+    beforeafter~skip~balanced/.style = {
+        before~skip~balanced = { #1 },
+        after~skip~balanced  = { #1 }
+    }
+}
+\RequirePackage{etoolbox}
+\AtEndPreamble {
+    \@ifpackageloaded { tcolorbox } {
+        \tl_set_eq:NN \__pseudo_orig_tcbopt \tcb@apply@box@options
+        \def \tcb@apply@box@options #1 {
+            \__pseudo_orig_tcbopt { #1 }
+            \tl_set_eq:NN \__pseudo_if_minipage: \if@minipage
+        }
+    } { }
+}
+}
+\AtEndPreamble {
+    \@ifpackageloaded { tcolorbox } {
+        \cs_new:Npn \__pseudo_vmaj:n #1 { \__pseudo_vmaj_aux:w #1 \q_stop }
+        \cs_new:Npn \__pseudo_vmaj_aux:w #1 . #2 \q_stop { #1 }
+        \tl_set:Nx \l_tmpa_tl { \exp_args:No \__pseudo_vmaj:n \tcb@version }
+        \int_compare:nNnT \l_tmpa_tl < 5 {
+            \tcbuselibrary { hooks }
+            \tcbset {
+                pseudo/boxruled/.append~style = {
+                    before~upper~app = \vspace { -\parskip }
+                }
+            }
+        }
+    }
 }

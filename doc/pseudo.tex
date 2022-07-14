@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[a4paper]{article}
 
 \usepackage[inline]{enumitem}
 
@@ -245,6 +245,14 @@
 \end{docKey}
 }
 
+\pgfqkeys {/tcb} {
+    listing/.style = {
+        listing only,
+        before skip balanced=8pt plus 2pt minus 2pt,
+        after app=\noindent
+    }
+}
+
 \lstdefinestyle{tcblatex}{language={[LaTeX]TeX},
     columns=fullflexible,
     keepspaces=true,
@@ -261,7 +269,6 @@
 
 \let\braces\brackets
 
-\makeatletter
 \DeclareTCBListing{texexp}{ !O{} }{
     empty,
     arc=0pt,
@@ -276,15 +283,15 @@
     },
     left=1.5em, % \parindent -- but that changes inside doc
     text above listing,
-    before app={\par\pagebreak[0]\medskip\parindent=0pt},
-    after app={\par\medskip\noindent},
+    before skip balanced=6pt plus 2pt minus 2pt,
+    after skip balanced=8pt plus 2pt minus 2pt,
+    after app=\noindent,
     % Because listings messes with the equals sign:
     before lower app={
         \RestorePseudoEq
     },
     #1
 }
-\makeatother
 
 \def\refc{\refCom*}
 \def\refe{\refEnv*}
@@ -410,8 +417,8 @@
     left=\parindent,
     top=0pt,
     bottom=0pt,
-    beforeafter skip balanced = 12pt plus 4pt minus 4pt, % bigskip
-    after app={\noindent},
+    beforeafter skip balanced=\bigskipamount,
+    after app=\noindent,
     #1
 }
 \makeatother
@@ -516,7 +523,7 @@ command and its relatives (as well as most other functionality) are discussed in
 are found in \cref{sec:impl}.} The input and output descriptions are aligned
 using \cs{tab} from the \pkg{tabto} package (cf.\@ \cref{sec:tabstops}).
 
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 % In document preamble:
 % \usepackage{tabto}
 % \TabPositions{1.5cm}
@@ -603,12 +610,12 @@ else (e.g., when submitting to some publisher with a custom setup), feel free to
 \href{https://github.com/mlhetland/pseudo.sty/pulls}{provide a pull request}
 with a fix. One thing to look out for is that older versions of \pkg{xparse}
 parse arguments differently, so things like
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 foo\\<1>
 bar\\[hl]
 \end{texexp}
 would work, but separating the arguments with spaces, as in
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 foo\\ <1>
 bar\\ [hl]
 \end{texexp}
@@ -979,7 +986,7 @@ you're free to put the specification in front of the line in question:
 \includegraphics[page=3]{hilitefig.pdf}\hfill
 \includegraphics[page=4]{hilitefig.pdf}
 
-\medskip
+\vspace{-4pt}
 
 % ! Copied from Beamer file
 \begin{texexp}[listing only]
@@ -1013,7 +1020,8 @@ purpose (equivalent to \code*{\refk{eol-append} = \cs{pause}}):
 \includegraphics[page=3]{pausefig.pdf}\hfill
 \includegraphics[page=4]{pausefig.pdf}
 
-\medskip
+\vspace{-4pt}
+
 % ! Copied from Beamer file
 \begin{texexp}[listing only]
 % In a beamer presentation
@@ -1091,7 +1099,7 @@ most recent version of their textbook~\citep{Cormen:2022}.
 \textb{Note:} For performance reasons, \pkg{pseudo} does \emph{not}
 automatically import \pkg{tcolorbox}; if you want to use the float
 functionality, you will need to import \pkg{tcolorbox} yourself:
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 \usepackage{pseudo}
 % ...
 \usepackage{tcolorbox}          % possibly with options
@@ -1146,7 +1154,7 @@ environments, possiby with additional \pkg{tcolorbox} options for customization:
 \end{texexp}
 }%
 Beyond the boxes themselves, you can customize the pseudocode inside them
-(separately from pseudocode elsewhere) by defining the \refk{every-float} style
+(separately from pseudocode elsewhere) by defining the \refk{in-float} style
 with \refc{pseudodefinestyle}.
 
 You can also create new environments with \cs{newtcolorbox},\footnote{See the
@@ -1155,7 +1163,7 @@ probably be to define a (possibly floating) theorem-style environment, using
 \cs{newtcbtheorem} (probably in the preamble):
 
 \label{p:pseudo-ruled-def}
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 \newtcbtheorem{algorithm}{Algorithm}{pseudo/ruled}{alg}
 \end{texexp}
 
@@ -1167,7 +1175,7 @@ that will be used in automatically labeling our boxes.
 
 If you want a \emph{floating} box (like figures and tables, for example), simply
 add the key \code{float} alongside the box style, such as:
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 \newtcbtheorem{algorithm}{Algorithm}{pseudo/ruled, float}{alg}
 \end{texexp}
 %
@@ -1181,7 +1189,7 @@ command in the preamble, and not in the document body, for the naming to take
 effect.}
 %
 % Actual definition in preamble (so crefname works)
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 \newtcbtheorem[
         number within = section,
         crefname = {Algorithm}{algorithms}
@@ -1270,7 +1278,7 @@ body, containing the pseudocode itself:
 It is possible to add titles using the \code{title} key, but then the definition
 must be expanded slightly, to permit arguments, e.g.:
 
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 \newtcolorbox{pseudobox}[1][]{pseudo/filled, #1}
 \end{texexp}
 \newtcolorbox{pseudobox}[1][]{pseudo/filled, #1}% For later use
@@ -1584,7 +1592,7 @@ alphabetical order), you'll find definitions of a couple of counters here
     the command versions \cs{tabularx} and \cs{endtabularx} should be used.
     Commands such as \refc{pseudopos} and \refc{pseudopreamble} may be used as
     part of the setup:
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 \pseudoset{
     begin-tabular =
         \tabularx{\linewidth}[\pseudopos]{\pseudopreamble},
@@ -1811,7 +1819,7 @@ $x = y$ \qquad \Imp
 
 \begin{docKey}{dim}{}{}
     Dims the following line. Equivalent to:
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 \pseudodefinestyle{dim}{
     bol-append   = \color{\pseudodimcolor},
     setup-append = \color{\pseudodimcolor}
@@ -1889,16 +1897,15 @@ See also \refk{bol-append}, \refk{setup-append} and \refk{dim-color}.
     The amount of space inserted between the two \code{=} signs in \cs{eqs}.
 \end{docKey}
 
-\begin{docKey}{every-float}{}{\pkg{pseudo} style}
+\begin{docKey}{in-float}{}{\pkg{pseudo} style}
     This is a style, defined using \refc{pseudodefinestyle}, that is applied to
-    the contents of every \code{tcolorbox} styled using the \code{pseudo/\dots}
+    the contents of every \code{tcolorbox} styled using the \code{pseudo/}
     styles, such as \refk{pseudo/boxed}, \refk{pseudo/ruled}, etc. (Despite the
     name, it is not limited to boxes defined with the \code{float} key.) The
-    style is initially empty, and acts as a hook for user customization:
+    style is initially empty, and acts as a hook for user customization (similar
+    to \refk{pseudo/init}, but specifically for \pkg{pseudo} configuration):
     \begin{texexp}
-    \pseudodefinestyle{every-float}{
-        kwfont = \sffamily
-    }
+    \pseudodefinestyle{in-float}{kwfont = \sffamily}
     \kw{not modified}
     \begin{tcolorbox}[pseudo/filled]
         \kw{modified}
@@ -2165,10 +2172,12 @@ This is some text interrupting the code.
 }
 \begin{docKey}{indent-mark}{\,=\,\meta{mark}}{default vertical line, initially
     empty}
-A mark used to indicate the start of each step of indentation. Any horizontal
-space taken up by this mark is added to the indentation; to prevent this, wrap
-the mark in \cs{rlap} (and, if necessary, in \cs{smash}, to handle
-\emph{vertical} space). The following example uses
+A mark used to indicate the start of each step of indentation.\footnote{Similar
+to \code{c:indentLine\_char} in the vim plugin
+\pkg[https://github.com/Yggdroot/indentLine]{indentLine}.}
+Any horizontal space taken up by this mark is added to the indentation; to
+prevent this, wrap the mark in \cs{rlap} (and, if necessary, in \cs{smash}, to
+handle \emph{vertical} space). The following example uses
 \verb|indent-mark=\rlap{$\cdot$}|:
 
 \algoexample{indent-mark=\rlap{$\cdot$}}
@@ -2600,6 +2609,26 @@ Second line
 \tcolorboxstylenosource{booktabs}
 \tcolorboxstylenosource{boxruled}
 \tcolorboxstylenosource{filled}
+
+\begin{docKey}{pseudo/init}{\,=\,\meta{commands}}{\pkg{tcolorbox} hook}
+    Can be used to define the contents of a hook that is inserted before the
+    contents of a \pkg{tcolorbox} box styled with one of the \code{pseudo/}
+    styles, such as \refk{pseudo/boxruled}, etc. It is used as part of the
+    \pkg{tcolorbox} configuration, and is \emph{not} set using \cs{pseudoset}.
+    Useful, e.g., for setting \cs{parskip} or tabstops (with the \pkg{tabto}
+    package).
+\begin{texexp}
+\begin{tcolorbox}[pseudo/boxed, pseudo/init=\parskip 2ex]
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
+diam nonumy eirmod tempor invidunt ut labore et dolore magna.
+
+At vero eos et accusam et justo duo dolores et ea rebum. Stet
+clita kasd gubergren, no sea takimata sanctus est Lorem ipsum
+dolor sit amet.
+\end{tcolorbox}
+\end{texexp}
+\end{docKey}
+
 \tcolorboxstylenosource{ruled}
 \tcolorboxstylenosource{tworuled}
 
@@ -2899,7 +2928,7 @@ could have it not start its own, i.e., not have an empty line before it. This
 will reduce the amount of spacing as well; if you'd rather have that reduced,
 you could simply drop the empty line \emph{after} the environment:
 
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 Text before
 
 \begin{pseudo}
@@ -2922,7 +2951,7 @@ indentation after \emph{all} instances of \refe{pseudo}, you could use the
 
 \medskip
 
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 \usepackage{noindentafter}
 \NoIndentAfterEnv{pseudo}
 \NoIndentAfterEnv{pseudo*}
@@ -3132,14 +3161,16 @@ the paragraph spacing set up by the \pkg{tcolorbox} styles defined by
 \pkg{pseudo}.
 
 You can simply define the tab stops globally, using \cs{TabPositions} in your
-preamble, or you can do it as part of the box setup, e.g.,. using \code*{before
-upper app = \cs{TabPositions}\braces{1.5cm}} when defining your \pkg{tcolorbox}
-environment with \cs{newtcbtheorem} (or, as in the following simplified example,
+preamble, or you can do it as part of the box setup, e.g.,. using
+\refk{pseudo/init} when defining your \pkg{tcolorbox} environment with
+\cs{newtcbtheorem} (or, as in the following simplified example,
 just supply it directly as an option to the box environment).
 
 \begin{texexp}
+% In document preamble:
+% \usepackage{tabto}
 \begin{tcolorbox}[pseudo/filled,
-    before upper app={\TabPositions{1.5cm}}]
+    pseudo/init = {\TabPositions{1.5cm}}]
 
 \textbf{Data}
     \tab A graph $G=(V,E)$ with weight function $w:E\to\mathbf{R}$
@@ -3252,7 +3283,7 @@ extent of a tabular row:
     \ignorespaces
 }
 \makeatother
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 % \usepackage{xparse,tikz}
 % \usetikzlibrary{decorations.pathreplacing,calligraphy}
 \makeatletter
@@ -3269,7 +3300,7 @@ You can then use the resulting nodes to draw braces or lines or whatever. First
 some example setup:
 
 % ! Duplicated
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 \pseudoset{
     kw,
     indent-length = 3.5em,
@@ -3340,7 +3371,7 @@ to include those in your document. Then you can submit the PDFs rather than the
 \LaTeX, so that the pseudocode need not be compiled on the old system. Each
 algorithm could go in a file like this:
 
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 \documentclass{standalone}
 \usepackage{pseudo}
 \begin{document}
@@ -3353,7 +3384,7 @@ algorithm could go in a file like this:
 \noindent
 Let's say this is compiled to \codefont{algo1.pdf}. You then include this file:
 
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 \documentclass{article}
 \usepackage{graphicx} % For \includegraphics
 ...
@@ -3411,7 +3442,7 @@ follows:
 
 % Duplicated:
 \newtcbtheorem{procedure}{Procedure}{pseudo/filled}{}
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 \newtcbtheorem{procedure}{Procedure}{pseudo/filled}{}
 \end{texexp}
 
@@ -3453,7 +3484,7 @@ some other float (such as a normal \LaTeX\@ \code{figure}, or a custom one using
 the \pkg[https://ctan.org/tex-archive/macros/latex/contrib/float]{float}
 package):
 
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 \begin{figure}
 \begin{procedure}[nofloat, after={}, width=.49\linewidth,
     equal height group=A]{}{}
@@ -3515,7 +3546,7 @@ One disadvantage of the \code{p} column is that you need to know its exact
 width. A better solution is probably to replace the default \code{tabular} with
 a \code{tabularx}, as discussed in \cref{sec:tabularx}, and use an \code{X}
 column, i.e.:
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
     begin-tabular = \tabularx{\linewidth}[t]{
         >{\pseudohpad} \pseudolabelalign
         >{\pseudosetup} X <{\pseudohpad}
@@ -3553,7 +3584,7 @@ documentation for more about \cs{newtcbtheorem}.}
 
 % Duplicated:
 \newtcbtheorem{example}{Example}{}{}
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 \newtcbtheorem{example}{Example}{}{}
 \end{texexp}
 
@@ -3570,20 +3601,27 @@ using the \code*{separator sign} key:
 \paragraph{A different parskip.} You might want more or less spacing between the
 paragraphs of any plain text outside your pseudocode. You do this by setting
 \cs{parskip}, which is normally set as part of the \code*{before upper} key in
-the \code{pseudo/\dots} styles. Rather than overwrite the \code*{before upper}
-code, you can \emph{append} to it, using \code*{before upper app}:
+the \code{pseudo/\dots} styles (see p.~\ref{p:before-upper}). Rather than
+overwrite the \code*{before upper} code, you can use the hook \refk{pseudo/init}
+(set as part of the \pkg{tcolorbox} configuration, not using \cs{pseudoset}):%
+\footnote{It is possible to use the \pkg{tcolorbox} key \code*{before upper app}
+(together with the \pkg{tcolorbox} library \code{hooks}) instead of
+\refk{pseudo/init}. However, the compatibility code (\cref{sec:compat}) appends
+some spacing to this setup hook, and this may be messed up by inserting more
+code after it. In this case, \refk{pseudo/init} is safer.}
 \begin{texexp}
 \begin{example}[pseudo/boxed,
-    before upper app = \parskip\baselineskip]{\dots}{}
+    pseudo/init = \parskip\baselineskip]{\dots}{}
     The parskip
 
     is bigger!
 \end{example}
 \end{texexp}
-You \emph{could} set \cs{topsep} and \cs{partopsep} in the same manner, but you
-could also just set those for pseudocode specifically, using the \pkg{pseudo}
-keys \refk{topsep} and \refk{partopsep}, perhaps as part of the
-\refk{every-float} style.
+You \emph{could} set \cs{topsep} and \cs{partopsep} in the same manner, but
+unless you want to change the settings for lists (such as \code{itemize} and
+\code{enumerate}), you could also just set those for pseudocode specifically,
+using the \pkg{pseudo} keys \refk{topsep} and \refk{partopsep}, perhaps as part
+of the \refk{in-float} style.
 
 \bigskip
 
@@ -4627,22 +4665,26 @@ value, and use it as extra space. If this, too, fails, we emit an error message.
 \begin{source}
             \bool_if:nTF {
                 \bool_lazy_and_p:nn
-                    { \l_@@_in_eol_bool      }
-                    { \tl_if_blank_p:n{ #1 } }
+                    { \l_@@_in_eol_bool       }
+                    { \tl_if_blank_p:n { #1 } }
             } {
-                \tl_set_rescan:Nno \l_@@_extra_space_tl { } { \l_keys_key_str }
+                \tl_set_rescan:Nno
+                    \l_@@_extra_space_tl { }
+                    { \l_keys_key_str  }
             } {
                 \msg_error:nnx
-                    { pseudo } { unknown-key } { \l_keys_path_str }
+                    { pseudo } { unknown-key }
+                    { \l_keys_path_str }
             }
         }
 
-        % Make sure any extra space carries over outside the group:
+        % Make sure extra space carries over outside the group:
         \exp_args:NNNV
             \group_end:
             \tl_set:Nn \l_@@_extra_space_tl \l_@@_extra_space_tl
 
     }
+
 }
 \end{source}
 %
@@ -4881,7 +4923,7 @@ We use \cs{noalign} to be able to place these definitions inside the tabular,
 without messing up \cs{multicolumn} or \cs{hline} or the like. It's not really
 supposed to be used in \pkg{expl3}; the alternative would be to create an extra
 dummy line, like:
-\begin{texexp}[listing only]
+\begin{texexp}[listing]
 \skip_vertical:n{ -\dim_eval:n{ \box_ht:N \@arstrutbox +
                                 \box_dp:N \@arstrutbox } }
 \tabularnewline
@@ -4950,13 +4992,13 @@ The starred version of the environment is just a wrapper that uses the custom
 (and overridable) \code{starred} style:
 \label{p:starred}%
 \begin{source}
-\pseudodefinestyle{starred}{
-    preamble={
+\pseudodefinestyle{ starred }{
+    preamble = {
         >{\pseudohpad\pseudoindent\pseudofont}
         l
         <{\pseudohpad}
     },
-    prefix={\pseudobol},
+    prefix = {\pseudobol},
 }
 
 \NewDocumentEnvironment { pseudo* } { +O{} } {
@@ -4992,9 +5034,9 @@ We also define some line widths based on those used by
 % very thick   1.2pt
 % ultra thick  1.6pt
 \begin{source}
-\dim_const:Nn \c_@@_very_thin_dim  {0.2pt}
-\dim_const:Nn \c_@@_thin_dim       {0.4pt}
-\dim_const:Nn \c_@@_semithick_dim  {0.6pt}
+\dim_const:Nn \c_@@_very_thin_dim     { 0.2pt }
+\dim_const:Nn \c_@@_thin_dim          { 0.4pt }
+\dim_const:Nn \c_@@_semithick_dim     { 0.6pt }
 \end{source}
 We'll be adjusting the spacing after the contents based on the value of
 \cs{prevdepth}. If \cs{prevdepth} is negative, this is suppressed. Otherwise, we
@@ -5013,19 +5055,27 @@ the body, we define a macro:
 }
 \end{source}
 To permit the styling specifically of \refe{pseudo} environments inside our
-boxes, we define and use a \pkg{pseudo} style that may overridden by the user:
+boxes, we define and use a \pkg{pseudo} style, and a hook (token list) that may
+overridden by the user:
 \begin{source}
-\pseudodefinestyle { every-float } {
+\pseudodefinestyle { in-float } {
     % Initially empty
 }
+\tl_new:N \l_@@_float_init_tl
 \end{source}
 We now define some \pkg{tcolorbox} box styles. Rather than importing
 \pkg{tcolorbox}, we just use its key management mechanism, \pkg{pgfkeys}, with
-the appropriate name\-space
+the appropriate name\-space.
 \begin{source}
-\pgfqkeys {tcb/pseudo} {
+\pgfqkeys { /tcb/pseudo } {
 \end{source}
-The first style (\refk{pseudo/boxruled}) is the basis for the others.
+We begin by defining our hook \refk{pseudo/init}.
+\begin{source}
+    init/.code = {
+        \tl_set:Nn \l_@@_float_init_tl { #1 }
+    },
+\end{source}
+The first box style (\refk{pseudo/boxruled}) is the basis for the others.
 \begin{source}
 boxruled/.style = {
 \end{source}
@@ -5043,15 +5093,17 @@ appends code to \code*{before upper}. For example, one could change the
 \cs{topsep} by using \code*{before upper app =
 \braces{\cs{topsep}10pt}}.\footnote{While you might want to modify \cs{parskip},
 \cs{topsep} or \cs{partopsep}, there's probably no need to change
-\cs{prevdepth}.}
+\cs{prevdepth}.}%
+\label{p:before-upper}
 \begin{source}
     before~upper = {
         \dim_set:Nn \parskip    { .3 \baselineskip }
         \dim_set:Nn \topsep     { .2 \baselineskip }
         \dim_set:Nn \partopsep  { 0pt              }
         \dim_set:Nn \prevdepth  { .3 \baselineskip }
-        \RestorePseudoEq           % Broken in floats
-        \pseudoset { every-float } % User hook
+        \RestorePseudoEq            % Broken in floats
+        \pseudoset { in-float }     % User hook (style)
+        \l_@@_float_init_tl         % User hook (code)
     },
 \end{source}
 At the end of the contents, we add some spacing, again for consistent vertical
@@ -5237,6 +5289,118 @@ Finally, we define a warning to issue if \refk{hl} is used without \refk{hpad}.
 \begin{source}
 \msg_new:nnn { pseudo } { hl-without-hpad } {
     hl~used~without~hpad~\msg_line_context:.
+}
+\end{source}
+
+
+\section{Compatibility}
+\label{sec:compat}
+
+If the box and float functionality is used with a version of \pkg{tcolorbox}
+prior to~4.40 (e.g., on \url{https://arxiv.org}, at the time of writing), the
+\code*{beforeafter skip balanced} option won't be defined
+\begin{source}
+\pgfkeysifdefined { /tcb/beforeafter~skip~balanced/.@cmd } { } {
+\end{source}
+To handle this, at least for the time being, \pkg{pseudo} implements a fallback
+version of this option.
+\begin{source}
+\pgfqkeys { /tcb } {
+    before~skip~balanced/.style = { before = {
+        \int_compare:nNnF { \lastnodetype } = { -1 } {
+            \par
+            \mode_if_vertical:T {
+                \@@_if_minipage:
+                    \dim_compare:nNnTF \parskip > \c_zero_dim {
+                        \addvspace{ -\parskip }
+                    }
+                \else:
+                    \bool_lazy_or:nnTF {
+                        \dim_compare_p:nNn
+                            \prevdepth < \c_zero_dim
+                    } {
+                        \dim_compare_p:nNn
+                            \prevdepth > { .3 \baselineskip }
+                    } {
+                        \addvspace { \skip_eval:n {
+                            #1 - \parskip
+                        } }
+                    } {
+                        \addvspace { \skip_eval:n {
+                            #1 + .3 \baselineskip
+                            - \prevdepth - \parskip
+                        } }
+                    }
+                \fi:
+                \nointerlineskip
+            }
+        }
+        \dim_set_eq:NN \lineskip \c_zero_dim
+        \noindent
+    } },
+    after~skip~balanced/.style = { after = {
+        \par
+        \mode_if_vertical:T {
+            \dim_set:Nn \prevdepth { .3\baselineskip }
+            \addvspace { \skip_eval:n { #1 - \parskip } }
+        }
+    } },
+    beforeafter~skip~balanced/.style = {
+        before~skip~balanced = { #1 },
+        after~skip~balanced  = { #1 }
+    }
+}
+\end{source}
+We need to know if the box is in a \code{minipage}, and this is normally
+detected as part of \cs{tcb@apply@box@options}. We override that macro (if
+\pkg{tcolorbox} has been loaded by the time we reach the end of the preamble) to
+insert the approproate definition.
+\begin{source}
+\RequirePackage{etoolbox}
+
+\AtEndPreamble {
+    \@ifpackageloaded { tcolorbox } {
+        \tl_set_eq:NN \@@_orig_tcbopt \tcb@apply@box@options
+        \def \tcb@apply@box@options #1 {
+            \@@_orig_tcbopt { #1 }
+            \tl_set_eq:NN \@@_if_minipage: \if@minipage
+        }
+    } { }
+}
+\end{source}
+End of \cs{pgfkeysifdefined}:
+\begin{source}
+}
+\end{source}
+In older version of \pkg{tcolorbox}, we end up with extra space at the top of
+the box contents. The simple solution here it so simply add \code{-\cs{parskip}}
+of vertical space. This doesn't really do much harm, but it is redundant with
+newer versions, and it does interfere with the use of \code*{before upper app},
+for example. Therefore, we only add this spacing in older versions (for
+simplicity, just going with 4.x and older). We do this at the end of the
+preamble, and only if \pkg{tcolorbox} has actually been loaded at that point.
+\begin{source}
+\AtEndPreamble {
+    \@ifpackageloaded { tcolorbox } {
+
+        \cs_new:Npn \@@_vmaj:n #1 { \@@_vmaj_aux:w #1 \q_stop }
+        \cs_new:Npn \@@_vmaj_aux:w #1 . #2 \q_stop { #1 }
+
+        \tl_set:Nx \l_tmpa_tl { \exp_args:No \@@_vmaj:n \tcb@version }
+
+        \int_compare:nNnT \l_tmpa_tl < 5 {
+
+            \tcbuselibrary { hooks }
+            \tcbset {
+                pseudo/boxruled/.append~style = {
+                    before~upper~app = \vspace { -\parskip }
+                }
+            }
+
+        }
+
+    }
+
 }
 \end{source}
 
