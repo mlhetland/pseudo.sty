@@ -3806,9 +3806,10 @@ variants we'll need of some standard commands. (I'm using the
 \verb|\q_no_value| machinery rather than \verb|\c_novalue_tl| for
 compatibility with older \TeX\ distributions.)
 \begin{source}
-\cs_generate_variant:Nn \quark_if_no_value:nTF    { VTF   }
-\cs_generate_variant:Nn \tl_if_novalue:nTF        { VTF   }
-\cs_generate_variant:Nn \tl_set:Nn                { Ne    }
+\cs_generate_variant:Nn \quark_if_no_value:nTF    { VTF    }
+\cs_generate_variant:Nn \tl_if_novalue:nTF        { VTF    }
+\cs_generate_variant:Nn \tl_set:Nn                { Ne     }
+\exp_args_generate:n                              { NNVNNV }
 \end{source}
 \paragraph{Defining columns.} The \refk{preamble} is is configurable, but the
 \pkg{array} package makes sure it doesn't expand any part of its preamble. One
@@ -4591,10 +4592,12 @@ latter of the two really shouldn't.\footnote{See
 \begin{source}
 \cs_new:Npn \@@_keys_set_overlay:nnn #1 #2 #3 {
     \bool_if:NT \c_@@_beamer_bool {
-        \only<#1>{ \keys_set:nn { #2 } { #3 } }
+        \tl_if_novalue:nF { #1 } {
+            \only<#1>{ \keys_set:nn { #2 } { #3 } }
+        }
     }
 }
-\cs_generate_variant:Nn \@@_keys_set_overlay:nnn  { VnV }
+
 \msg_new:nnn { pseudo } { unknown-key } {
     Unknown~key~'#1'~ignored.
 }
@@ -4605,6 +4608,12 @@ latter of the two really shouldn't.\footnote{See
     unknown .code:n = {
 
         \group_begin:
+
+        \int_zero:N \l_tmpa_int
+        \int_zero:N \l_tmpb_int
+
+        \tl_clear:N \l_tmpa_tl
+        \tl_clear:N \l_tmpb_tl
 
         \tl_map_inline:Nn \l_keys_key_tl {
 
@@ -4652,8 +4661,16 @@ specification.
             \tl_if_blank:nF{ #1 } {
                 \tl_put_right:Nn \l_tmpb_tl {= #1}
             }
-            \@@_keys_set_overlay:VnV
-                \l_@@_overlay_tl { pseudo } \l_tmpb_tl
+\end{source}
+Rather than setting the keys here, inside a group, we put the code into a
+variable that we'll expand outside the group, later:
+\begin{source}
+            \tl_set:Nn \l_tmpa_tl {
+                \@@_keys_set_overlay:nnn
+            }
+            \tl_put_right:NV \l_tmpa_tl \l_@@_overlay_tl
+            \tl_put_right:Nn \l_tmpa_tl { { pseudo     } }
+            \tl_put_right:Nx \l_tmpa_tl { { \l_tmpb_tl } }
         } {
 \end{source}
 We have \emph{not} matched an overlay specification, so we just have an unknown
@@ -4662,7 +4679,10 @@ arguments to \refc{\bslash}, we also permit a keyless value to be used to
 specify extra space (normally done using \refk{extra-space}). If the unknown
 key doesn't have an attached (non-blank) value, we treat the key itself as a
 value, and use it as extra space. If this, too, fails, we emit an error message.
+Note that we'll also make sure the variable with the key-setting code is
+empty.
 \begin{source}
+            \tl_clear:N \l_tmpa_tl
             \bool_if:nTF {
                 \bool_lazy_and_p:nn
                     { \l_@@_in_eol_bool       }
@@ -4678,10 +4698,15 @@ value, and use it as extra space. If this, too, fails, we emit an error message.
             }
         }
 
-        % Make sure extra space carries over outside the group:
-        \exp_args:NNNV
+        % Make sure extra space and key-setting carry over
+        % outside the group:
+        \exp_args:NNNVNNV
             \group_end:
             \tl_set:Nn \l_@@_extra_space_tl \l_@@_extra_space_tl
+            \tl_set:Nn \l_tmpa_tl           \l_tmpa_tl
+
+        % Run the key-setting code with overlay specification:
+        \l_tmpa_tl
 
     }
 
