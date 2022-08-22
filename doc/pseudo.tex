@@ -4668,9 +4668,9 @@ variable that we'll expand outside the group, later:
             \tl_set:Nn \l_tmpa_tl {
                 \@@_keys_set_overlay:nnn
             }
-            \tl_put_right:NV \l_tmpa_tl \l_@@_overlay_tl
-            \tl_put_right:Nn \l_tmpa_tl { { pseudo     } }
-            \tl_put_right:Nx \l_tmpa_tl { { \l_tmpb_tl } }
+            \tl_put_right:Nx \l_tmpa_tl { { \l_@@_overlay_tl } }
+            \tl_put_right:Nn \l_tmpa_tl { { pseudo           } }
+            \tl_put_right:Nx \l_tmpa_tl { { \l_tmpb_tl       } }
         } {
 \end{source}
 We have \emph{not} matched an overlay specification, so we just have an unknown
