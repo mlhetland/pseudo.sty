@@ -4788,8 +4788,8 @@ and clamp the indent level to non-negative values:
 %
 \paragraph{The actual row separator.} The command consists of a few
 interacting macros. The implementation of \refc{\bslash} is
-\verb|@@_eol:|, but that is just a thin wrapper that counts pluses and
-minuses, before handing the control over to \verb|@@_eol_tail|. This is where
+\verb|\@@_eol:|, but that is just a thin wrapper that counts pluses and
+minuses, before handing the control over to \verb|\@@_eol_tail|. This is where
 the remaining argument parsing takes place, and the \cs{tabularnewline} is
 inserted, after which control is passed to \verb|\@@_bol:| in order to begin a
 new line---unless we're at the end of the environment.
