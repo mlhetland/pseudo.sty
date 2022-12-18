@@ -1,4 +1,18 @@
-\documentclass[a4paper]{article}
+\documentclass[a4paper]{book}
+
+% Using geometry.sty to have equal margins, despite twoside option. It will
+% normally change the margins quite a bit; the following produces something
+% close to normal LaTeX layout -- it just increases \topmargin by 2pt:
+\usepackage[textwidth=345pt,textheight=598pt,centering]{geometry}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\enskip#1}}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[LO]{\textit{\rightmark}}
+\fancyhead[RE]{\textit{\leftmark}}
 
 \usepackage[inline]{enumitem}
 
@@ -135,6 +149,11 @@
             { \s+ }{ \c{textnormal}\cB\{ \0 \cE\} } \l_tmpa_tl
     }
     \codefont{ \l_tmpa_tl }
+}
+
+% https://tex.stackexchange.com/a/44362/18003
+\DeclareTextFontCommand \hyphencodefont {
+    \ttfamily \hyphenchar \font=45 \relax
 }
 
 \ExplSyntaxOff
@@ -360,9 +379,13 @@
 
 }
 
+
 \NewDocumentCommand \Abstract { } {
 
-    \begin{abstract}
+    % \begin{abstract}
+    \cleardoublepage
+    \null
+    \vfill
 
     \ior_open:Nn \g_tmpa_ior {README.md}
 
@@ -394,14 +417,18 @@
 
     \regex_replace_all:nnN
         {` ( \w+ ) `}
-        { \c{code} \cB{ \1 \cE} } \g_tmpa_tl
+        { \c{hyphencodefont} \cB{ \1 \cE} } \g_tmpa_tl
+    %   { \c{code} \cB{ \1 \cE} } \g_tmpa_tl
 
     \noindent
     \tl_use:N \g_tmpa_tl
 
     \ior_close:N \g_tmpa_ior
 
-    \end{abstract}
+    % \end{abstract}
+    \vfill
+    \null
+    \cleardoublepage
 
 }
 
@@ -428,7 +455,7 @@
 % \NoIndentAfterEnv{source}
 
 \newtcbtheorem[
-        number within = section,
+        number within = chapter,
         crefname = {Algorithm}{algorithms}
     ]%
     {algorithm}{Algorithm}{pseudo/ruled}{alg}
@@ -447,7 +474,7 @@
 
 \Abstract
 
-\section{Introduction}
+\chapter{Introduction}
 
 The \pkg{pseudo} package lets you typeset pseudocode in a straightforward and
 not all too opinionated manner. You don't need to use separate commands for
@@ -505,7 +532,7 @@ The running time is quadratic in the number of bits in the input.
 \end{algorithm}
 }
 
-\subsection*{Microtutorial: How to produce \cref{alg:euclid}}
+\section*{Microtutorial: How to produce \cref{alg:euclid}}
 
 The pseudocode in \cref{alg:euclid} is typeset in the same way as on
 \vpageref{p:intro-euclid}. The line numbers are styled using the \refk{label}
@@ -547,7 +574,7 @@ The running time is quadratic in the number of bits in the input.
 \end{algorithm}
 \end{texexp}
 
-\subsection*{Alternatives}
+\section*{Alternatives}
 
 There are many ways of typesetting code and pseudocode in \LaTeX, so if you're
 unhappy with \pkg{pseudo}, you have several alternatives to choose from. I
@@ -598,7 +625,7 @@ There are also code-typesetting packages like
 \pkg[https://ctan.org/tex-archive/macros/latex/contrib/listings]{listings} and
 \pkg{minted}, of course.
 
-\subsection*{Using older \TeX\ distributions}
+\section*{Using older \TeX\ distributions}
 
 The imlementation of \pkg{pseudo} uses some functionality that isn't available
 in older \TeX\ distributions, in particular, older versions of \pkg{xparse} and
@@ -623,7 +650,7 @@ will \emph{not} work, though this works with more recent versions (as seen
 from some of my examples, later). For more advice on working around an older
 distribution, see also \cref{sec:older}.
 
-\section{Overview}
+\chapter{Overview}
 \label{sec:overview}
 
 The main component of the \pkg{pseudo} package is the \refe{pseudo}
@@ -1059,7 +1086,7 @@ unnumbered version of the \refe{pseudo} environment:
 \end{texexp}
 }
 
-\section{Boxes and floats}
+\chapter{Boxes and floats}
 \label{sec:floats}
 
 There are (at least) two different ways of viewing a block of pseudocode: as
@@ -1191,7 +1218,7 @@ effect.}
 % Actual definition in preamble (so crefname works)
 \begin{texexp}[listing]
 \newtcbtheorem[
-        number within = section,
+        number within = chapter,
         crefname = {Algorithm}{algorithms}
     ]%
     {algorithm}{Algorithm}{pseudo/ruled, float}{alg}
@@ -1345,7 +1372,7 @@ The running time of the algorithm is quadratic.
 }
 
 
-\section{Reference}
+\chapter{Reference}
 \label{sec:reference}
 
 This section gives an overview of all the moving parts of the package. A
@@ -1356,7 +1383,7 @@ at the point where \pkg{pseudo} is imported. Several commands (such as, e.g.,
 \refk{prefix}). When the behavior of such commands is described, the description
 references their initial behavior.
 
-\subsection{Line structure}
+\section{Line structure}
 \label{sec:linestructure}
 
 Each line of a \refe{pseudo} environment is (initially) structured as follows:
@@ -1483,7 +1510,7 @@ appropriate options (e.g., \refk{prefix} and \refk{setup}).
         not insert \refk{eol} and does not start a new line).
 \end{description}
 
-\subsection{Command and key reference}
+\section{Command and key reference}
 \label{sec:cmdandkeyref}
 
 In addition to descriptions of the various commands and options/keys (in
@@ -2916,12 +2943,12 @@ See also \refk{indent-level}.
     space in the ordinary way, with \code{\cs{\bslash}[1.5ex]}, etc.
 \end{docKey}
 
-\section{But how do I\,\dots}
+\chapter{But how do I\,\dots}
 
 Some functionality is not built in, but is still fairly easy to achieve. Some
 streamlining may be added in future versions.
 
-\subsection{\dots\,prevent paragraph indentation after \code{pseudo}?}
+\section{\dots\,prevent paragraph indentation after \code{pseudo}?}
 
 If you want to keep the pseudocode as part of a surrounding paragraph, you
 could have it not start its own, i.e., not have an empty line before it. This
@@ -2961,7 +2988,7 @@ indentation after \emph{all} instances of \refe{pseudo}, you could use the
 If you wish to override this, and indent a given paragraph after all, you can
 simply use the \cs{indent} command.
 
-\subsection{\dots\,get log-like functions?}
+\section{\dots\,get log-like functions?}
 
 There's no built-in command for math-roman function names, as used in $\log$
 and $\sin$, etc. (other than just setting \refk{fnfont}, if you want it
@@ -2982,7 +3009,7 @@ if $\MyFunc x \== 1$ \\+
 The spacing is then correct whether you enclose the arguments in parentheses
 or not.
 
-\subsection{\dots\,unbold punctuation?}
+\section{\dots\,unbold punctuation?}
 
 If you use the \refk{kw} key, all pseudocode not in math mode will end up
 using the keyword font (\refc{kwfont}), which initially is bold. Though some
@@ -3037,7 +3064,7 @@ only do it locally, at the very least):
 \end{pseudo*}
 \end{texexp}
 
-\subsection{\dots\,use \codefont{tabularx}?}
+\section{\dots\,use \codefont{tabularx}?}
 \label{sec:tabularx}
 
 You can use other tabular packages such as \pkg{tabularx} via
@@ -3092,7 +3119,7 @@ to use \cs{pseudolabelalign}, rather than \code{r}.
 \makeatother
 
 
-\subsection{\dots\,get tab stops?}
+\section{\dots\,get tab stops?}
 \label{sec:tabstops}
 
 Some packages, such as \pkg{clrscode3e}, use an actual \code{tabbing}
@@ -3190,7 +3217,7 @@ just supply it directly as an option to the box environment).
 \end{texexp}
 
 
-\subsection{\dots\,use horizontal lines?}
+\section{\dots\,use horizontal lines?}
 \label{sec:horizontallines}
 
 Many opt for a table-like appearance when typesetting algorithms, with
@@ -3226,7 +3253,7 @@ Rather than \code{\cs{\bslash}[bol=\cs{midrule}]}, you could also have used
 that the paragraph break between \refc{\bslash} and its argument has been
 commented out.)
 
-\subsection{\dots\,handle object attributes?}
+\section{\dots\,handle object attributes?}
 
 In the \pkg{clrscode3e} package, you'll find an assortment of commands for
 handling object attributes such as $A.\id{length}$. The manual says (here with
@@ -3260,7 +3287,7 @@ perhaps using \pkg{microtype}), you may of course do so, but \pkg{pseudo} does
 not (at present) include any special attribute lookup commands that do it for
 you.
 
-\subsection{\dots\,indicate blocks with braces or the like?}
+\section{\dots\,indicate blocks with braces or the like?}
 
 Some packages (such as \pkg{algorithm2e}) have support for using vertical lines
 to indicate the block structure;
@@ -3348,7 +3375,7 @@ course. This could be done by some hook triggered by the \code{-} flags in
 \refc{\bslash}. If it turns out there's a demand for something like that, I
 might add it in a future version.
 
-\subsection{\dots\,use \pkg{pseudo} with older \TeX\ distributions?}
+\section{\dots\,use \pkg{pseudo} with older \TeX\ distributions?}
 \label{sec:older}
 
 As mentioned in the introduction, I've tried to make \pkg{pseudo} work with at
@@ -3408,7 +3435,7 @@ Of course, you won't have access to other functionality (such as
 of that should be possible to emulate by hand (possibly peeking at the
 implementation in \cref{sec:impl}).
 
-\subsection{\dots\,use a header with no arguments?}
+\section{\dots\,use a header with no arguments?}
 
 Normally, \refc{hd} has a mandatory set of arguments; at the very least,
 you'll need to supply the parentheses:
@@ -3434,7 +3461,7 @@ arguments. If you'd like, though, you can just use \cs{multicolumn} yourself
 \end{pseudo}
 \end{texexp}
 
-\subsection{\dots\,place algorithm boxes side by side?}
+\section{\dots\,place algorithm boxes side by side?}
 
 In the simplest case, maybe you just want to place two of them side by side in
 the text (i.e., not as floats). Let's say you've defined an environment as
@@ -3502,7 +3529,7 @@ package):
 \end{figure}
 \end{texexp}
 
-\subsection{\dots\,have steps span multiple lines?}
+\section{\dots\,have steps span multiple lines?}
 
 First of all, you can do this by just breaking your lines manually, keeping any
 additional lines belonging to the same step unnumbered, by using the starred
@@ -3556,7 +3583,7 @@ column, i.e.:
 \end{texexp}
 
 
-\subsection{\dots\,get the old spacing?}
+\section{\dots\,get the old spacing?}
 
 The current version of the \refe{pseudo} environment ensures the spacing above
 and below is adjusted, so the baselines of the previous and following lines are
@@ -3568,7 +3595,7 @@ follows:
 \end{texexp}
 
 
-\subsection{\dots\,configure my \code{tcolorbox}es?}
+\section{\dots\,configure my \code{tcolorbox}es?}
 \label{sec:boxconfig}
 
 If you use the \pkg{pseudo} styles for \code{tcolorbox}es (see
@@ -3680,7 +3707,7 @@ If you want to style the top and bottom line separately, just use
 \code*{borderline north} and \code*{borderline south} separately, rather than
 the collective \code*{borderline horizontal}.
 
-\section{Implementation}
+\chapter{Implementation}
 \label{sec:impl}
 
 \lstdefinestyle{tcblatex}{language={[LaTeX]TeX},
@@ -3757,7 +3784,7 @@ As part of the initial setup, we also record whether we're part of a
 \end{source}
 We're now ready to begin the actual implementation.
 
-\subsection{Variable declarations}
+\section{Variable declarations}
 
 Many variables are created as needed by various \code{set} commands, but some
 are declared initially. First, we create a plain-vanilla \LaTeX\ counter for
@@ -3799,7 +3826,7 @@ to know if that's the command we're in:
 \bool_new:N \l_@@_in_eol_bool
 \end{source}
 
-\subsection{Utilities}
+\section{Utilities}
 
 \paragraph{Variants.} First, let's just generate a couple of expansion
 variants we'll need of some standard commands. (I'm using the
@@ -4019,7 +4046,7 @@ used to refer to it until it's restored.
 }
 \end{source}
 %
-\subsection{Styles}
+\section{Styles}
 
 The first text styling commands are only straight-up shortcuts for normal font
 commands:
@@ -4167,7 +4194,7 @@ provided:
 \@@_new_dec:nn { String     } { st }
 \end{source}
 %
-\subsection{Notation}
+\section{Notation}
 
 Here we'll define a couple of symbols that are useful for pseudocode but that
 are not necessarily entirely standard mathematical notation. First, the double
@@ -4255,7 +4282,7 @@ command of \pkg[https://www.cs.dartmouth.edu/~thc/]{clrscode4e}.
 }
 \end{source}
 
-\subsection{Options}
+\section{Options}
 \label{sec:options}
 
 Much of the behavior of \pkg{pseudo} may be configured through various options,
@@ -4720,7 +4747,7 @@ supply a command for setting them.
 \cs_new:Npn \@@_set:n #1 { \keys_set:nn { pseudo } { #1 } }
 \end{source}
 %
-\subsection{The row separator}
+\section{The row separator}
 
 Much of the work of the \refe{pseudo} environment is performed by the row
 separator, that is, the \refc{\bslash} command; whatever part of the line
@@ -4837,7 +4864,7 @@ The \verb|\@@_bol:| command (currently) just inserts the \refk{prefix}:
 }
 \end{source}
 %
-\subsection{Various user commands}
+\section{Various user commands}
 
 A few user-level wrappers around internal commands. First, a couple primarily
 for use in the \refk{preamble}, together with \refc{pseudosavelabel} and
@@ -4884,7 +4911,7 @@ for setting multiple keys at some later point:
 \end{source}
 %
 % Not allowed to use \code in header, here:
-\subsection{The \codefont{pseudo} environment}
+\section{The \codefont{pseudo} environment}
 
 While this is the main attraction, it's essentially just an augmented
 \code{tabular} environment, which does a bit of setup initially, using the
@@ -5034,7 +5061,7 @@ The starred version of the environment is just a wrapper that uses the custom
 }
 \end{source}
 
-\subsection{Boxes and floats}
+\section{Boxes and floats}
 \label{sec:floatsrc}
 
 Some spacing and width values are taken from \pkg{booktabs}, to partly emulate
