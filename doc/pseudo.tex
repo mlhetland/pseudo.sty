@@ -548,12 +548,17 @@ command and its relatives (as well as most other functionality) are discussed in
 \cref{sec:overview}, with individual definitions given in
 \cref{sec:reference}.\footnote{The actual implementations, with explanations,
 are found in \cref{sec:impl}.} The input and output descriptions are aligned
-using \cs{tab} from the \pkg{tabto} package (cf.\@ \cref{sec:tabstops}).
+using \cs{tab} from the \pkg{tabto} package (cf.\@
+\cref{sec:tabstops}).\footnote{With a different font, ``\textb{Output:}'' may
+take up more space, and \cs{tabto} might just introduce a line break. If so,
+simply increase the argument to \cs{TabPositions}. To produce an indent right
+after a line break (\cs{\bslash})---e.g., if you want multiline
+input/output---use \cs{null}\cs{tab}.}
 
 \begin{texexp}[listing]
 % In document preamble:
 % \usepackage{tabto}
-% \TabPositions{1.5cm}
+% \TabPositions{1.5cm} % Adjust as needed!
 
 \begin{algorithm}{Euclid's algorithm, \pr{Euclid}(a, b)}{euclid}
 
@@ -3192,6 +3197,11 @@ preamble, or you can do it as part of the box setup, e.g.,. using
 \refk{pseudo/init} when defining your \pkg{tcolorbox} environment with
 \cs{newtcbtheorem} (or, as in the following simplified example,
 just supply it directly as an option to the box environment).
+
+If you'd rather not separate the elements of, say, your input description by
+paragraphs, you could of course use line breaks (\cs{\bslash}); however,
+\cs{tab} won't work on its own at the beginning of the next line. To fix this,
+simply add \cs{null} before it (i.e., use \cs{null}\cs{tab}).
 
 \begin{texexp}
 % In document preamble:
