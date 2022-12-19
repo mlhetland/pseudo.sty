@@ -885,6 +885,12 @@ if $b \== 0$                                    \\+
 \end{texexp}
 
 \noindent
+Note that \refc{hd} is a bit less capable than \refc{pr} and \refc{fn} in its
+argument parsing: the parenthetical arguments are mandatory, and they are
+terminated at the first closing parenthesis, regardless of nesting.\footnote{If
+you want to include parentheses in the arguments, you need to wrap them in
+braces, e.g., \code{\cs{hd}\braces{Traverse}(\braces{G=(V, E), s})}.}
+
 As can be seen in this example, \cs{==} (or \refc{eqs}) is a notational
 convenience defined by \pkg{pseudo}, along with interval dots \cs{..}\@ (or
 \refc{dts}) and the alternative range operator \refc{rng}:
@@ -2059,7 +2065,21 @@ We're not in math mode, but the argument of \Ln[A] is.
     The \refk{hd-space} key can be used to configure \refc{hd} so it sets the
     \refk{extra-space} key. Note that the signature arguments are mandatory; in
     order to function properly, \cs{hd} must be \emph{expandable}, and therefore
-    cannot end with an optional argument, the way \refc{pr} does.
+    cannot end with an optional argument, the way \refc{pr} does. Also, it is
+    not able to determine nesting levels of parentheses, so the arguments are
+    terminated upon encountering the first closing parentheses. If you want to
+    use parentheses in the arguments themselves, you must wrap them in braces,
+    or thing will get wonky:
+
+\begin{texexp}
+\begin{pseudo}*
+\hd{Foo}(G=(V, E), w, s)                        \\*
+\hd{Foo}({G=(V, E), w, s})                      \\
+lorem ipsum dolor sit amet, consetetur
+\end{pseudo}
+\end{texexp}
+
+    \noindent
     \pseudoshortcutted{hd}
 \end{docCommand}
 
