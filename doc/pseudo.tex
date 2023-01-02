@@ -3178,7 +3178,9 @@ only do it locally, at the very least):
 You can use other tabular packages such as \pkg{tabularx} via
 \refk{begin-tabular} and \refk{end-tabular}. Let's say, for example, that you
 wish to extend the \refe{pseudo} environment to fill out the entire line, and
-set up a new column for comments. You could achieve that as follows:
+set up a new column for comments. You could achieve that as
+follows:\footnote{For an explanation of the use of \code{[t]}, see the
+documentation of the \refk{pos} option.}
 
 \label{p:fullwidth}
 \begin{texexp}
@@ -3689,7 +3691,8 @@ restore \refc{\bslash}, because \cs{raggedright} redefines it).
 One disadvantage of the \code{p} column is that you need to know its exact
 width. A better solution is probably to replace the default \code{tabular} with
 a \code{tabularx}, as discussed in \cref{sec:tabularx}, and use an \code{X}
-column, i.e.:
+column, i.e.:\footnote{For an explanation of the use of \code{[t]}, see the
+documentation of the \refk{pos} option.}
 \begin{texexp}[listing]
     begin-tabular = \tabularx{\linewidth}[t]{
         >{\pseudohpad} \pseudolabelalign
