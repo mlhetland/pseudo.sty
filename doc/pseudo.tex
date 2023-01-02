@@ -11,8 +11,9 @@
 \renewcommand{\sectionmark}[1]{\markright{\thesection\enskip#1}}
 \fancyhf{}
 \fancyhead[LE,RO]{\thepage}
-\fancyhead[LO]{\textit{\rightmark}}
-\fancyhead[RE]{\textit{\leftmark}}
+\fancyhead[LO]{\nouppercase{\textit{\rightmark}}}
+\fancyhead[RE]{\nouppercase{\textit{\leftmark}}}
+\def\headrulewidth{0pt}
 
 \usepackage[inline]{enumitem}
 
@@ -519,6 +520,8 @@
 \maketitle
 
 % \Abstract
+
+\tableofcontents
 
 \chapter{Introduction}
 
