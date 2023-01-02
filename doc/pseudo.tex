@@ -166,7 +166,8 @@
 
 \NewDocumentCommand \shortcutted { m m } {%
     If some package defines \cs{#1} before \pkg{pseudo} is loaded, \pkg{pseudo}
-    will not overwrite it. The command will still be available, as \cs{#2}.%
+    will not overwrite it. The command will still be available, as \cs{#2}. To
+    get the shorter version, simply use \code{\cs{let}\cs{#1}\cs{#2}}.%
 }
 
 \NewDocumentCommand \pseudoshortcutted { m } {%
