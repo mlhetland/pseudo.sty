@@ -959,6 +959,22 @@ convenience defined by \pkg{pseudo}, along with interval dots \cs{..}\@ (or
 Do you prefer $A[1 \.. n]$ or $A[1 \rng n]$?
 \end{texexp}
 
+\begin{sidebar}{Shortcuts for \cs{rng}}
+The \refc{..} command is actually implemented by hijacking the \cs{.} command,
+and isn't easily redefined directly. Instead, if you want \code{1\refc{..}n} to
+produce $1\rng n$, you can redefine \refc{dts}, using
+\code{\cs{let}\refc{dts}\refc{rng}}.
+
+Another option is to introduce some other shortcut, such as \cs{:}, for example:
+\begin{texexp}
+\let\:\rng
+$A[1\:n]$
+\end{texexp}
+Note that \cs{:} is an existing spacing command that produces a medium space. If
+\cs{:} is redefined, this spacing command is still available as \cs{>}. However,
+if you use packages that rely on \cs{:}, such a redefinition might cause trouble.
+\end{sidebar}
+
 \noindent
 Other special symbols may be found in other packages. For example, if you want
 to use $\coloneqq$ for assignment, you can use \cs{coloneqq} from
@@ -1079,9 +1095,20 @@ is simply ignored.
 
 What is more, the row separator \emph{itself} takes an overlay specification
 as a shortcut for the one on \refk{hl}, so \code{\refc{\bslash}<1,2-4>} is
-equivalent to \code{\refc{\bslash}[\refk{hl}<1,2-4>]}. Just like with the
-optional arguments, space before the overlay specification is ignored, so
-you're free to put the specification in front of the line in question:
+equivalent to \code{\refc{\bslash}[\refk{hl}<1,2-4>]}.
+
+\begin{note}
+Actually, explicitly using \code{\refk{hl}<1,2-4>} wouldn't work! The problem is
+that the key--value lists are split at commas before individual keys (including
+overlay specifications) are parsed. And unlike values, using braces to
+``protect'' the keys isn't entirely straightforward. The solution is instead to
+use the key multiple times, as in
+\code{\refc{\bslash}[\refk{hl}<1>, \refk{hl}<2-4>]}.
+\end{note}
+
+Just like with the optional arguments, space before the overlay specification is
+ignored, so you're free to put the specification in front of the line in
+question:
 
 \medskip
 
@@ -3037,6 +3064,12 @@ See also \refk{indent-level}.
 
     \noindent
     If \pkg{beamer} is \emph{not} used, the key is simply ignored.
+
+    \begin{note}
+    Currently, using commas in the \meta{overlay specification} doesn't
+    work. As a workaround, you can use the key multiple times. That is, rather
+    than \code{\refk{dim}<1,3>}, use \code{\refk{dim}<1>, \refk{dim}<3>}.
+    \end{note}
 
     If an unknown key does \emph{not} take the form of a key with an overlay
     specification, a second special case is also handled: If we're processing
