@@ -1460,6 +1460,17 @@ The running time of the algorithm is quadratic.
 \end{texexp}
 }
 
+\begin{sidebar}{Why only styles?}
+Currently, \pkg{pseudo} defines only \pkg{tcolorbox} \emph{styles}, and not any
+actual boxes or theorem-style environments. While this may change in the future,
+it has a couple of advantages. First, the style definitions aren't dependent on
+\pkg{tcolorbox} being imported, making it entirely optional. Second, when
+defining the box or theorem environment, you can easily configure the counter
+style, counter level, etc., through the normal \pkg{tcolorbox} mechanisms.
+Similar customization mechanisms would have to be defined, anyway, and there is
+no real point in aliasing them, rather than simply using the originals.
+\end{sidebar}
+
 
 \chapter{Reference}
 \label{sec:reference}
