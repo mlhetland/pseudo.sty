@@ -13,7 +13,10 @@
 \fancyhead[LE,RO]{\thepage}
 \fancyhead[LO]{\nouppercase{\textit{\rightmark}}}
 \fancyhead[RE]{\nouppercase{\textit{\leftmark}}}
-\def\headrulewidth{0pt}
+% \def\headrulewidth{0pt}
+
+\usepackage{abspos}
+\usepackage{xcoffins}
 
 \usepackage[inline]{enumitem}
 
@@ -21,6 +24,8 @@
 \setlist[inl]{
     label=\mbox{\rm($\roman*$)},
 }
+
+\usepackage[prefix=s]{xcolor-solarized}
 
 \usepackage{tabularx}
 
@@ -426,9 +431,6 @@
 
 \NewDocumentCommand \Abstract { } {
 
-    % \begin{abstract}
-    \cleardoublepage
-
     \ior_open:Nn \g_tmpa_ior {README.md}
 
     \tl_gclear:N \g_tmpa_tl
@@ -462,20 +464,9 @@
         { \c{hyphencodefont} \cB{ \1 \cE} } \g_tmpa_tl
     %   { \c{code} \cB{ \1 \cE} } \g_tmpa_tl
 
-
-    \null
-    \vfill
-    \begin{tcolorbox}[sidebar, nofloat]
-    % \noindent
     \tl_use:N \g_tmpa_tl
-    \end{tcolorbox}
-    \vfill
-    \null
-    \cleardoublepage
 
     \ior_close:N \g_tmpa_ior
-
-    % \end{abstract}
 
 }
 
@@ -517,11 +508,76 @@
 \usepackage{ellipsis}
 
 \begin{document}
-\maketitle
 
-% \Abstract
+
+\makeatletter
+{\colorlet{scol}{black!15}%
+\def\ssep{\hspace{.5em}\color{scol}}%
+\absput[scale=4.5]{
+    \tcbox[
+        pseudo/boxruled,
+        before upper={}, % bc/o restricted horizontal mode
+        after upper={},  % -- " --
+        title={pseudo \pseudoversion}]
+    {%
+    \begin{pseudo}[hsep=.5em, label=\color{sred}\arabic*]
+    \rlap{straight-}\phantom{pseudocode}\ssep\code{\bslash\bslash+}\\
+    \phantom{pseudocode}\llap{forward}\ssep\code{\bslash\bslash-}\\
+    pseudocode\ssep\code{\bslash\bslash}
+    \end{pseudo}%
+    }
+}}
+\makeatother
+
+\pagenumbering{roman}
+\pagestyle{empty}
+\pagecolor{black!4}
+\null
+\clearpage
+\null\vfill
+{\small
+\makeatletter
+\noindent
+Copyright\enskip\copyright\enskip\@author\enskip2019--\the\year
+\makeatother
+
+\medskip\noindent
+\Abstract}
+\clearpage
+\nopagecolor
+
+\pagenumbering{arabic}
+
+\begin{titlepage}
+\makeatletter
+\null
+\begin{center}
+
+\null
+\vfill
+
+\Huge
+\@title
+
+\vspace{\baselineskip}
+
+\LARGE
+\@author
+
+\vspace{\baselineskip}
+
+\LARGE
+\@date
+
+\vfill
+
+\end{center}
+\makeatother
+\end{titlepage}
 
 \tableofcontents
+
+\pagestyle{fancy}
 
 \chapter{Introduction}
 
