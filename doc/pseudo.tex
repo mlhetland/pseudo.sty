@@ -1,4 +1,22 @@
-\documentclass[a4paper]{article}
+\documentclass[a4paper]{book}
+
+% Using geometry.sty to have equal margins, despite twoside option. It will
+% normally change the margins quite a bit; the following produces something
+% close to normal LaTeX layout -- it just increases \topmargin by 2pt:
+\usepackage[textwidth=345pt,textheight=598pt,centering]{geometry}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\enskip#1}}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[LO]{\nouppercase{\textit{\rightmark}}}
+\fancyhead[RE]{\nouppercase{\textit{\leftmark}}}
+% \def\headrulewidth{0pt}
+
+\usepackage{abspos}
+\usepackage{xcoffins}
 
 \usepackage[inline]{enumitem}
 
@@ -6,6 +24,8 @@
 \setlist[inl]{
     label=\mbox{\rm($\roman*$)},
 }
+
+\usepackage[prefix=s]{xcolor-solarized}
 
 \usepackage{tabularx}
 
@@ -137,6 +157,11 @@
     \codefont{ \l_tmpa_tl }
 }
 
+% https://tex.stackexchange.com/a/44362/18003
+\DeclareTextFontCommand \hyphencodefont {
+    \ttfamily \hyphenchar \font=45 \relax
+}
+
 \ExplSyntaxOff
 \makeatother
 
@@ -147,7 +172,8 @@
 
 \NewDocumentCommand \shortcutted { m m } {%
     If some package defines \cs{#1} before \pkg{pseudo} is loaded, \pkg{pseudo}
-    will not overwrite it. The command will still be available, as \cs{#2}.%
+    will not overwrite it. The command will still be available, as \cs{#2}. To
+    get the shorter version, simply use \code{\cs{let}\cs{#1}\cs{#2}}.%
 }
 
 \NewDocumentCommand \pseudoshortcutted { m } {%
@@ -293,6 +319,49 @@
     #1
 }
 
+\tcbset{
+    infobox/.style = {
+        pseudo/filled,
+        colback = black!4,
+        colbacktitle = black!4,
+        % coltitle = black!65,
+        top = 9pt,
+        bottom = 8pt,
+        right= 10pt,
+        left= 9pt,
+    },
+    admonition/.style = {
+        infobox,
+        borderline west = {2.5pt}{0pt}{black!25},
+        leftrule = 2.5pt, % spacing
+        before title = {},
+        after title = {},
+        attach title to upper,
+        beforeafter skip balanced = 6.0pt plus 3.0pt minus 1.5pt,
+    },
+    sidebar/.style = {
+        infobox,
+        float,
+        colback = white,
+        colbacktitle = white,
+        boxrule = \lightrulewidth,
+        borderline = {\lightrulewidth}{0pt}{black},
+        toptitle = 8pt,
+        top = 5pt,
+        fonttitle = \centering\bfseries\large,
+    }
+}
+
+\DeclareTColorBox {note} { } {
+    admonition,
+    % title = {Note:\enskip}
+}
+
+\DeclareTColorBox {sidebar} { m } {
+    sidebar,
+    title = {#1},
+}
+
 \def\refc{\refCom*}
 \def\refe{\refEnv*}
 \def\refk{\refKey*}
@@ -360,9 +429,8 @@
 
 }
 
-\NewDocumentCommand \Abstract { } {
 
-    \begin{abstract}
+\NewDocumentCommand \Abstract { } {
 
     \ior_open:Nn \g_tmpa_ior {README.md}
 
@@ -394,14 +462,12 @@
 
     \regex_replace_all:nnN
         {` ( \w+ ) `}
-        { \c{code} \cB{ \1 \cE} } \g_tmpa_tl
+        { \c{hyphencodefont} \cB{ \1 \cE} } \g_tmpa_tl
+    %   { \c{code} \cB{ \1 \cE} } \g_tmpa_tl
 
-    \noindent
     \tl_use:N \g_tmpa_tl
 
     \ior_close:N \g_tmpa_ior
-
-    \end{abstract}
 
 }
 
@@ -428,7 +494,7 @@
 % \NoIndentAfterEnv{source}
 
 \newtcbtheorem[
-        number within = section,
+        number within = chapter,
         crefname = {Algorithm}{algorithms}
     ]%
     {algorithm}{Algorithm}{pseudo/ruled}{alg}
@@ -443,11 +509,78 @@
 \usepackage{ellipsis}
 
 \begin{document}
-\maketitle
 
-\Abstract
 
-\section{Introduction}
+\makeatletter
+{\colorlet{scol}{black!15}%
+\def\ssep{\hspace{.5em}\color{scol}}%
+\absput[scale=4.5]{
+    \tcbox[
+        pseudo/boxruled,
+        before upper={}, % bc/o restricted horizontal mode
+        after upper={},  % -- " --
+        title={pseudo \pseudoversion}]
+    {%
+    \begin{pseudo}[hsep=.5em, label=\color{sred}\arabic*]
+    \rlap{straight-}\phantom{pseudocode}\ssep\code{\bslash\bslash+}\\
+    \phantom{pseudocode}\llap{forward}\ssep\code{\bslash\bslash-}\\
+    pseudocode\ssep\code{\bslash\bslash}
+    \end{pseudo}%
+    }
+}}
+\makeatother
+
+\pagenumbering{roman}
+\pagestyle{empty}
+\pagecolor{black!4}
+\null
+\clearpage
+\null\vfill
+{\small
+\makeatletter
+\noindent
+Copyright\enskip\copyright\enskip\@author\enskip2019--\the\year
+\makeatother
+
+\medskip\noindent
+\Abstract}
+\clearpage
+\nopagecolor
+
+\pagenumbering{arabic}
+
+\begin{titlepage}
+\makeatletter
+\null
+\begin{center}
+
+\null
+\vfill
+
+\Huge
+\@title
+
+\vspace{\baselineskip}
+
+\LARGE
+\@author
+
+\vspace{\baselineskip}
+
+\LARGE
+\@date
+
+\vfill
+
+\end{center}
+\makeatother
+\end{titlepage}
+
+\tableofcontents
+
+\pagestyle{fancy}
+
+\chapter{Introduction}
 
 The \pkg{pseudo} package lets you typeset pseudocode in a straightforward and
 not all too opinionated manner. You don't need to use separate commands for
@@ -505,7 +638,7 @@ The running time is quadratic in the number of bits in the input.
 \end{algorithm}
 }
 
-\subsection*{Microtutorial: How to produce \cref{alg:euclid}}
+\section*{Microtutorial: How to produce \cref{alg:euclid}}
 
 The pseudocode in \cref{alg:euclid} is typeset in the same way as on
 \vpageref{p:intro-euclid}. The line numbers are styled using the \refk{label}
@@ -521,12 +654,13 @@ command and its relatives (as well as most other functionality) are discussed in
 \cref{sec:overview}, with individual definitions given in
 \cref{sec:reference}.\footnote{The actual implementations, with explanations,
 are found in \cref{sec:impl}.} The input and output descriptions are aligned
-using \cs{tab} from the \pkg{tabto} package (cf.\@ \cref{sec:tabstops}).
+using \cs{tab} from the \pkg{tabto} package (cf.\@
+\cref{sec:tabstops}).
 
 \begin{texexp}[listing]
 % In document preamble:
 % \usepackage{tabto}
-% \TabPositions{1.5cm}
+% \TabPositions{1.5cm} % Adjust as needed!
 
 \begin{algorithm}{Euclid's algorithm, \pr{Euclid}(a, b)}{euclid}
 
@@ -547,7 +681,15 @@ The running time is quadratic in the number of bits in the input.
 \end{algorithm}
 \end{texexp}
 
-\subsection*{Alternatives}
+\begin{note}
+With a different font, ``\textb{Output:}''\ may take up more space, and
+\cs{tabto} might just introduce a line break. If so, simply increase the
+argument to \cs{TabPositions}. To produce an indent right after a line break
+(\cs{\bslash})---e.g., if you want multiline input/output---use
+\cs{null}\cs{tab}.
+\end{note}
+
+\section*{Alternatives}
 
 There are many ways of typesetting code and pseudocode in \LaTeX, so if you're
 unhappy with \pkg{pseudo}, you have several alternatives to choose from. I
@@ -598,7 +740,7 @@ There are also code-typesetting packages like
 \pkg[https://ctan.org/tex-archive/macros/latex/contrib/listings]{listings} and
 \pkg{minted}, of course.
 
-\subsection*{Using older \TeX\ distributions}
+\section*{Using older \TeX\ distributions}
 
 The imlementation of \pkg{pseudo} uses some functionality that isn't available
 in older \TeX\ distributions, in particular, older versions of \pkg{xparse} and
@@ -610,20 +752,24 @@ else (e.g., when submitting to some publisher with a custom setup), feel free to
 \href{https://github.com/mlhetland/pseudo.sty/pulls}{provide a pull request}
 with a fix. One thing to look out for is that older versions of \pkg{xparse}
 parse arguments differently, so things like
-\begin{texexp}[listing]
-foo\\<1>
-bar\\[hl]
-\end{texexp}
+\code{\cs{\bslash}[hl]}
+% \begin{texexp}[listing]
+% foo\\<1>
+% bar\\[hl]
+% \end{texexp}
 would work, but separating the arguments with spaces, as in
-\begin{texexp}[listing]
-foo\\ <1>
-bar\\ [hl]
-\end{texexp}
+% \begin{texexp}[listing]
+% foo\\ <1>
+% bar\\ [hl]
+% \end{texexp}
+\code*{\cs{\bslash} [hl]}
 will \emph{not} work, though this works with more recent versions (as seen
-from some of my examples, later). For more advice on working around an older
-distribution, see also \cref{sec:older}.
+from some of my examples, later).
+\begin{note}
+For more advice on working around an older distribution, see \cref{sec:older}.
+\end{note}
 
-\section{Overview}
+\chapter{Overview}
 \label{sec:overview}
 
 The main component of the \pkg{pseudo} package is the \refe{pseudo}
@@ -643,16 +789,8 @@ repeat the following while $a\neq b$            \\+
 \end{pseudo}
 \end{texexp}
 
+% \medskip
 \noindent
-Spacing is handled similarly to in \LaTeX\ lists, with \cs{topsep} and
-\cs{parskip} added before and after, as well as \cs{partopsep} whenever the
-environment starts a new paragraph. The left margin (how much the pseudocode
-is indented wrt.\ the surrounding text) is set by the \refk{left-margin} key
-(initially \code{0pt}).\footnote{If \refe{pseudo} occurs in a box such as
-\code{fbox}, or a \pkg[https://ctan.org/pkg/pgf]{tikz} node, this spacing is
-dropped. See also the \refk{compact} key for overriding this behavior.}
-
-\medskip\noindent
 There are also some styling commands for special elements of the pseudocode:
 
 \begin{texexp}
@@ -669,6 +807,18 @@ The longer names (\cs{pseudokw}, \cs{pseudocn}, etc.)\@ are always available;
 the more convenient short forms (\refc{kw}, \refc{cn}, etc.)\@ are prone to
 name collisions, and are only defined if the names are not already in use when
 \pkg{pseudo} is imported.
+
+Spacing is handled similarly to in \LaTeX\ lists, with \cs{topsep} and
+\cs{parskip} added before and after, as well as \cs{partopsep} whenever the
+environment starts a new paragraph. The left margin (how much the pseudocode
+is indented wrt.\ the surrounding text) is set by the \refk{left-margin} key
+(initially \code{0pt}).
+
+\begin{note}
+If \refe{pseudo} occurs in a box such as \code{fbox}, or
+a \pkg[https://ctan.org/pkg/pgf]{tikz} node, this spacing is dropped. See also
+the \refk{compact} key for overriding this behavior.
+\end{note}
 
 The \refk{indent-length} option, which determines the length of each
 indentation step, is initially set via the secondary \refk{indent-text} key,
@@ -767,11 +917,13 @@ You can also configure the quotes and comment markers:
 \kw{print} \st{Hello, world!} \quad \ct{Greeting}
 \end{pseudo}
 \end{texexp}
-%
+
+\begin{note}
 Note that \cs{stfont} and friends may either be font-switching commands like
 \cs{itshape} or formatting commands like \cs{textit}, though the latter are
 generally preferable when available. They need not be restricted to actual
 fonts, but may include color commands, for example.
+\end{note}
 
 You can also set the font for the entire code lines, using the \refk{font}
 option. The command you provide there should just switch the font (i.e., not
@@ -852,13 +1004,36 @@ if $b \== 0$                                    \\+
 \end{pseudo}
 \end{texexp}
 
-\noindent
+\begin{note}
+The \refc{hd} command is less capable than \refc{pr} and \refc{fn} in its
+argument parsing: the parenthetical arguments are mandatory, and they are
+terminated at the first closing parenthesis, regardless of nesting. If you want
+to include parentheses in the arguments, you need to wrap them in braces, e.g.,
+\code{\cs{hd}\braces{Traverse}(\braces{G=(V, E), s})}.
+\end{note}
+
 As can be seen in this example, \cs{==} (or \refc{eqs}) is a notational
 convenience defined by \pkg{pseudo}, along with interval dots \cs{..}\@ (or
 \refc{dts}) and the alternative range operator \refc{rng}:
 \begin{texexp}
 Do you prefer $A[1 \.. n]$ or $A[1 \rng n]$?
 \end{texexp}
+
+\begin{sidebar}{Shortcuts for \cs{rng}}
+The \refc{..} command is actually implemented by hijacking the \cs{.} command,
+and isn't easily redefined directly. Instead, if you want \code{1\refc{..}n} to
+produce $1\rng n$, you can redefine \refc{dts}, using
+\code{\cs{let}\refc{dts}\refc{rng}}.
+
+Another option is to introduce some other shortcut, such as \cs{:}, for example:
+\begin{texexp}
+\let\:\rng
+$A[1\:n]$
+\end{texexp}
+Note that \cs{:} is an existing spacing command that produces a medium space. If
+\cs{:} is redefined, this spacing command is still available as \cs{>}. However,
+if you use packages that rely on \cs{:}, such a redefinition might cause trouble.
+\end{sidebar}
 
 \noindent
 Other special symbols may be found in other packages. For example, if you want
@@ -904,11 +1079,11 @@ We're using something custom! \label{custom-line}
 \end{texexp}
 
 \noindent
-Note that if I refer to the labeled line with \cs{ref}, I'll just end up with
-\ref{custom-line}, which is probably what I'd want in this case. If you want a
-custom reference format as well, you can set that with the \refk{ref} key, in
-the same way as with \refk{label}. If you use the key without arguments, it'll
-use the same format as the one provided to \refk{label}:
+Note that if you refer to the labeled line with \cs{ref}, you'll just end up
+with \ref{custom-line}, which is probably what you'd want in this case. If you
+want a custom reference format as well, you can set that with the \refk{ref}
+key, in the same way as with \refk{label}. If you use the key without arguments,
+it'll use the same format as the one provided to \refk{label}:
 
 \begin{texexp}
 \pseudoset{label=(\textit{\roman*}), label-align=l, ref}
@@ -938,7 +1113,7 @@ I'm not highlighted \\[hl]
 But I am!
 \end{pseudo*}
 \end{texexp}
-}
+}%
 %
 Initially, the \refc{pseudohl} command that is inserted is simply a
 \cs{rowcolor} that uses \refk{hl-color}, but you're free to redefine this
@@ -950,11 +1125,17 @@ pseudocode aligned with the surrounding text. However, when using row
 highlighting (e.g., because you are stepping through the code in some
 presentation), that alignment may be less of an issue---and you'd rather widen
 the highlight a bit. The horizontal padding on each side is controlled by the
-\refk{hpad} key.\footnote{In fact, if you use \refk{hl} without \refk{hpad},
-you'll get a warning. You can turn this warning off using \refk{hl-warn}, or by,
-e.g., setting \refk{hpad} to \code{0pt}.} You can either specify a length, or
-just turn on the default, by not supplying an argument. There's a similar
-option, \refk{hsep}, which controls the separation between the two columns.
+\refk{hpad} key.
+
+\begin{note}
+If you use \refk{hl} without \refk{hpad}, you'll get a warning. You can turn
+this warning off using \refk{hl-warn} or by setting \refk{hpad} to \code{0pt}.
+\end{note}
+
+\noindent
+You can either specify a length, or just turn on the default, by not supplying
+an argument. There's a similar option, \refk{hsep}, which controls the
+separation between the two columns.
 
 \begin{texexp}
 \begin{pseudo}[hpad, hsep=1em, indent-length=1em]
@@ -974,9 +1155,20 @@ is simply ignored.
 
 What is more, the row separator \emph{itself} takes an overlay specification
 as a shortcut for the one on \refk{hl}, so \code{\refc{\bslash}<1,2-4>} is
-equivalent to \code{\refc{\bslash}[\refk{hl}<1,2-4>]}. Just like with the
-optional arguments, space before the overlay specification is ignored, so
-you're free to put the specification in front of the line in question:
+equivalent to \code{\refc{\bslash}[\refk{hl}<1,2-4>]}.
+
+\begin{note}
+Actually, explicitly using \code{\refk{hl}<1,2-4>} wouldn't work! The problem is
+that the key--value lists are split at commas before individual keys (including
+overlay specifications) are parsed. And unlike values, using braces to
+``protect'' the keys isn't entirely straightforward. The solution is instead to
+use the key multiple times, as in
+\code{\refc{\bslash}[\refk{hl}<1>, \refk{hl}<2-4>]}.
+\end{note}
+
+Just like with the optional arguments, space before the overlay specification is
+ignored, so you're free to put the specification in front of the line in
+question:
 
 \medskip
 
@@ -1018,7 +1210,7 @@ purpose (equivalent to \code*{\refk{eol-append} = \cs{pause}}):
 \includegraphics[page=1]{pausefig.pdf}\hfill
 \includegraphics[page=2]{pausefig.pdf}\hfill
 \includegraphics[page=3]{pausefig.pdf}\hfill
-\includegraphics[page=4]{pausefig.pdf}
+\includegraphics[page=4]{pausefig.pdf}\qquad\null
 
 \vspace{-4pt}
 
@@ -1037,6 +1229,12 @@ purpose (equivalent to \code*{\refk{eol-append} = \cs{pause}}):
 The \refk{eol} value is only inserted wherever \refc{\bslash} starts a new
 line (i.e., not at the end of the environment), so in this case only three
 \cs{pause} commands are inserted.
+
+\begin{note}
+    The last \refc{\bslash} looks for an immediately following
+    \code{\cs{end}\braces{pseudo}}, after skipping any non-paragraph whitespace,
+    so if you insert anything between te
+\end{note}
 
 The previously discussed configuration keys are described in more detail in
 \cref{sec:reference}. You can create your own presets or \emph{styles} using
@@ -1059,7 +1257,7 @@ unnumbered version of the \refe{pseudo} environment:
 \end{texexp}
 }
 
-\section{Boxes and floats}
+\chapter{Boxes and floats}
 \label{sec:floats}
 
 There are (at least) two different ways of viewing a block of pseudocode: as
@@ -1082,23 +1280,27 @@ you could do a quick \href{https://ctan.org}{\textsc{ctan}} search for
 the \pkg[https://ctan.org/tex-archive/macros/latex/contrib/float]{float}
 package, will give you many options, with varying functionality.} You could also
 use the float environments supplied with packages such as \pkg{algorithms},
-\pkg{algorithmicx} and \pkg{algorithm2e}.\footnote{The definition of \refc{==}
-doesn't properly carry over into floats. It's properly redefined inside
-\refe{pseudo}, so you probably won't notice, but if you wish to use the symbol
-outside the \refe{pseudo} environment, but in a float (e.g., inside
-\cs{caption}), you'll need to either call \refc{RestorePseudoEq} to
-re-establish \pkg{pseudo}'s redefinition of \cs{=} or simply use \refc{eqs}
-instead of \refc{==}.}
+\pkg{algorithmicx} and \pkg{algorithm2e}.
 
+\begin{note}
+The definition of \refc{==} doesn't properly carry over into floats. It's
+properly redefined inside \refe{pseudo}, so you probably won't notice, but if
+you wish to use the symbol outside the \refe{pseudo} environment, but in a float
+(e.g., inside \cs{caption}), you'll need to either call \refc{RestorePseudoEq}
+to re-establish \pkg{pseudo}'s redefinition of \cs{=} or simply use \refc{eqs}
+instead of \refc{==}.
+\end{note}
+
+\noindent
 The \pkg{pseudo} package does provide some specialized setup,
 however, using \pkg{tcolorbox}. This also lets you typeset non-float pseudocode
 with a colored background, for example, like \citeauthor{Cormen:2022} do in the
 most recent version of their textbook~\citep{Cormen:2022}.
-
-\medskip\noindent
-\textb{Note:} For performance reasons, \pkg{pseudo} does \emph{not}
-automatically import \pkg{tcolorbox}; if you want to use the float
-functionality, you will need to import \pkg{tcolorbox} yourself:
+%
+\begin{sidebar}{Importing \pkg{tcolorbox}}
+For performance reasons, \pkg{pseudo} does \emph{not} automatically import
+\pkg{tcolorbox}; if you want to use the box functionality, you will need to
+import it yourself:
 \begin{texexp}[listing]
 \usepackage{pseudo}
 % ...
@@ -1108,7 +1310,8 @@ functionality, you will need to import \pkg{tcolorbox} yourself:
 It does not matter whether you import
 \pkg{tcolorbox} before or after \pkg{pseudo}, but make sure you also import the
 two libraries \code{skins} and \code{theorems}, as in the example above.
-
+\end{sidebar}
+%
 The styles defined by \pkg{pseudo} are versions of the commonly used
 \emph{boxed} and \emph{ruled} styles, as found in, e.g.,
 \pkg[https://ctan.org/tex-archive/macros/latex/contrib/float]{float}, as well as
@@ -1191,7 +1394,7 @@ effect.}
 % Actual definition in preamble (so crefname works)
 \begin{texexp}[listing]
 \newtcbtheorem[
-        number within = section,
+        number within = chapter,
         crefname = {Algorithm}{algorithms}
     ]%
     {algorithm}{Algorithm}{pseudo/ruled, float}{alg}
@@ -1344,8 +1547,19 @@ The running time of the algorithm is quadratic.
 \end{texexp}
 }
 
+\begin{sidebar}{Why only styles?}
+Currently, \pkg{pseudo} defines only \pkg{tcolorbox} \emph{styles}, and not any
+actual boxes or theorem-style environments. While this may change in the future,
+it has a couple of advantages. First, the style definitions aren't dependent on
+\pkg{tcolorbox} being imported, making it entirely optional. Second, when
+defining the box or theorem environment, you can easily configure the counter
+style, counter level, etc., through the normal \pkg{tcolorbox} mechanisms.
+Similar customization mechanisms would have to be defined, anyway, and there is
+no real point in aliasing them, rather than simply using the originals.
+\end{sidebar}
 
-\section{Reference}
+
+\chapter{Reference}
 \label{sec:reference}
 
 This section gives an overview of all the moving parts of the package. A
@@ -1356,7 +1570,7 @@ at the point where \pkg{pseudo} is imported. Several commands (such as, e.g.,
 \refk{prefix}). When the behavior of such commands is described, the description
 references their initial behavior.
 
-\subsection{Line structure}
+\section{Line structure}
 \label{sec:linestructure}
 
 Each line of a \refe{pseudo} environment is (initially) structured as follows:
@@ -1483,7 +1697,7 @@ appropriate options (e.g., \refk{prefix} and \refk{setup}).
         not insert \refk{eol} and does not start a new line).
 \end{description}
 
-\subsection{Command and key reference}
+\section{Command and key reference}
 \label{sec:cmdandkeyref}
 
 In addition to descriptions of the various commands and options/keys (in
@@ -2027,7 +2241,21 @@ We're not in math mode, but the argument of \Ln[A] is.
     The \refk{hd-space} key can be used to configure \refc{hd} so it sets the
     \refk{extra-space} key. Note that the signature arguments are mandatory; in
     order to function properly, \cs{hd} must be \emph{expandable}, and therefore
-    cannot end with an optional argument, the way \refc{pr} does.
+    cannot end with an optional argument, the way \refc{pr} does. Also, it is
+    not able to determine nesting levels of parentheses, so the arguments are
+    terminated upon encountering the first closing parentheses. If you want to
+    use parentheses in the arguments themselves, you must wrap them in braces,
+    or thing will get wonky:
+
+\begin{texexp}
+\begin{pseudo}*
+\hd{Foo}(G=(V, E), w, s)                        \\*
+\hd{Foo}({G=(V, E), w, s})                      \\
+lorem ipsum dolor sit amet, consetetur
+\end{pseudo}
+\end{texexp}
+
+    \noindent
     \pseudoshortcutted{hd}
 \end{docCommand}
 
@@ -2137,7 +2365,7 @@ $\textit{foo-bar:baz}$
     \refk{indent-text} is used to calculate one the indent length instead.
 \end{docKey}
 
-\begin{docKey}{indent-level}{\,=\,\meta{length}}{no default, initially \code{0}}
+\begin{docKey}{indent-level}{\,=\,\meta{level}}{no default, initially \code{0}}
     Sets the current indentation level. This is most usefully set on
     \refe{pseudo} environment, in concert with \refk{start}:\footnote{The
     \cs{strut} here is just to even out spacing above and below the text,
@@ -2315,21 +2543,23 @@ vs.\
     font or theme, e.g., with the \pkg{beamer} command
     \code{\cs{usefonttheme}\braces{serif}}, you may not have any issues to begin
     with.} though only once, as it's suppressed after the first occurrence, so the
-    fact that the font selection doesn't work on the last line isn't reported. Note,
-    however, that the current implementation of \refc{kwfont} actually
-    \emph{piggybacks} on this warning to determine if the non-extended bold is
-    available. This means that if you've tried (and failed) to use
-    \code{\cs{fontseries}\braces{b}} \emph{before} the fist use of \refc{kwfont},
-    the fallback (i.e., extended bold) won't be triggered.
+    fact that the font selection doesn't work on the last line isn't reported.
 
-    Also note that \refk{indent-text} (which will tend to be the first
-    occurrence use of \refc{kwfont}) won't be evaluated (to determine
-    \refk{indent-length}) until you actually start a \refe{pseudo}
-    environment, so if you're \emph{aware} that you don't have non-extended
-    bold available, and you set \code*{\refk{kwfont} = \cs{bfseries}}, for
-    example, there will be no attempt to use the non-extended version, and you
-    won't get the font warning that the default implementation produces in
-    that case.
+    \begin{note}
+    The current implementation of \refc{kwfont} actually \emph{piggybacks} on
+    this warning to determine if the non-extended bold is available. This means
+    that if you've tried (and failed) to use \code{\cs{fontseries}\braces{b}}
+    \emph{before} the fist use of \refc{kwfont}, the fallback (i.e., extended
+    bold) won't be triggered.
+    \end{note}
+
+    Note that \refk{indent-text} (which will tend to be the first occurrence use
+    of \refc{kwfont}) won't be evaluated (to determine \refk{indent-length})
+    until you actually start a \refe{pseudo} environment, so if you're
+    \emph{aware} that you don't have non-extended bold available, and you set
+    \code*{\refk{kwfont} = \cs{bfseries}}, for example, there will be no attempt
+    to use the non-extended version, and you won't get the font warning that the
+    default implementation produces in that case.
 \end{docCommand}
 
 \begin{docKey}{label}{\,=\,\meta{commands}}{%
@@ -2348,10 +2578,11 @@ print \st{Hello, label!} \label{li:label}       \\
 goto \tn{\ref{li:label}}
 \end{pseudo}
 \end{texexp}
-    \noindent
-    Note that \cs{label} should be used in the actual code line, as here, and
-    not in the number cell (which is generally not explicitly written,
-    anyway).
+
+    \begin{note}
+    Make sure to use \cs{label} in the actual code line, as here, and not in the
+    number cell (which is generally not explicitly written, anyway).
+    \end{note}
 
     As can be seen from the example, \cs{ref} is unaffected by
     \refKey*{label}, and in many cases that's what you want---as apposed to,
@@ -2398,10 +2629,10 @@ I'm a livin' in a box \\
 I'm a livin' in a cardboard box
 \end{pseudo*}}
 \end{texexp}
-Note that as opposed to \refk{topsep} and \refk{partopsep}, we are \emph{not}
-working with one of the built-in list spacing commands; \cs{leftmargin} has no
-effect on this key (which is why the hyphenated naming style of other keys such
-as \refk{label-align} or \refk{indent-text} is also adopted for
+As opposed to with \refk{topsep} and \refk{partopsep}, we are \emph{not} working
+with one of the built-in list spacing commands; \cs{leftmargin} has no effect on
+this key (which is why the hyphenated naming style of other keys such as
+\refk{label-align} or \refk{indent-text} is also adopted for
 \refk{left-margin}).
 %
 See also \refk{compact}.
@@ -2680,8 +2911,8 @@ dolor sit amet.
     environment (so that units like \code{em} and \code{ex} adapt to the
     current font). If no \refk{indent-mark} is set, the \cs{pseudoindent}
     command then inserts a horizontal space of length
-    $\cs{pseudoindentlength}\times\textit{current indent level}$. Otherwise,
-    one \refk{indent-mark} and a horizontal space of length
+    $\cs{pseudoindentlength}\times\mkern-1.8mu\textit{current indent level}$.
+    Otherwise, one \refk{indent-mark} and a horizontal space of length
     \cs{pseudoindentlength} is inserted for each level of indentation up to the
     current indentation level. (This horizontal space is measured from the left
     edge of the \refk{indent-mark}.)
@@ -2892,21 +3123,13 @@ See also \refk{indent-level}.
     \medskip
 
     \noindent
-    If \pkg{beamer} is \emph{not} used, the key is simply ignored. Note that
-    because of current limitations on how keys are handled,
-    % Cf. https://github.com/latex3/latex3/issues/67
-    unknown keys cannot have defaults, and so there is no way to insert a
-    marker for when no value is provided, which could be used to determine
-    whether to use
-    \code*{\refc{pseudoset}\braces{\meta{name} = \meta{value}}}
-    or simply
-    \code*{\refc{pseudoset}\braces{\meta{name}}}. Instead, if an empty value
-    is provided to the unknown key, that is treated in the same way as when
-    the key is used
-    without a value, resulting in
-    \code*{\refc{pseudoset}\braces{\meta{name}}}
-    rather than
-    \code*{\refc{pseudoset}\braces{\meta{name} = }}.
+    If \pkg{beamer} is \emph{not} used, the key is simply ignored.
+
+    \begin{note}
+    Currently, using commas in the \meta{overlay specification} doesn't
+    work. As a workaround, you can use the key multiple times. That is, rather
+    than \code{\refk{dim}<1,3>}, use \code{\refk{dim}<1>, \refk{dim}<3>}.
+    \end{note}
 
     If an unknown key does \emph{not} take the form of a key with an overlay
     specification, a second special case is also handled: If we're processing
@@ -2915,13 +3138,29 @@ See also \refk{indent-level}.
     implicit key is \refk{extra-space}. This means that you can specify extra
     space in the ordinary way, with \code{\cs{\bslash}[1.5ex]}, etc.
 \end{docKey}
+\begin{sidebar}{Unknown Keys and Defaults}
+Because of current limitations on how keys are handled,
+% \footnote{\url{https://github.com/latex3/latex3/issues/67}.}
+unknown keys cannot have defaults, and so there is no way to insert a
+marker for when no value is provided, which could be used to determine
+whether to use
+\code*{\refc{pseudoset}\braces{\meta{name} = \meta{value}}}
+or simply
+\code*{\refc{pseudoset}\braces{\meta{name}}}. Instead, if an empty value
+is provided to the unknown key, that is treated in the same way as when
+the key is used
+without a value, resulting in
+\code*{\refc{pseudoset}\braces{\meta{name}}}
+rather than
+\code*{\refc{pseudoset}\braces{\meta{name} = }}.
+\end{sidebar}
 
-\section{But how do I\,\dots}
+\chapter{But how do I\,\dots}
 
 Some functionality is not built in, but is still fairly easy to achieve. Some
 streamlining may be added in future versions.
 
-\subsection{\dots\,prevent paragraph indentation after \code{pseudo}?}
+\section{\dots\,prevent paragraph indentation after \code{pseudo}?}
 
 If you want to keep the pseudocode as part of a surrounding paragraph, you
 could have it not start its own, i.e., not have an empty line before it. This
@@ -2961,7 +3200,7 @@ indentation after \emph{all} instances of \refe{pseudo}, you could use the
 If you wish to override this, and indent a given paragraph after all, you can
 simply use the \cs{indent} command.
 
-\subsection{\dots\,get log-like functions?}
+\section{\dots\,get log-like functions?}
 
 There's no built-in command for math-roman function names, as used in $\log$
 and $\sin$, etc. (other than just setting \refk{fnfont}, if you want it
@@ -2982,7 +3221,7 @@ if $\MyFunc x \== 1$ \\+
 The spacing is then correct whether you enclose the arguments in parentheses
 or not.
 
-\subsection{\dots\,unbold punctuation?}
+\section{\dots\,unbold punctuation?}
 
 If you use the \refk{kw} key, all pseudocode not in math mode will end up
 using the keyword font (\refc{kwfont}), which initially is bold. Though some
@@ -3037,13 +3276,15 @@ only do it locally, at the very least):
 \end{pseudo*}
 \end{texexp}
 
-\subsection{\dots\,use \codefont{tabularx}?}
+\section{\dots\,use \codefont{tabularx}?}
 \label{sec:tabularx}
 
 You can use other tabular packages such as \pkg{tabularx} via
 \refk{begin-tabular} and \refk{end-tabular}. Let's say, for example, that you
 wish to extend the \refe{pseudo} environment to fill out the entire line, and
-set up a new column for comments. You could achieve that as follows:
+set up a new column for comments. You could achieve that as
+follows:\footnote{For an explanation of the use of \code{[t]}, see the
+documentation of the \refk{pos} option.}
 
 \label{p:fullwidth}
 \begin{texexp}
@@ -3078,10 +3319,10 @@ column.\footnote{You can also, of course, just use \refc{eqs} instead.}
 
 See the \pkg{tabularx} documentation (page~4) for an explanation of why we can't
 use \code{\cs{begin}\braces{tabularx}} and \code{\cs{end}\braces{tabularx}}.
-Also note that because \pkg{tabularx} passes its contents as the argument to a
-macro, the parsing \pkg{pseudo} uses to determine if \refc{\bslash} is at the
-end of the last line doesn't work; if you add \refc{\bslash} at the end here,
-you'll introduce an empty line.
+Also, because \pkg{tabularx} passes its contents as the argument to a macro, the
+parsing \pkg{pseudo} uses to determine if \refc{\bslash} is at the end of the
+last line doesn't work; if you add \refc{\bslash} at the end here, you'll
+introduce an empty line.
 
 \makeatletter
 For simplicity, I've used \code{@\braces{}} to remove space on either side.
@@ -3092,7 +3333,7 @@ to use \cs{pseudolabelalign}, rather than \code{r}.
 \makeatother
 
 
-\subsection{\dots\,get tab stops?}
+\section{\dots\,get tab stops?}
 \label{sec:tabstops}
 
 Some packages, such as \pkg{clrscode3e}, use an actual \code{tabbing}
@@ -3166,6 +3407,11 @@ preamble, or you can do it as part of the box setup, e.g.,. using
 \cs{newtcbtheorem} (or, as in the following simplified example,
 just supply it directly as an option to the box environment).
 
+If you'd rather not separate the elements of, say, your input description by
+paragraphs, you could of course use line breaks (\cs{\bslash}); however,
+\cs{tab} won't work on its own at the beginning of the next line. To fix this,
+simply add \cs{null} before it (i.e., use \cs{null}\cs{tab}).
+
 \begin{texexp}
 % In document preamble:
 % \usepackage{tabto}
@@ -3181,7 +3427,7 @@ just supply it directly as an option to the box environment).
     \tab No negative cycle in $G$ is reachable from $s$
 
 \textbf{Result}
-    \tab An matrix $D$ of distances between the vertices in $V$
+    \tab An array $d$ of distances from $s$
 
 \begin{pseudo}
 \dots
@@ -3190,7 +3436,7 @@ just supply it directly as an option to the box environment).
 \end{texexp}
 
 
-\subsection{\dots\,use horizontal lines?}
+\section{\dots\,use horizontal lines?}
 \label{sec:horizontallines}
 
 Many opt for a table-like appearance when typesetting algorithms, with
@@ -3202,6 +3448,7 @@ tools such as \pkg{booktabs}, making sure to suppress the \pkg{pseudo}
 \refk{prefix} using the star flag (\code{*}):
 
 \begin{texexp}
+% In document preamble:
 % \usepackage{booktabs}
 \begin{pseudo}*
 \toprule
@@ -3226,7 +3473,7 @@ Rather than \code{\cs{\bslash}[bol=\cs{midrule}]}, you could also have used
 that the paragraph break between \refc{\bslash} and its argument has been
 commented out.)
 
-\subsection{\dots\,handle object attributes?}
+\section{\dots\,handle object attributes?}
 
 In the \pkg{clrscode3e} package, you'll find an assortment of commands for
 handling object attributes such as $A.\id{length}$. The manual says (here with
@@ -3260,7 +3507,7 @@ perhaps using \pkg{microtype}), you may of course do so, but \pkg{pseudo} does
 not (at present) include any special attribute lookup commands that do it for
 you.
 
-\subsection{\dots\,indicate blocks with braces or the like?}
+\section{\dots\,indicate blocks with braces or the like?}
 
 Some packages (such as \pkg{algorithm2e}) have support for using vertical lines
 to indicate the block structure;
@@ -3348,7 +3595,7 @@ course. This could be done by some hook triggered by the \code{-} flags in
 \refc{\bslash}. If it turns out there's a demand for something like that, I
 might add it in a future version.
 
-\subsection{\dots\,use \pkg{pseudo} with older \TeX\ distributions?}
+\section{\dots\,use \pkg{pseudo} with older \TeX\ distributions?}
 \label{sec:older}
 
 As mentioned in the introduction, I've tried to make \pkg{pseudo} work with at
@@ -3408,7 +3655,7 @@ Of course, you won't have access to other functionality (such as
 of that should be possible to emulate by hand (possibly peeking at the
 implementation in \cref{sec:impl}).
 
-\subsection{\dots\,use a header with no arguments?}
+\section{\dots\,use a header with no arguments?}
 
 Normally, \refc{hd} has a mandatory set of arguments; at the very least,
 you'll need to supply the parentheses:
@@ -3434,7 +3681,7 @@ arguments. If you'd like, though, you can just use \cs{multicolumn} yourself
 \end{pseudo}
 \end{texexp}
 
-\subsection{\dots\,place algorithm boxes side by side?}
+\section{\dots\,place algorithm boxes side by side?}
 
 In the simplest case, maybe you just want to place two of them side by side in
 the text (i.e., not as floats). Let's say you've defined an environment as
@@ -3502,7 +3749,7 @@ package):
 \end{figure}
 \end{texexp}
 
-\subsection{\dots\,have steps span multiple lines?}
+\section{\dots\,have steps span multiple lines?}
 
 First of all, you can do this by just breaking your lines manually, keeping any
 additional lines belonging to the same step unnumbered, by using the starred
@@ -3517,10 +3764,13 @@ adding unnumbered lines:
 \end{texexp}
 If you want the line breaking to be automated, you can use a \code{p} column,
 specified in \refk{preamble} (perhaps defining a style using
-\refc{pseudodefinestyle}), adapted from the default:\footnote{The default is
+\refc{pseudodefinestyle}), adapted from the default, as in the following.
+\begin{note}
+The default is
 found on p.~\pageref{p:preamble}. However, in the source code there, whitespace
-is insignificant. If writing your own preamble, you should avoid spurious
-whitespace inside \code{>\braces{\dots}} and \code{<\braces{\dots}}.}
+is insignificant. In writing your own preamble, you should avoid spurious
+whitespace inside \code{>\braces{\dots}} and \code{<\braces{\dots}}.
+\end{note}
 \begin{texexp}
 \begin{pseudo}[preamble = {
         >{\pseudohpad} \pseudolabelalign
@@ -3539,13 +3789,14 @@ dolor sit amet.
 
 \noindent
 In addition to introducing the \code{p} column, I've added \cs{raggedright} to
-the setup (with \refk{setup-append}, with \cs{RestorePseudoBackslash} to restore
-\refc{\bslash}, because \cs{raggedright} redefines it).
+the setup (using \refk{setup-append}, with \cs{RestorePseudoBackslash} to
+restore \refc{\bslash}, because \cs{raggedright} redefines it).
 
 One disadvantage of the \code{p} column is that you need to know its exact
 width. A better solution is probably to replace the default \code{tabular} with
 a \code{tabularx}, as discussed in \cref{sec:tabularx}, and use an \code{X}
-column, i.e.:
+column, i.e.:\footnote{For an explanation of the use of \code{[t]}, see the
+documentation of the \refk{pos} option.}
 \begin{texexp}[listing]
     begin-tabular = \tabularx{\linewidth}[t]{
         >{\pseudohpad} \pseudolabelalign
@@ -3556,7 +3807,7 @@ column, i.e.:
 \end{texexp}
 
 
-\subsection{\dots\,get the old spacing?}
+\section{\dots\,get the old spacing?}
 
 The current version of the \refe{pseudo} environment ensures the spacing above
 and below is adjusted, so the baselines of the previous and following lines are
@@ -3568,7 +3819,7 @@ follows:
 \end{texexp}
 
 
-\subsection{\dots\,configure my \code{tcolorbox}es?}
+\section{\dots\,configure my \code{tcolorbox}es?}
 \label{sec:boxconfig}
 
 If you use the \pkg{pseudo} styles for \code{tcolorbox}es (see
@@ -3578,15 +3829,19 @@ system, not that of \pkg{pseudo}, so it's worth consulting the \pkg{tcolorbox}
 documentation (and, perhaps, the source of the \pkg{pseudo} box styles, in
 \cref{sec:floatsrc}). In the following, I go through some examples of things you
 might want to adjust. First, let's define a rather unstyled environment which we
-can modify locally.\footnote{If you want the styling to apply to the environment
-in general, simply insert it as the third argument. See the \pkg{tcolorbox}
-documentation for more about \cs{newtcbtheorem}.}
+can modify locally.
 
 % Duplicated:
 \newtcbtheorem{example}{Example}{}{}
 \begin{texexp}[listing]
 \newtcbtheorem{example}{Example}{}{}
 \end{texexp}
+
+\begin{note}
+If you want the styling to apply to the environment in general, simply insert it
+as the third argument. See the \pkg{tcolorbox} documentation for more about
+\cs{newtcbtheorem}.
+\end{note}
 
 \paragraph{A different separator.} By default, the \pkg{pseudo} box styles use
 an \cs{enskip} to separate the label part from the description, but you might
@@ -3601,14 +3856,9 @@ using the \code*{separator sign} key:
 \paragraph{A different parskip.} You might want more or less spacing between the
 paragraphs of any plain text outside your pseudocode. You do this by setting
 \cs{parskip}, which is normally set as part of the \code*{before upper} key in
-the \code{pseudo/\dots} styles (see p.~\ref{p:before-upper}). Rather than
+the \code{pseudo/} styles (see p.~\pageref{p:before-upper}). Rather than
 overwrite the \code*{before upper} code, you can use the hook \refk{pseudo/init}
 (set as part of the \pkg{tcolorbox} configuration, not using \cs{pseudoset}):%
-\footnote{It is possible to use the \pkg{tcolorbox} key \code*{before upper app}
-(together with the \pkg{tcolorbox} library \code{hooks}) instead of
-\refk{pseudo/init}. However, the compatibility code (\cref{sec:compat}) appends
-some spacing to this setup hook, and this may be messed up by inserting more
-code after it. In this case, \refk{pseudo/init} is safer.}
 \begin{texexp}
 \begin{example}[pseudo/boxed,
     pseudo/init = \parskip\baselineskip]{\dots}{}
@@ -3617,6 +3867,14 @@ code after it. In this case, \refk{pseudo/init} is safer.}
     is bigger!
 \end{example}
 \end{texexp}
+\begin{note}
+It is possible to use the \pkg{tcolorbox} key \code*{before upper app}
+(together with the \pkg{tcolorbox} library \code{hooks}) instead of
+\refk{pseudo/init}. However, the compatibility code (\cref{sec:compat}) appends
+some spacing to this setup hook, and this may be messed up by inserting more
+code after it. In this case, \refk{pseudo/init} is safer.
+\end{note}
+
 You \emph{could} set \cs{topsep} and \cs{partopsep} in the same manner, but
 unless you want to change the settings for lists (such as \code{itemize} and
 \code{enumerate}), you could also just set those for pseudocode specifically,
@@ -3635,9 +3893,12 @@ adjust the line widths.
 \end{example}
 \end{texexp}
 The problem with the other ruled or boxed styles is that they use the
-\code{empty} skin, which removes the box drawing.\footnote{The reason they don't
-just set the appropriate line widths to zero is that this generally still
-results in visible hairlines in many PDF viewers.}
+\code{empty} skin, which removes the box drawing.
+\begin{note}
+The reason they don't just set the appropriate line widths to zero is that this
+generally still results in visible hairlines in many PDF viewers.
+\end{note}
+\noindent
 They then instead rely on various \code{borderline} commands. These are
 cumulative, so if you want to replace some of them, you first need to clear the
 deck with \code*{no borderline}, and then re-do them all. For example, maybe you
@@ -3680,7 +3941,7 @@ If you want to style the top and bottom line separately, just use
 \code*{borderline north} and \code*{borderline south} separately, rather than
 the collective \code*{borderline horizontal}.
 
-\section{Implementation}
+\chapter{Implementation}
 \label{sec:impl}
 
 \lstdefinestyle{tcblatex}{language={[LaTeX]TeX},
@@ -3757,7 +4018,7 @@ As part of the initial setup, we also record whether we're part of a
 \end{source}
 We're now ready to begin the actual implementation.
 
-\subsection{Variable declarations}
+\section{Variable declarations}
 
 Many variables are created as needed by various \code{set} commands, but some
 are declared initially. First, we create a plain-vanilla \LaTeX\ counter for
@@ -3799,7 +4060,7 @@ to know if that's the command we're in:
 \bool_new:N \l_@@_in_eol_bool
 \end{source}
 
-\subsection{Utilities}
+\section{Utilities}
 
 \paragraph{Variants.} First, let's just generate a couple of expansion
 variants we'll need of some standard commands. (I'm using the
@@ -4019,7 +4280,7 @@ used to refer to it until it's restored.
 }
 \end{source}
 %
-\subsection{Styles}
+\section{Styles}
 
 The first text styling commands are only straight-up shortcuts for normal font
 commands:
@@ -4167,7 +4428,7 @@ provided:
 \@@_new_dec:nn { String     } { st }
 \end{source}
 %
-\subsection{Notation}
+\section{Notation}
 
 Here we'll define a couple of symbols that are useful for pseudocode but that
 are not necessarily entirely standard mathematical notation. First, the double
@@ -4255,7 +4516,7 @@ command of \pkg[https://www.cs.dartmouth.edu/~thc/]{clrscode4e}.
 }
 \end{source}
 
-\subsection{Options}
+\section{Options}
 \label{sec:options}
 
 Much of the behavior of \pkg{pseudo} may be configured through various options,
@@ -4720,7 +4981,7 @@ supply a command for setting them.
 \cs_new:Npn \@@_set:n #1 { \keys_set:nn { pseudo } { #1 } }
 \end{source}
 %
-\subsection{The row separator}
+\section{The row separator}
 
 Much of the work of the \refe{pseudo} environment is performed by the row
 separator, that is, the \refc{\bslash} command; whatever part of the line
@@ -4761,8 +5022,8 @@ and clamp the indent level to non-negative values:
 %
 \paragraph{The actual row separator.} The command consists of a few
 interacting macros. The implementation of \refc{\bslash} is
-\verb|@@_eol:|, but that is just a thin wrapper that counts pluses and
-minuses, before handing the control over to \verb|@@_eol_tail|. This is where
+\verb|\@@_eol:|, but that is just a thin wrapper that counts pluses and
+minuses, before handing the control over to \verb|\@@_eol_tail|. This is where
 the remaining argument parsing takes place, and the \cs{tabularnewline} is
 inserted, after which control is passed to \verb|\@@_bol:| in order to begin a
 new line---unless we're at the end of the environment.
@@ -4837,7 +5098,7 @@ The \verb|\@@_bol:| command (currently) just inserts the \refk{prefix}:
 }
 \end{source}
 %
-\subsection{Various user commands}
+\section{Various user commands}
 
 A few user-level wrappers around internal commands. First, a couple primarily
 for use in the \refk{preamble}, together with \refc{pseudosavelabel} and
@@ -4884,7 +5145,7 @@ for setting multiple keys at some later point:
 \end{source}
 %
 % Not allowed to use \code in header, here:
-\subsection{The \codefont{pseudo} environment}
+\section{The \codefont{pseudo} environment}
 
 While this is the main attraction, it's essentially just an augmented
 \code{tabular} environment, which does a bit of setup initially, using the
@@ -5034,7 +5295,7 @@ The starred version of the environment is just a wrapper that uses the custom
 }
 \end{source}
 
-\subsection{Boxes and floats}
+\section{Boxes and floats}
 \label{sec:floatsrc}
 
 Some spacing and width values are taken from \pkg{booktabs}, to partly emulate
