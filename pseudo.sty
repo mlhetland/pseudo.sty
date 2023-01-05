@@ -21,7 +21,7 @@
 % SOFTWARE.
 %
 \def \pseudoversion {1.2.1}
-\def \pseudodate    {2023/01/03}
+\def \pseudodate    {2023/01/05}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -274,6 +274,13 @@
 }
 \ProcessKeysOptions{ pseudo/package }
 \keys_define:nn { pseudo } {
+    init            .tl_set:N       = \l__pseudo_init_tl,
+    init-append     .code:n         = {
+        \tl_put_right:Nn \l__pseudo_init_tl {#1}
+    },
+    init-prepend    .code:n         = {
+        \tl_put_left:Nn \l__pseudo_init_tl {#1}
+    },
     font            .tl_set:N       = \pseudofont,
     font            .initial:n      = \normalfont,
     hpad            .meta:n         = {
@@ -630,6 +637,7 @@
     \stepcounter{pseudoenv}
     \setcounter{pseudoline}{\l__pseudo_start_tl}
     \addtocounter{pseudoline}{-1}
+    \tl_use:N \l__pseudo_init_tl
     \tl_use:N \l__pseudo_begin_tabular_tl
     \tex_noalign:D {
         \RestorePseudoBackslash

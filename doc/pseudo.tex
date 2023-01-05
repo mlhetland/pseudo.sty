@@ -173,7 +173,8 @@
 \NewDocumentCommand \shortcutted { m m } {%
     If some package defines \cs{#1} before \pkg{pseudo} is loaded, \pkg{pseudo}
     will not overwrite it. The command will still be available, as \cs{#2}. To
-    get the shorter version, simply use \code{\cs{let}\cs{#1}\cs{#2}}.%
+    get the shorter version, simply use \code{\cs{let}\cs{#1}\cs{#2}}, possibly
+    as part of the \refk{init} hook.%
 }
 
 \NewDocumentCommand \pseudoshortcutted { m } {%
@@ -1032,7 +1033,9 @@ $A[1\:n]$
 \end{texexp}
 Note that \cs{:} is an existing spacing command that produces a medium space. If
 \cs{:} is redefined, this spacing command is still available as \cs{>}. However,
-if you use packages that rely on \cs{:}, such a redefinition might cause trouble.
+if you use packages that rely on \cs{:}, such a redefinition might cause
+trouble. One solution is to keep the redefinition local, e.g., using
+\code{\refc{pseudoset}\braces{\refk{init}=\cs{let}\cs{:}\refc{rng}}}.
 \end{sidebar}
 
 \noindent
@@ -2468,6 +2471,22 @@ indent-mark-width=.4pt}
     example, you might want a different indentation size. To set it to some
     specific length, you could use
     the \refKey*{indent-length} key.
+\end{docKey}
+
+\begin{docKey}{init}{\,=\,\meta{commands}}{\initiallyempty}
+    Used to set the initialization hook, which is inserted at the beginning of
+    the \refe{pseudo} environment (right before the actual tabular environment
+    begins, as defined by \refk{begin-tabular}). See also \refk{init-append} and
+    \refk{init-prepend}.
+\end{docKey}
+
+\begin{docKey}{init-append}{\,=\,\meta{commands}}{no default}
+    Locally appends \meta{commands} to \refk{init}.
+\end{docKey}
+
+\begin{docKey}{init-prepend}{\,=\,\meta{commands}}{no default}
+    Similar to \refk{init-append}, except that \meta{commands} are added to
+    the \emph{beginning} of \refk{init}.
 \end{docKey}
 
 \begin{docKey}{kw}{}{\novaluekey}
@@ -4548,6 +4567,14 @@ typesetting the pseudocode.
 \begin{source}
 \keys_define:nn { pseudo } {
 
+    init            .tl_set:N       = \l_@@_init_tl,
+    init-append     .code:n         = {
+        \tl_put_right:Nn \l_@@_init_tl {#1}
+    },
+    init-prepend    .code:n         = {
+        \tl_put_left:Nn \l_@@_init_tl {#1}
+    },
+
     font            .tl_set:N       = \pseudofont,
     font            .initial:n      = \normalfont,
 
@@ -4632,7 +4659,6 @@ magnitude.
         bol-prepend = \pseudohl
     },
     hl              .value_forbidden:n = true,
-
 
     bol             .tl_set:N       = \l_@@_bol_tl,
     bol-append      .code:n         = {
@@ -5202,7 +5228,11 @@ various macros already described.
     \stepcounter{pseudoenv}
     \setcounter{pseudoline}{\l_@@_start_tl}
     \addtocounter{pseudoline}{-1}
-
+\end{source}
+Before starting the actual tabular environment, we insert any user-configured
+initialization.
+\begin{source}
+    \tl_use:N \l_@@_init_tl
     \tl_use:N \l_@@_begin_tabular_tl
 \end{source}
 We use \cs{noalign} to be able to place these definitions inside the tabular,
