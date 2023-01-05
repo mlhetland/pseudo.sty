@@ -1013,9 +1013,27 @@ to include parentheses in the arguments, you need to wrap them in braces, e.g.,
 \code{\cs{hd}\braces{Traverse}(\braces{G=(V, E), s})}.
 \end{note}
 
-As can be seen in this example, \cs{==} (or \refc{eqs}) is a notational
-convenience defined by \pkg{pseudo}, along with interval dots \cs{..}\@ (or
-\refc{dts}) and the alternative range operator \refc{rng}:
+Another style is to include the header as a statement, just as any other,
+perhaps with an introductory keyword. The following example, for example, is
+based on one in the \pkg{algxpar} documentation (using \refe{pseudo*} to
+suppress line numbering, along with a couple of config keys):
+
+{\def\bf{\fontseries{bx}\selectfont}
+\begin{texexp}
+\begin{pseudo*}[font=\bf, indent-length=1.5em]
+function \pr{Max}(a, b)                         \\+
+    if $a > b$ then                             \\+
+        return $a$                              \\-
+    else                                        \\+
+        return $b$                              \\-
+    end if                                      \\-
+end function
+\end{pseudo*}
+\end{texexp}}
+
+As can be seen in the earlier \pr{Euclid} example, \cs{==} (or \refc{eqs}) is
+a notational convenience defined by \pkg{pseudo}, along with interval dots
+\cs{..}\@ (or \refc{dts}) and the alternative range operator \refc{rng}:
 \begin{texexp}
 Do you prefer $A[1 \.. n]$ or $A[1 \rng n]$?
 \end{texexp}
