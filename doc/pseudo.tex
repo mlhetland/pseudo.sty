@@ -4328,9 +4328,13 @@ commands:
 \@@_new_cmd:Nnn \cn { m } { \textnormal {\cnfont { #1 } } }
 \@@_new_cmd:Nnn \id { m } { \textnormal {\idfont { #1 } } }
 \end{source}
-(As a side-effect, we've now also defined \cs{pseudonf} and \cs{pseudotn},
-which we don't really need.)
-%
+\begin{note}
+As a side-effect, we've now also defined \cs{pseudonf} and \cs{pseudotn}, which
+we don't really need, as we might as well use \cs{normalfont} and
+\cs{textnormal} directly.
+\end{note}
+
+\noindent
 While we're at it, we'll define the initial value for \refc{kwfont}, which is
 generally non-extended bold, if that's available, but extended bold otherwise:
 \begin{source}
