@@ -4317,6 +4317,21 @@ used to refer to it until it's restored.
 }
 \end{source}
 %
+\paragraph{Skipping paragraphs.} Ignoring space is easy enough, but skipping
+\cs{par} tokens takes a bit more work. We'll be using this as part of the
+end-of-line handling, when we're checking if the next ``real'' token is
+\cs{end}. The argument is the code to execute after skipping (and removing)
+whitespace and \cs{par} tokens.
+\begin{source}
+\cs_new:Npn \@@_skip_pars:n #1 {
+    \peek_meaning_remove_ignore_spaces:NTF \par {
+        \@@_skip_pars:n { #1 }
+    } {
+        #1
+    }
+}
+\end{source}
+%
 \section{Styles}
 
 The first text styling commands are only straight-up shortcuts for normal font
@@ -5114,12 +5129,14 @@ particular for it to use any extra space provided to \refk{extra-space}.
     \tl_set:Nx \l_tmpa_tl {
         \exp_not:N \tabularnewline [ \l_@@_extra_space_tl ]
     }
-    \peek_meaning_ignore_spaces:NTF \end {
-        \l_tmpa_tl
-    } {
-        \pseudoeol
-        \l_tmpa_tl
-        \@@_bol:
+    \@@_skip_pars:n {
+        \peek_meaning_ignore_spaces:NTF \end {
+            \l_tmpa_tl
+        } {
+            \pseudoeol
+            \l_tmpa_tl
+            \@@_bol:
+        }
     }
 }
 \end{source}

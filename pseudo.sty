@@ -149,6 +149,13 @@
     \group_insert_after:N #1
     \group_insert_after:N #2
 }
+\cs_new:Npn \__pseudo_skip_pars:n #1 {
+    \peek_meaning_remove_ignore_spaces:NTF \par {
+        \__pseudo_skip_pars:n { #1 }
+    } {
+        #1
+    }
+}
 \__pseudo_new_cmd:Nnn \nf {   } { \normalfont          }
 \__pseudo_new_cmd:Nnn \tn { m } { \textnormal { #1 }   }
 \__pseudo_new_cmd:Nnn \kw { m } { \textnormal {\kwfont { #1 } } }
@@ -561,12 +568,14 @@
     \tl_set:Nx \l_tmpa_tl {
         \exp_not:N \tabularnewline [ \l__pseudo_extra_space_tl ]
     }
-    \peek_meaning_ignore_spaces:NTF \end {
-        \l_tmpa_tl
-    } {
-        \pseudoeol
-        \l_tmpa_tl
-        \__pseudo_bol:
+    \__pseudo_skip_pars:n {
+        \peek_meaning_ignore_spaces:NTF \end {
+            \l_tmpa_tl
+        } {
+            \pseudoeol
+            \l_tmpa_tl
+            \__pseudo_bol:
+        }
     }
 }
 \cs_new:Npn \__pseudo_eol: {
