@@ -4309,7 +4309,7 @@ the original name to the meaning it had when we entered the scope.
 In saving a macro, we also supply a name for the original, which may then be
 used to refer to it until it's restored.
 \begin{source}
-\cs_new:Npn \@@_gsave_as:NN #1 #2 {
+\cs_new:Npn \@@_cs_gsave_as:NN #1 #2 {
     \cs_gset_eq:NN #2 #1
     \group_insert_after:N \cs_gset_eq:NN
     \group_insert_after:N #1
@@ -4345,7 +4345,7 @@ generally non-extended bold, if that's available, but extended bold otherwise:
     \group_begin:
 
     \cs_if_exist:NT \@defaultsubs {
-        \@@_gsave_as:NN \@defaultsubs \@@_defaultsubs
+        \@@_cs_gsave_as:NN \@defaultsubs \@@_defaultsubs
         \cs_gset_eq:NN \@defaultsubs \relax
     }
 
@@ -5200,8 +5200,8 @@ various macros already described.
 
     \group_begin:
 
-    \@@_gsave_as:NN \\ \c_@@_saved_cr_cs
-    \@@_gsave_as:NN \= \c_@@_saved_eq_cs
+    \@@_cs_gsave_as:NN \\ \c_@@_saved_cr_cs
+    \@@_cs_gsave_as:NN \= \c_@@_saved_eq_cs
 
     % \RestorePseudoBackslash is inside the tabular
     \RestorePseudoEq

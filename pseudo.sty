@@ -21,7 +21,7 @@
 % SOFTWARE.
 %
 \def \pseudoversion {1.2.1}
-\def \pseudodate    {2023/01/05}
+\def \pseudodate    {2023/01/06}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -143,7 +143,7 @@
 \DeclareDocumentCommand \pseudosavelabel { } {
     \__pseudo_save_label:
 }
-\cs_new:Npn \__pseudo_gsave_as:NN #1 #2 {
+\cs_new:Npn \__pseudo_cs_gsave_as:NN #1 #2 {
     \cs_gset_eq:NN #2 #1
     \group_insert_after:N \cs_gset_eq:NN
     \group_insert_after:N #1
@@ -157,7 +157,7 @@
 \cs_new:Npn \__pseudo_b_or_bx: {
     \group_begin:
     \cs_if_exist:NT \@defaultsubs {
-        \__pseudo_gsave_as:NN \@defaultsubs \__pseudo_defaultsubs
+        \__pseudo_cs_gsave_as:NN \@defaultsubs \__pseudo_defaultsubs
         \cs_gset_eq:NN \@defaultsubs \relax
     }
     \cs_gset:Nn \__pseudo_b_or_bx: { \fontseries{b}\selectfont }
@@ -605,8 +605,8 @@
 }
 \NewDocumentEnvironment { pseudo } { +o s d<> +O{ } } {
     \group_begin:
-    \__pseudo_gsave_as:NN \\ \c__pseudo_saved_cr_cs
-    \__pseudo_gsave_as:NN \= \c__pseudo_saved_eq_cs
+    \__pseudo_cs_gsave_as:NN \\ \c__pseudo_saved_cr_cs
+    \__pseudo_cs_gsave_as:NN \= \c__pseudo_saved_eq_cs
     \RestorePseudoEq
     \int_set:Nn \g__pseudo_last_saved_line_int {\arabic{pseudoline}}
     \__pseudo_star_setup:
