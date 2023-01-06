@@ -5741,7 +5741,9 @@ preamble, and only if \pkg{tcolorbox} has actually been loaded at that point.
         \cs_new:Npn \@@_vmaj:n #1 { \@@_vmaj_aux:w #1 \q_stop }
         \cs_new:Npn \@@_vmaj_aux:w #1 . #2 \q_stop { #1 }
 
-        \tl_set:Nx \l_tmpa_tl { \exp_args:No \@@_vmaj:n \tcb@version }
+        \tl_set:Nx \l_tmpa_tl {
+            \exp_args:No \@@_vmaj:n \tcb@version
+        }
 
         \int_compare:nNnT \l_tmpa_tl < 5 {
 

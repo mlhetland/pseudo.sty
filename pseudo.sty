@@ -872,7 +872,9 @@ filled/.style = {
     \@ifpackageloaded { tcolorbox } {
         \cs_new:Npn \__pseudo_vmaj:n #1 { \__pseudo_vmaj_aux:w #1 \q_stop }
         \cs_new:Npn \__pseudo_vmaj_aux:w #1 . #2 \q_stop { #1 }
-        \tl_set:Nx \l_tmpa_tl { \exp_args:No \__pseudo_vmaj:n \tcb@version }
+        \tl_set:Nx \l_tmpa_tl {
+            \exp_args:No \__pseudo_vmaj:n \tcb@version
+        }
         \int_compare:nNnT \l_tmpa_tl < 5 {
             \tcbuselibrary { hooks }
             \tcbset {
