@@ -770,7 +770,7 @@ from some of my examples, later).
 For more advice on working around an older distribution, see \cref{sec:older}.
 \end{note}
 
-\chapter{Overview}
+\chapter{Pseudocode}
 \label{sec:overview}
 
 The main component of the \pkg{pseudo} package is the \refe{pseudo}
@@ -1280,6 +1280,18 @@ unnumbered version of the \refe{pseudo} environment:
 
 \chapter{Boxes and floats}
 \label{sec:floats}
+
+\begin{sidebar}{The short story}
+First import \pkg{tcolorbox}, with
+libraries \code{skins} and \code{theorems} (see nearby sidebar), and then put
+the following in your preamble:
+\begin{texexp}[listing]
+\newtcbtheorem{algorithm}{Algorithm}{pseudo/ruled, float}{alg}
+\end{texexp}
+You now have an \code{algorithm} float with the \code{pseudo/ruled} style. The
+environment takes two arguments: the title and a label name, which can be left
+empty.
+\end{sidebar}
 
 There are (at least) two different ways of viewing a block of pseudocode: as
 an inline element, like equations, or as a float, like figures and tables. For
