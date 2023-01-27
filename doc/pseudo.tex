@@ -977,15 +977,37 @@ The code is normally typeset in a two-column \code{tabular} (whose preamble,
 and thus number of columns, is configurable via the option \refk{preamble}),
 but the first column is handled by an automatic \refk{prefix} inserted before
 each line, containing the numbering and column separator (\code{\&}). You
-disable the prefix for the following line by using \code{\refc{\bslash}*}:
+disable the prefix for the following line by using \code{\refc{\bslash}*}. If
+you add the \code{\&} manually, you get an (appropriately indented) unnumbered
+line:
 
 \begin{texexp}
 \begin{pseudo}
-  this line has an automatic prefix             \\+*
-& this line does not                            \\+
+  this line has an automatic prefix             \\+*&
+  this line does not                            \\+
   but this one does
 \end{pseudo}
 \end{texexp}
+
+\noindent
+The \code{\cs{\bslash}*\&} combo can also be used for manual line breaking in
+multiline pseudocode steps:
+
+\begin{texexp}
+\begin{pseudo}[indent-mark]
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+nonumy \\*& eirmod tempor invidunt ut labore et dolore magna
+aliquyam erat. \\+
+At vero eos et accusam et justo duo dolores et ea rebum. Stet
+clita \\*& kasd gubergren, no sea takimata sanctus est Lorem ipsum
+dolor.
+\end{pseudo}
+\end{texexp}
+
+\begin{note}
+Automatic line wrapping is a bit trickier. See \cref{sec:multiline} for a
+discussion.
+\end{note}
 
 \noindent
 This star also works after \code{\cs{begin}\braces{pseudo}}. Note that in
@@ -3799,21 +3821,23 @@ package):
 \end{texexp}
 
 \section{\dots\,have steps span multiple lines?}
+\label{sec:multiline}
 
 First of all, you can do this by just breaking your lines manually, keeping any
 additional lines belonging to the same step unnumbered, by using the starred
-version of \refc{\bslash} (and skipping the number column with \code{\&}):
-adding unnumbered lines:
+version of \refc{\bslash} and skipping the number column with \code{\&}, adding
+unnumbered lines:
 \begin{texexp}
 \begin{pseudo}[line-height=1.1]
-  This step is broken\,\dots                    \\*
-& \dots\,into multiple lines                    \\
+  This step is broken\,\dots                    \\*&
+  \dots\,into multiple lines                    \\
   This one is not
 \end{pseudo}
 \end{texexp}
-If you want the line breaking to be automated, you can use a \code{p} column,
-specified in \refk{preamble} (perhaps defining a style using
-\refc{pseudodefinestyle}), adapted from the default, as in the following.
+If you want the line breaking to be automated, \emph{and you don't need
+indentation}, you can use a \code{p} column, specified in \refk{preamble}
+(perhaps defining a style using \refc{pseudodefinestyle}), adapted from the
+default, as in the following.
 \begin{note}
 The default is
 found on p.~\pageref{p:preamble}. However, in the source code there, whitespace
@@ -3855,6 +3879,13 @@ documentation of the \refk{pos} option.}
     setup-append = \RestorePseudoEq,
 \end{texexp}
 
+\noindent
+The main problem with this setup is that the automatic line wrapping doesn't
+take indentation into account, i.e., only the first line is indented! While
+there are ways of dealing with this,\footnote{Cf.\
+\url{https://github.com/mlhetland/pseudo.sty/issues/16}.} the simplest solution
+(at least for now) is probably to break lines manually, using
+\code{\cs{\bslash}*\&}.
 
 \section{\dots\,get the old spacing?}
 
