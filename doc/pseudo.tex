@@ -1276,7 +1276,10 @@ line (i.e., not at the end of the environment), so in this case only three
 \begin{note}
     The last \refc{\bslash} looks for an immediately following
     \code{\cs{end}\braces{pseudo}}, after skipping any non-paragraph whitespace,
-    so if you insert anything between te
+    so if you insert anything between the the \refc{\bslash} and
+    \code{\cs{end}\braces{pseudo}}, even if it's just an empty line (i.e., a
+    \cs{par}), you'll end up with an extra (empty) line in the result. Note,
+    however, that the last \refc{\bslash} is entirely optional!
 \end{note}
 
 The previously discussed configuration keys are described in more detail in
