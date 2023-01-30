@@ -2,6 +2,7 @@
 \usepackage{pseudo}
 
 \begin{document}
+
 \begin{frame}
 \begin{pseudo}
     foo \\[dim<2->]
@@ -9,4 +10,13 @@
     baz
 \end{pseudo}
 \end{frame}
+
+% https://github.com/mlhetland/pseudo.sty/issues/21
+\begin{frame}
+\begin{pseudo}[pause]*
+\hd{A}(x) \\
+B \\
+\end{pseudo}
+\end{frame}
+
 \end{document}

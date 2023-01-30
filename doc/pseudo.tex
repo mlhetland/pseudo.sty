@@ -5171,9 +5171,17 @@ but then we'd have a conditional at the beginning of the next line, which
 would mess up \cs{bottomrule} or the like. We need to keep \verb|\@@_bol:|
 alone at the start of the line.) We call \cs{tabularnewline} either way, in
 particular for it to use any extra space provided to \refk{extra-space}.
+
+It seems providing a zero-length extra space in \cs{tabularnewline} can cause
+trouble,\footnote{Cf.\ \url{https://github.com/mlhetland/pseudo.sty/issues/21}}
+so we treat that as a special case.
 \begin{source}
-    \tl_set:Nx \l_tmpa_tl {
-        \exp_not:N \tabularnewline [ \l_@@_extra_space_tl ]
+    \dim_compare:nNnTF \l_@@_extra_space_tl = { 0pt } {
+        \tl_set_eq:NN \l_tmpa_tl \tabularnewline
+    } {
+        \tl_set:Nx \l_tmpa_tl {
+            \exp_not:N \tabularnewline [ \l_@@_extra_space_tl ]
+        }
     }
     \@@_skip_pars:n {
         \peek_meaning_ignore_spaces:NTF \end {
