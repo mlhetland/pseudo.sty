@@ -1061,9 +1061,9 @@ Do you prefer $A[1 \.. n]$ or $A[1 \rng n]$?
 \end{texexp}
 
 \begin{sidebar}{Shortcuts for \cs{rng}}
-The \refc{..} command is actually implemented by hijacking the \cs{.} command,
-and isn't easily redefined directly. Instead, if you want \code{1\refc{..}n} to
-produce $1\rng n$, you can redefine \refc{dts}, using
+The \refc{..}\@ command is actually implemented by hijacking the \cs{.}\@
+command, and isn't easily redefined directly. Instead, if you want
+\code{1\refc{..}n} to produce $1\rng n$, you can redefine \refc{dts}, using
 \code{\cs{let}\refc{dts}\refc{rng}}.
 
 Another option is to introduce some other shortcut, such as \cs{:}, for example:
@@ -1071,10 +1071,10 @@ Another option is to introduce some other shortcut, such as \cs{:}, for example:
 \let\:\rng
 $A[1\:n]$
 \end{texexp}
-Note that \cs{:} is an existing spacing command that produces a medium space. If
-\cs{:} is redefined, this spacing command is still available as \cs{>}. However,
-if you use packages that rely on \cs{:}, such a redefinition might cause
-trouble. One solution is to keep the redefinition local, e.g., using
+Note that \cs{:}\@ is an existing spacing command that produces a medium space.
+If \cs{:}\@ is redefined, this spacing command is still available as \cs{>}.
+However, if you use packages that rely on \cs{:}, such a redefinition might
+cause trouble. One solution is to keep the redefinition local, e.g., using
 \code{\refc{pseudoset}\braces{\refk{init}=\cs{let}\cs{:}\refc{rng}}}.
 \end{sidebar}
 
@@ -2126,7 +2126,7 @@ See also \refk{bol-append}, \refk{setup-append} and \refk{dim-color}.
     A two-dot ellipsis, for use in the Wirth interval notation $1\..n$,
     typeset as \citeauthor{Graham:1994} did in
     \citetitle{Graham:1994}~\citep{Graham:1994}. Its definition is the same as
-    in \pkg{gkpmac}. Also accessible via the \refc{..} shortcut. See also
+    in \pkg{gkpmac}. Also accessible via the \refc{..}\@ shortcut. See also
     \refc{rng}.
 \end{docCommand}
 
@@ -4593,7 +4593,7 @@ command from Concrete Mathematics (see \pkg{gkpmac.tex}), with the addition of
 }
 \end{source}
 %
-There's a shortcut (\cs{..}) defined for this as well (this time hijacking
+There's a shortcut (\cs{..})\@ defined for this as well (this time hijacking
 \cs{.}):
 \begin{source}
 \cs_gset_eq:NN \c_@@_dot_cs \.
