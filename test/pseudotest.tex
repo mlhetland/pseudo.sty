@@ -2,6 +2,8 @@
 
 \def\id{my previous definition}
 
+\def\rng{\text{ MY OWN RNG }}
+
 \usepackage{pseudo}
 
 \usepackage{tcolorbox}
@@ -117,6 +119,24 @@ Hello, world!
 
 $A[1\..n] \== B[2\..n+1]$ \\
 $A[1\dts n] \eqs B[2\dts n+1]$ \\
+$A[1\pseudodts n] \pseudoeqs B[2\pseudodts n+1]$
+
+\bigskip
+\noindent
+Redefining dots:
+\let\origdts\pseudodts
+\let\pseudodts\pseudorng
+$1\..n$
+\let\pseudodts\origdts
+
+\bigskip
+
+\noindent
+Testing that a custom command is not overridden:
+$1\rng n$ \\
+The original still works: $1\pseudorng n$
+
+\bigskip
 
 \noindent
 $\id{foo-bar:baz}$

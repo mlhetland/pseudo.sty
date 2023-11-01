@@ -1063,8 +1063,9 @@ Do you prefer $A[1 \.. n]$ or $A[1 \rng n]$?
 \begin{sidebar}{Shortcuts for \cs{rng}}
 The \refc{..}\@ command is actually implemented by hijacking the \cs{.}\@
 command, and isn't easily redefined directly. Instead, if you want
-\code{1\refc{..}n} to produce $1\rng n$, you can redefine \refc{dts}, using
-\code{\cs{let}\refc{dts}\refc{rng}}.
+\code{1\refc{..}n} to produce $1\rng n$, you can redefine \refc{dts}---or,
+rather, its fully prefixed version, which is what \refc{..} uses
+internally---with \code{\cs{let}\cs{pseudodts}\refc{rng}}.
 
 Another option is to introduce some other shortcut, such as \cs{:}, for example:
 \begin{texexp}
@@ -1774,20 +1775,20 @@ alphabetical order), you'll find definitions of a couple of counters here
 \begin{docCommand}{..}{}
     This is a shortcut that hijacks the normal \cs{.}\@ accent command, so
     that if it is called with \code{.}\@ as an argument, the result is
-    \refc{dts}. In other words, the command \cs{..}\@ is really the call
-    \code{\cs{.}\braces{.}}. For any other arguments, the original \cs{.}\@ is
-    used, so while \code{\$1\cs{..}n\$} produces $1\..n$, \code{\cs{.}o} still
-    yields~\.o.
+    \refc{dts} (or, rather, the fully prefixed \cs{pseudodts}). In other words,
+    the command \cs{..}\@ is really the call \code{\cs{.}\braces{.}}. For any
+    other arguments, the original \cs{.}\@ is used, so while
+    \code{\$1\cs{..}n\$} produces $1\..n$, \code{\cs{.}o} still yields~\.o.
 \end{docCommand}
 
 \begin{docCommand}{==}{}
     \RestorePseudoEq % Having some trouble bc/o floats, or something?
     This is a shortcut that hijacks the normal \cs{=} accent command, so that
-    if it is called with \code{=} as an argument, the result is \refc{eqs}. In
-    other words, the command \cs{==} is really the call
-    \code{\cs{=}\braces{=}}. For any other arguments, the original \cs{=} is
-    used, so while \code{\$x\cs{==}y\$} produces $x\==y$, \code{\cs{=}o} still
-    yields \=o.
+    if it is called with \code{=} as an argument, the result is \refc{eqs} (or,
+    rather, the fully prefixed \cs{pseudoeqs}). In other words, the command
+    \cs{==} is really the call \code{\cs{=}\braces{=}}. For any other arguments,
+    the original \cs{=} is used, so while \code{\$x\cs{==}y\$} produces $x\==y$,
+    \code{\cs{=}o} still yields \=o.
 
     In some contexts, this may not work because \cs{=} has reverted to its
     original meaning (as is currently the case if you try to use it within a
@@ -2123,11 +2124,15 @@ See also \refk{bol-append}, \refk{setup-append} and \refk{dim-color}.
 % https://proofwiki.org/wiki/Definition:Real_Interval/Notation/Wirth
 % https://en.wikipedia.org/wiki/Ellipsis_(computer_programming)
 \begin{docCommand}{dts}{} % The name in Concrete Mathematics
+    \parindent1.5em
+    \noindent
     A two-dot ellipsis, for use in the Wirth interval notation $1\..n$,
     typeset as \citeauthor{Graham:1994} did in
     \citetitle{Graham:1994}~\citep{Graham:1994}. Its definition is the same as
-    in \pkg{gkpmac}. Also accessible via the \refc{..}\@ shortcut. See also
-    \refc{rng}.
+    in \pkg{gkpmac}. Also accessible via the \refc{..}\@ shortcut (which calls
+    the fully prefixed command \cs{pseudodts}). See also \refc{rng}.
+
+    \pseudoshortcutted{dts}
 \end{docCommand}
 
 \begin{docKey}{end-tabular}{}{\initialkeyvalue{\code{\cs{end}\braces{tabular}}}}
@@ -2150,13 +2155,18 @@ See also \refk{bol-append}, \refk{setup-append} and \refk{dim-color}.
 \end{docKey}
 
 \begin{docCommand}{eqs}{}
+    \parindent1.5em
+    \noindent
     Two equality signs typeset together as a binary relation, as in $x \eqs
     y$ (as opposed to the wider $x == y$, resulting from \code*{\$x == y\$}).
     It emulates the \pkg{stix} symbol \cs{eqeq}, but for use with Computer
     Modern (the default \LaTeX\ font) or Latin Modern (available via the
     \pkg[https://ctan.org/tex-archive/info/lmodern]{lmodern} package). It should
-    work just fine with other fonts. Also accessible via the \refc{==} shortcut,
-    and configurable via \refk{eqs-pad}, \refk{eqs-scale} and \refk{eqs-sep}.
+    work just fine with other fonts. Also accessible via the \refc{==} shortcut
+    (which calls the fully prefixed command \cs{pseudoeqs}), and configurable
+    via \refk{eqs-pad}, \refk{eqs-scale} and \refk{eqs-sep}.
+
+    \pseudoshortcutted{eqs}
 \end{docCommand}
 \begin{docKey}{eqs-pad}{\,=\,\meta{muskip}}{\initialkeyvalue{\code{0.28mu}}}
     The amount of space inserted on each side of \refc{eqs}.
@@ -3081,6 +3091,7 @@ goto \tn{\ref{li:ref}}
 \begin{texexp}
 Compare $A[1\rng n]$ to $A[1:n]$.
 \end{texexp}
+    \pseudoshortcutted{rng}
 \end{docCommand}
 
 \begin{docKey}{setup}{\,=\,\meta{commands}}{no default}
@@ -4542,7 +4553,7 @@ adjusted by using the keys \refk{eqs-scale}, \refk{eqs-sep} and
 \pkg{stix} when used with Computer Modern, Latin Modern or the like (though the
 command works just fine with other fonts as well).
 \begin{source}
-\NewDocumentCommand \eqs { } {
+\@@_new_cmd:Nnn \eqs { } {
     \group_begin:
     \muskip_set:Nn \l_tmpa_muskip \l_@@_eqs_pad_tl
     \muskip_set:Nn \l_tmpb_muskip \l_@@_eqs_sep_tl
@@ -4567,7 +4578,7 @@ For convenience and source-code clarity, the following shortcut (i.e.,
 
 \DeclareDocumentCommand \= { m } {
     \tl_if_eq:nnTF { #1 } { = } {
-        \eqs
+        \pseudoeqs
     } {
         \c_@@_orig_eq_cs{#1}
     }
@@ -4583,7 +4594,7 @@ command from Concrete Mathematics (see \pkg{gkpmac.tex}), with the addition of
 \pkg[https://www.cs.dartmouth.edu/~thc/]{clrscode4e}.
 
 \begin{source}
-\NewDocumentCommand \dts { } {
+\@@_new_cmd:Nnn \dts { } {
     \nolinebreak
     \mathinner {
         \ldotp
@@ -4600,7 +4611,7 @@ There's a shortcut (\cs{..})\@ defined for this as well (this time hijacking
 
 \DeclareDocumentCommand \. { m } {
     \tl_if_eq:nnTF { #1 } { . } {
-        \dts
+        \pseudodts
     } {
         \c_@@_dot_cs { #1 }
     }
@@ -4611,7 +4622,7 @@ Finally, we define a different syntax for numeric ranges like these (or
 \emph{slices} or \emph{subarrays}). This command is based on the \cs{subarr}
 command of \pkg[https://www.cs.dartmouth.edu/~thc/]{clrscode4e}.
 \begin{source}
-\NewDocumentCommand \rng { } {
+\@@_new_cmd:Nnn \rng { } {
     \nolinebreak
     \mathinner { : }
     \nolinebreak

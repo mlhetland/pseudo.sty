@@ -21,7 +21,7 @@
 % SOFTWARE.
 %
 \def \pseudoversion {1.2.3}
-\def \pseudodate    {2023/08/14}
+\def \pseudodate    {2023/11/01}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -230,7 +230,7 @@
 \__pseudo_new_dec:nn { Normal     } { tn }
 \__pseudo_new_dec:nn { Procedure  } { pr }
 \__pseudo_new_dec:nn { String     } { st }
-\NewDocumentCommand \eqs { } {
+\__pseudo_new_cmd:Nnn \eqs { } {
     \group_begin:
     \muskip_set:Nn \l_tmpa_muskip \l__pseudo_eqs_pad_tl
     \muskip_set:Nn \l_tmpb_muskip \l__pseudo_eqs_sep_tl
@@ -248,13 +248,13 @@
 \cs_gset_eq:NN \c__pseudo_orig_eq_cs \=
 \DeclareDocumentCommand \= { m } {
     \tl_if_eq:nnTF { #1 } { = } {
-        \eqs
+        \pseudoeqs
     } {
         \c__pseudo_orig_eq_cs{#1}
     }
 }
 \cs_gset_eq:NN \__pseudo_eq: \=
-\NewDocumentCommand \dts { } {
+\__pseudo_new_cmd:Nnn \dts { } {
     \nolinebreak
     \mathinner {
         \ldotp
@@ -265,12 +265,12 @@
 \cs_gset_eq:NN \c__pseudo_dot_cs \.
 \DeclareDocumentCommand \. { m } {
     \tl_if_eq:nnTF { #1 } { . } {
-        \dts
+        \pseudodts
     } {
         \c__pseudo_dot_cs { #1 }
     }
 }
-\NewDocumentCommand \rng { } {
+\__pseudo_new_cmd:Nnn \rng { } {
     \nolinebreak
     \mathinner { : }
     \nolinebreak
