@@ -2136,6 +2136,11 @@ See also \refk{bol-append}, \refk{setup-append} and \refk{dim-color}.
 
     \pseudoshortcutted{dts}
 \end{docCommand}
+\begin{docKey}{dts-impl}{\,=\,\meta{code}}{\initialkeyvalue{\cs{pseudodts}}}
+    The code used internally by the \cs{..} command, to produce the actual
+    output. The initial value is the fully prefixed version of the \refc{dts}
+    command.
+\end{docKey}
 
 \begin{docKey}{end-tabular}{}{\initialkeyvalue{\code{\cs{end}\braces{tabular}}}}
     The actual command for ending the \code{tabular} or \code{tabular}-like
@@ -2170,6 +2175,11 @@ See also \refk{bol-append}, \refk{setup-append} and \refk{dim-color}.
 
     \pseudoshortcutted{eqs}
 \end{docCommand}
+\begin{docKey}{eqs-impl}{\,=\,\meta{code}}{\initialkeyvalue{\cs{pseudoeqs}}}
+    The code used internally by the \cs{==} command, to produce the actual
+    output. The initial value is the fully prefixed version of the \refc{eqs}
+    command.
+\end{docKey}
 \begin{docKey}{eqs-pad}{\,=\,\meta{muskip}}{\initialkeyvalue{\code{0.28mu}}}
     The amount of space inserted on each side of \refc{eqs}.
 \end{docKey}
