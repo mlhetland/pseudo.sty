@@ -520,7 +520,7 @@
         pseudo/boxruled,
         before upper={}, % bc/o restricted horizontal mode
         after upper={},  % -- " --
-        title={pseudo \pseudoversion}]
+        title={pseudo \pseudoversion\textcolor{scol}{\pseudorevision}}]
     {%
     \begin{pseudo}[hsep=.5em, label=\color{sred}\arabic*]
     \rlap{straight-}\phantom{pseudocode}\ssep\code{\bslash\bslash+}\\
@@ -2495,7 +2495,7 @@ This default mark may be configured by using the keys \refk{indent-mark-color},
     \refk{indent-mark-shift} for an example.
 \end{docKey}
 
-\begin{docKey}{indent-mark-shift}{\,=\,\meta{length}}{default \code{.5em},
+\begin{docKey}{indent-mark-shift}{\,=\,\meta{length}}{default \code{.6em},
         initial value \code{0pt}}
     Sets the horizontal shift (from the actual start of an indent step) at which
     to render the default \refk{indent-mark}. The following example uses the
@@ -4050,8 +4050,11 @@ the collective \code*{borderline horizontal}.
     extendedchars=true,
     nolol,
     inputencoding=\kvtcb@listingencoding,
-    literate={VERSION}{\pseudoversion}{3}{DATE}{\pseudodate}{10}%
-    {~}{\textcolor{gray}{\raisebox{-.75ex}{\textasciitilde}}}{1},
+    literate=%
+        {VERSION}{\pseudoversion}{3}%
+        {REVISION}{\pseudorevision}{2}%
+        {DATE}{\pseudodate}{10}%
+        {~}{\textcolor{gray}{\raisebox{-.75ex}{\textasciitilde}}}{1},
     commentstyle=\color{gray},
 }
 
@@ -4063,8 +4066,9 @@ an internal prefix (\verb|__pseudo|), the same way they do with
 \bigskip\noindent
 First, we just define some metadata:
 \begin{source}
-\def \pseudoversion {VERSION}
-\def \pseudodate    {DATE}
+\def \pseudoversion  {VERSION}
+\def \pseudorevision {REVISION}
+\def \pseudodate     {DATE}
 \end{source}
 The \pkg{pseudo} package is implemented using experimental \LaTeX\,3, so we
 start by importing \pkg{expl3}:
@@ -4076,7 +4080,7 @@ Then we're ready start the package:
 \ProvidesExplPackage
     {pseudo}
     {\pseudodate}
-    {\pseudoversion}
+    {\pseudoversion\pseudorevision}
     {Straightforward pseudocode}
 \end{source}
 Tools for defining user commands:

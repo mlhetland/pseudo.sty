@@ -31,19 +31,36 @@ build/beamertest.pdf: test/beamertest.tex pseudo.sty
 	$(LATEX) $<
 
 pseudo.sty:	VERSION LICENSE doc/pseudo.tex
-	cat LICENSE | sed -e "s/^/% /" | sed -e "s/^% \$$/%/" > pseudo.sty
-	echo "%" >> pseudo.sty
+	VERSION="$$(cat VERSION)"; \
+	COMMITS=$$(git rev-list --count HEAD ^$$(git describe --tags --abbrev=0)); \
+	COMMITS=$$(expr $$COMMITS + 1); \
+	REVISION=""; \
+	if git diff --quiet VERSION || git diff --cached --quiet VERSION; then \
+	    REVISION=".$$COMMITS"; \
+	fi; \
+	A="1"; \
+	cat LICENSE | sed -e "s/^/% /" | sed -e "s/^% \$$/%/" > pseudo.sty; \
+	echo "%" >> pseudo.sty; \
 	cat doc/pseudo.tex | sed -n \
-		-e "/\begin{source}/,/\end{source}/{" \
+		-e "/\\begin{source}/,/\\end{source}/{" \
 		-e "/\\begin{source}/b" \
 		-e "/\\end{source}/b" \
 		-e "s/_@@/__pseudo/g" \
 		-e "s/@@/__pseudo/g" \
-		-e "s/VERSION/$$(cat VERSION)/g" \
+		-e "s/VERSION/$$VERSION/g" \
+		-e "s/REVISION/$$REVISION/g" \
 		-e "s/DATE/$$(date +"%Y\/%m\/%d")/g" \
 		-e "s/[ ]*%.*\$$//" \
 		-e "/^\$$/d" \
 		-e "p" \
+		-e "}" >> pseudo.sty
+
+
+debugging:
+	COMMITS=$$(expr $$(git rev-list --count HEAD \
+			^$$(git describe --tags --abbrev=0)) + 1); \
+	cat doc/pseudo.tex | sed -n \
+		-e "/\\begin{source}/,/\\end{source}/{" \
 		-e "}" >> pseudo.sty
 
 build/readmecode.tex: doc/fig/readmecode.tex
