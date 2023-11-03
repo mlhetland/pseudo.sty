@@ -4584,7 +4584,7 @@ For convenience and source-code clarity, the following shortcut (i.e.,
 
 \DeclareDocumentCommand \= { m } {
     \tl_if_eq:nnTF { #1 } { = } {
-        \pseudoeqs
+        \l_@@_eqs_impl_tl
     } {
         \c_@@_orig_eq_cs{#1}
     }
@@ -4617,7 +4617,7 @@ There's a shortcut (\cs{..})\@ defined for this as well (this time hijacking
 
 \DeclareDocumentCommand \. { m } {
     \tl_if_eq:nnTF { #1 } { . } {
-        \pseudodts
+        \l_@@_dts_impl_tl
     } {
         \c_@@_dot_cs { #1 }
     }
@@ -4931,6 +4931,20 @@ mode).
             \tl_clear:N \pseudopos
         }
     },
+\end{source}
+
+\paragraph{Notation.} The commands \refc{==} and \refc{..} normally produce
+$\..$ and $\==$, via \refc{eqs} and \refc{dts} (in their fully prefixed
+versions, \cs{pseudoeqs} and \cs{pseudodts}). Because of the implementation of
+these commands, you can't simply replace their implementation directly with
+\cs{def} or \cs{let}. Instead, you can use these keys to replace the necessary
+internal code.
+\begin{source}
+    eqs-impl        .tl_set:N       = \l_@@_eqs_impl_tl,
+    eqs-impl        .initial:n      = { \pseudoeqs },
+
+    dts-impl        .tl_set:N       = \l_@@_dts_impl_tl,
+    dts-impl        .initial:n      = { \pseudodts },
 \end{source}
 
 \paragraph{Details.} Finally, some tweakable parameters.
