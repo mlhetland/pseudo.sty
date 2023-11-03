@@ -1065,9 +1065,8 @@ Do you prefer $A[1 \.. n]$ or $A[1 \rng n]$?
 \begin{sidebar}{Shortcuts for \cs{rng}}
 The \refc{..}\@ command is actually implemented by hijacking the \cs{.}\@
 command, and isn't easily redefined directly. Instead, if you want
-\code{1\refc{..}n} to produce $1\rng n$, you can redefine \refc{dts}---or,
-rather, its fully prefixed version, which is what \refc{..} uses
-internally---with \code{\cs{let}\cs{pseudodts}\refc{rng}}.
+\code{1\refc{..}n} to produce $1\rng n$, you can use the \refk{dts-impl} key
+(i.e., \code*{\refk{dts-impl} = \refc{rng}}).
 
 Another option is to introduce some other shortcut, such as \cs{:}, for example:
 \begin{texexp}
@@ -1078,7 +1077,7 @@ Note that \cs{:}\@ is an existing spacing command that produces a medium space.
 If \cs{:}\@ is redefined, this spacing command is still available as \cs{>}.
 However, if you use packages that rely on \cs{:}, such a redefinition might
 cause trouble. One solution is to keep the redefinition local, e.g., using
-\code{\refc{pseudoset}\braces{\refk{init}=\cs{let}\cs{:}\refc{rng}}}.
+\code*{\refc{pseudoset}\braces{\refk{init} = \cs{let}\cs{:}\refc{rng}}}.
 \end{sidebar}
 
 \noindent
