@@ -1775,15 +1775,30 @@ alphabetical order), you'll find definitions of a couple of counters here
 \end{docKey}
 
 \begin{docCommand}{..}{}
+    \parindent1.5em
+    \noindent
     This is a shortcut that hijacks the normal \cs{.}\@ accent command, so
     that if it is called with \code{.}\@ as an argument, the result is
     \refc{dts} (or, rather, the fully prefixed \cs{pseudodts}). In other words,
     the command \cs{..}\@ is really the call \code{\cs{.}\braces{.}}. For any
     other arguments, the original \cs{.}\@ is used, so while
     \code{\$1\cs{..}n\$} produces $1\..n$, \code{\cs{.}o} still yields~\.o.
+
+    Because \refc{..} isn't an ordinary macro, it cannot be overridden by a
+    simple \cs{let} statement. Instead, the part that produces the actual output
+    may be overridden by using the \refk{dts-impl} key. For example, if you'd
+    like to use the \refc{..} shortcut, but prefer to use \refc{rng} as your
+    range operator, you could achieve that as follows:
+
+\begin{texexp}
+\pseudoset{dts-impl=\rng}
+$1\..n$
+\end{texexp}
 \end{docCommand}
 
 \begin{docCommand}{==}{}
+    \parindent1.5em
+    \noindent
     \RestorePseudoEq % Having some trouble bc/o floats, or something?
     This is a shortcut that hijacks the normal \cs{=} accent command, so that
     if it is called with \code{=} as an argument, the result is \refc{eqs} (or,
@@ -1798,6 +1813,17 @@ alphabetical order), you'll find definitions of a couple of counters here
     \code{figure}). In this case, you can restore the \pkg{pseudo} meaning (and
     the \refc{==} shortcut) by using \refc{RestorePseudoEq}. In some cases, you
     may want to just use \refc{eqs} instead.
+
+    Because \refc{==} isn't an ordinary macro, it cannot be overridden by a
+    simple \cs{let} statement. Instead, the part that produces the actual output
+    may be overridden by using the \refk{eqs-impl} key. For example, if you'd
+    like to use the \refc{==} shortcut, but prefer to use \cs{equiv} as your
+    range operator, you could achieve that as follows:
+
+\begin{texexp}
+\pseudoset{eqs-impl=\equiv}
+$1\==n$
+\end{texexp}
 \end{docCommand}
 
 \begin{docCommand}{\protect\bslash}{\,\colOpt{+}%
