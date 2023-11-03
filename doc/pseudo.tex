@@ -1787,10 +1787,13 @@ alphabetical order), you'll find definitions of a couple of counters here
     Because \refc{..} isn't an ordinary macro, it cannot be overridden by a
     simple \cs{let} statement. Instead, the part that produces the actual output
     may be overridden by using the \refk{dts-impl} key. For example, if you'd
-    like to use the \refc{..} shortcut, but prefer to use \refc{rng} as your
-    range operator, you could achieve that as follows:
+    like to use the \refc{..} shortcut, but prefer to use \cs{dots} or
+    \refc{rng} as your range operator, you could achieve that as follows:
 
 \begin{texexp}
+\pseudoset{dts-impl=\dots}
+$1\..n$
+
 \pseudoset{dts-impl=\rng}
 $1\..n$
 \end{texexp}
