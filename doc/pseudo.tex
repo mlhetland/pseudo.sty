@@ -1040,7 +1040,8 @@ perhaps with an introductory keyword. The following example, for example, is
 based on one in the \pkg{algxpar} documentation (using \refe{pseudo*} to
 suppress line numbering, along with a couple of config keys):
 
-{\def\bf{\fontseries{bx}\selectfont}
+\let\origbf\bf
+\def\bf{\fontseries{bx}\selectfont}
 \begin{texexp}
 \begin{pseudo*}[font=\bf, indent-length=1.5em]
 function \pr{Max}(a, b)                         \\+
@@ -1051,7 +1052,8 @@ function \pr{Max}(a, b)                         \\+
     end if                                      \\-
 end function
 \end{pseudo*}
-\end{texexp}}
+\end{texexp}
+\let\bf\origbf
 
 As can be seen in the earlier \pr{Euclid} example, \cs{==} (or \refc{eqs}) is
 a notational convenience defined by \pkg{pseudo}, along with interval dots
