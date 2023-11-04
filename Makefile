@@ -30,10 +30,13 @@ build/pseudotest.pdf: test/pseudotest.tex pseudo.sty
 build/beamertest.pdf: test/beamertest.tex pseudo.sty
 	$(LATEX) $<
 
+# When the revision number is computed in branches other than master, a squashed
+# merge is assumed.
 pseudo.sty:	VERSION LICENSE doc/pseudo.tex
 	VERSION="$$(cat VERSION)"; \
-	COMMITS=$$(git rev-list --count HEAD ^$$(git describe --tags --abbrev=0)); \
-	COMMITS=$$(expr $$COMMITS + 1); \
+	PREVTAG="$$(git describe --tags --abbrev=0 master)"; \
+	COMMITS="$$(git rev-list --count master ^$$PREVTAG)"; \
+	COMMITS="$$(expr $$COMMITS + 1)"; \
 	REVISION=""; \
 	if git diff --quiet VERSION || git diff --cached --quiet VERSION; then \
 	    REVISION=".$$COMMITS"; \

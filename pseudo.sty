@@ -21,8 +21,8 @@
 % SOFTWARE.
 %
 \def \pseudoversion  {1.2.3}
-\def \pseudorevision {.8}
-\def \pseudodate     {2023/11/03}
+\def \pseudorevision {.9}
+\def \pseudodate     {2023/11/04}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -249,7 +249,7 @@
 \cs_gset_eq:NN \c__pseudo_orig_eq_cs \=
 \DeclareDocumentCommand \= { m } {
     \tl_if_eq:nnTF { #1 } { = } {
-        \pseudoeqs
+        \l__pseudo_eqs_impl_tl
     } {
         \c__pseudo_orig_eq_cs{#1}
     }
@@ -266,7 +266,7 @@
 \cs_gset_eq:NN \c__pseudo_dot_cs \.
 \DeclareDocumentCommand \. { m } {
     \tl_if_eq:nnTF { #1 } { . } {
-        \pseudodts
+        \l__pseudo_dts_impl_tl
     } {
         \c__pseudo_dot_cs { #1 }
     }
@@ -454,6 +454,10 @@
             \tl_clear:N \pseudopos
         }
     },
+    eqs-impl        .tl_set:N       = \l__pseudo_eqs_impl_tl,
+    eqs-impl        .initial:n      = { \pseudoeqs },
+    dts-impl        .tl_set:N       = \l__pseudo_dts_impl_tl,
+    dts-impl        .initial:n      = { \pseudodts },
     eqs-scale       .fp_set:N       = \l__pseudo_eqs_scale_fp,
     eqs-scale       .initial:n      = 0.6785,
     eqs-sep         .tl_set:N       = \l__pseudo_eqs_sep_tl,
