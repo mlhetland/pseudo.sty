@@ -58,14 +58,6 @@ pseudo.sty:	VERSION LICENSE doc/pseudo.tex
 		-e "p" \
 		-e "}" >> pseudo.sty
 
-
-debugging:
-	COMMITS=$$(expr $$(git rev-list --count HEAD \
-			^$$(git describe --tags --abbrev=0)) + 1); \
-	cat doc/pseudo.tex | sed -n \
-		-e "/\\begin{source}/,/\\end{source}/{" \
-		-e "}" >> pseudo.sty
-
 build/readmecode.tex: doc/fig/readmecode.tex
 	mkdir -p $(@D) && cp $< $@
 
