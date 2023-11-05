@@ -1335,12 +1335,12 @@ pseudocode as part of the body text. If you wish to place your pseudocode in a
 float, you can easily use a package such as
 \pkg[https://ctan.org/tex-archive/macros/latex/contrib/float]{float}.\footnote{Or
 you could do a quick \href{https://ctan.org}{\textsc{ctan}} search for
-``\href{https://ctan.org/search/?phrase=float}{float}'', or a look at the
+``\href{https://ctan.org/search/?phrase=float}{float}'', or take a look at the
 \href{https://ctan.org/recommendations/float}{recommendations} related to
 the \pkg[https://ctan.org/tex-archive/macros/latex/contrib/float]{float}
-package, will give you many options, with varying functionality.} You could also
-use the float environments supplied with packages such as \pkg{algorithms},
-\pkg{algorithmicx} and \pkg{algorithm2e}.
+package, which will give you many options, with varying functionality.} You
+could also use the float environments supplied with packages such as
+\pkg{algorithms}, \pkg{algorithmicx} and \pkg{algorithm2e}.
 
 \begin{note}
 The definition of \refc{==} doesn't properly carry over into floats. It's
@@ -1432,7 +1432,7 @@ environment, using \cs{newtcbtheorem} (probably in the preamble):
 
 \noindent
 Here \code{algorithm} is the name we've chosen for our new environment,
-\code{Algorithm} is the label to be used when numbering (i.e., ``Algorithm~1,''
+\code{Algorithm} is the label to be used when numbering (i.e., ``Algorithm~1'',
 etc.), \refk{pseudo/ruled} is the ruled box style, and \code{alg} is is a prefix
 that will be used in automatically labeling our boxes.
 
@@ -1482,7 +1482,7 @@ follows (here with floating turned off locally):
 \end{texexp}
 }
 
-The first argument is the title, or ``caption,'' and the second argument
+The first argument is the title, or ``caption'', and the second argument
 (\code{gnome}) is the \emph{marker}, which is combined with the prefix (in our
 case, \code{alg}) to create the label, \code{alg:gnome}, which can be used with
 \cs{ref} or (using \pkg{cleveref}) \cs{cref}, etc.:\footnote{The separator
@@ -1578,7 +1578,7 @@ on configuring the boxes, see \cref{sec:boxconfig}.)
 The contents of one of these boxes need not be restricted to pseudocode---the
 spacing is set up to handle plain text as well. For example, you may want to
 specify inputs and outputs.\footnote{Common alternatives to ``Input/Output'' are
-``Require/Ensure'' and ``Data/Result.''} (If you want to align such
+``Require/Ensure'' and ``Data/Result''.} (If you want to align such
 specification, as in \cref{alg:euclid} \vpageref{alg:euclid}, you can use the
 \pkg{tabto} package; see \cref{sec:tabstops}.)
 
@@ -4495,7 +4495,7 @@ parenthesis-delimited arguments, which are set in math mode. To avoid
 erroneousy slurping up following parentheticals, there should be no space
 separating the command and its optional argument. With current versions of
 \pkg{xparse}, this can be achieved with the \verb|!| argument type, but for
-compatibility with older \TeX\ distributions, I'll deal with it ``manually.''
+compatibility with older \TeX\ distributions, I'll deal with it ``manually''.
 \begin{source}
 \cs_new:Npn \@@_fmt_pr:n #1 {
     \textnormal{\prfont{ #1 }}
