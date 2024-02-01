@@ -21,8 +21,8 @@
 % SOFTWARE.
 %
 \def \pseudoversion  {1.2.3}
-\def \pseudorevision {.11}
-\def \pseudodate     {2023/11/05}
+\def \pseudorevision {.12}
+\def \pseudodate     {2024/02/01}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -47,7 +47,6 @@
 \bool_new:N \l__pseudo_in_eol_bool
 \cs_generate_variant:Nn \quark_if_no_value:nTF    { VTF    }
 \cs_generate_variant:Nn \tl_if_novalue:nTF        { VTF    }
-\cs_generate_variant:Nn \tl_set:Nn                { Ne     }
 \exp_args_generate:n                              { NNVNNV }
 \cs_new:Npn \__pseudo_undef_col:n #1 {
     \tl_set_eq:cN { NC@find@ \token_to_str:N #1 } \scan_stop:
