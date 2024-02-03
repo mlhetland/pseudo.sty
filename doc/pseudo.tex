@@ -4187,15 +4187,21 @@ manipulated by \refc{\bslash}; their product determines the actual length by
 which the current line is indented. The initial indent level may be set using
 \refk{indent-level}.
 \begin{source}
-\dim_new:N  \pseudoindentlength
-\int_new:N  \g_@@_indent_level_int
-\int_new:N  \l_@@_initial_indent_level_int
+\dim_new:N \pseudoindentlength
+\int_new:N \g_@@_indent_level_int
+\int_new:N \l_@@_initial_indent_level_int
 \end{source}
 
 When handling unknown keys, we have special-casing of \refc{\bslash}, so we need
 to know if that's the command we're in:
 \begin{source}
 \bool_new:N \l_@@_in_eol_bool
+\end{source}
+We'll also create a couple of globals, to help us get some key-setting results
+out of the group surrounding the code handling unknown keys:
+\begin{source}
+\tl_new:N \g_@@_extra_space_temp_tl
+\tl_new:N \g_@@_key_setting_code_temp_tl
 \end{source}
 
 \section{Utilities}
@@ -4207,7 +4213,6 @@ compatibility with older \TeX\ distributions.)
 \begin{source}
 \cs_generate_variant:Nn \quark_if_no_value:nTF    { VTF    }
 \cs_generate_variant:Nn \tl_if_novalue:nTF        { VTF    }
-\exp_args_generate:n                              { NNVNNV }
 \end{source}
 \paragraph{Defining columns.} The \refk{preamble} is is configurable, but the
 \pkg{array} package makes sure it doesn't expand any part of its preamble. One
@@ -5053,6 +5058,11 @@ latter of the two really shouldn't.\footnote{See
         \tl_clear:N \l_tmpa_tl
         \tl_clear:N \l_tmpb_tl
 
+        % We'll modify this globally, remporarily, and put it back
+        % into the local variable just outside this group.
+        \tl_gset_eq:NN \g_@@_extra_space_temp_tl
+                       \l_@@_extra_space_tl
+
         \tl_map_inline:Nn \l_keys_key_tl {
 
             \tl_if_eq:nnTF { ##1 } { < } {
@@ -5126,8 +5136,8 @@ empty.
                     { \l_@@_in_eol_bool       }
                     { \tl_if_blank_p:n { #1 } }
             } {
-                \tl_set_rescan:Nno
-                    \l_@@_extra_space_tl { }
+                \tl_gset_rescan:Nno
+                    \g_@@_extra_space_temp_tl { }
                     { \l_keys_key_str  }
             } {
                 \msg_error:nnx
@@ -5136,15 +5146,14 @@ empty.
             }
         }
 
-        % Make sure extra space and key-setting carry over
-        % outside the group:
-        \exp_args:NNNVNNV
-            \group_end:
-            \tl_set:Nn \l_@@_extra_space_tl \l_@@_extra_space_tl
-            \tl_set:Nn \l_tmpa_tl           \l_tmpa_tl
+        \tl_gset_eq:NN \g_@@_key_setting_code_temp_tl \l_tmpa_tl
 
-        % Run the key-setting code with overlay specification:
-        \l_tmpa_tl
+        \group_end:
+
+        % Make sure extra space and key-setting carry over outside
+        % the group:
+        \tl_set_eq:NN \l_@@_extra_space_tl \g_@@_extra_space_temp_tl
+        \tl_use:N \g_@@_key_setting_code_temp_tl
 
     }
 
