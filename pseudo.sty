@@ -21,8 +21,8 @@
 % SOFTWARE.
 %
 \def \pseudoversion  {1.2.3}
-\def \pseudorevision {.14}
-\def \pseudodate     {2024/02/03}
+\def \pseudorevision {.15}
+\def \pseudodate     {2024/02/05}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -682,11 +682,11 @@
 }
 \pseudodefinestyle{ starred }{
     preamble = {
-        >{\pseudohpad\pseudoindent\pseudofont}
+        >{ \pseudohpad \pseudoindent \pseudofont }
         l
-        <{\pseudohpad}
+        <{ \pseudohpad }
     },
-    prefix = {\pseudobol},
+    prefix = { \pseudobol },
 }
 \NewDocumentEnvironment { pseudo* } { +O{} } {
     \begin{pseudo}[starred, #1]
