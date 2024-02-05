@@ -55,7 +55,9 @@
 % Still getting warnings about OT1/cmtt/b/n ...
 
 \usepackage{tikz}
-\usetikzlibrary{matrix,calc,decorations.pathreplacing,calligraphy}
+\usetikzlibrary{matrix,calc}
+\usetikzlibrary{tikzmark,decorations.pathreplacing,calligraphy}
+\usetikzlibrary{arrows,arrows.meta}
 \tikzset{
     auto/.style={fill=black!12}
 }
@@ -319,6 +321,26 @@
     },
     #1
 }
+
+\ExplSyntaxOn
+\NewDocumentCommand \ExecutedListing { +v } {
+    \group_begin:
+    \obeylines
+    \exp_args:Nx \scantokens {
+        \string\begin{texexp}[listing]
+            #1
+        \string\end{texexp}
+    }
+    \group_end:
+
+    \int_set_eq:NN \l_tmpa_int \newlinechar
+    \int_set_eq:NN \newlinechar \endlinechar
+    \exp_args:Nx \scantokens {
+        #1
+    }
+    \int_set_eq:NN \newlinechar \l_tmpa_int
+}
+\ExplSyntaxOff
 
 \tcbset{
     infobox/.style = {
@@ -3637,88 +3659,161 @@ you.
 Some packages (such as \pkg{algorithm2e}) have support for using vertical lines
 to indicate the block structure;
 \pkg[https://ctan.org/tex-archive/macros/latex/contrib/pseudocode]{pseudocode}
-uses large braces. In \pkg{pseudo}, there is support for using an
-\refk{indent-mark}, for which the default is a semithick, gray vertical line
-(see \cpageref{p:indent-mark}). However, by using
-\pkg[https://ctan.org/pkg/pgf]{tikz}, you could draw all kinds of indentation
-decorations.
+uses large braces. In \pkg{pseudo}, you can use an \refk{indent-mark}, for which
+the default is a semithick, gray vertical line (see \cpageref{p:indent-mark}).
+However, with \pkg[https://ctan.org/pkg/pgf]{tikz}, you could draw all kinds of
+indentation decorations, for example using \pkg{tikzmark} to anchor the drawings
+at the individual lines.
 
-You could, for example, add a \code{node} at the start of each code line,
-containing an \verb|\@arstrut|, the (\pkg{array}) strut used to indicate the
-extent of a tabular row:
+\begingroup
 
-% ! Contents duplicated
-\makeatletter
-\NewDocumentCommand \pseudoanchor { m } {%
-    \tikz[baseline, overlay, remember picture]
-        \node[anchor=base, inner sep=0] (#1) {\@arstrut};%
-    \ignorespaces
+For example, you might add a \cs{tikzmarknode} at the start of each code line.
+This might contain a small zero-width box covering the vertical extent of normal
+text (such as \code{\cs{vphantom}\braces{fg}}). The nodes can be given names
+like \code{line-1}, etc., using \code{\cs{arabic}\braces{\refk{*}}} for the
+numbering:
+
+\ExecutedListing{
+% In document preamble:
+% \usepackage{tikz}
+% \usetikzlibrary{tikzmarks}
+
+\def\shortstrut{\vphantom{fg}}
+
+\pseudoset{
+    setup-append = {\tikzmarknode{L\arabic*}{\shortstrut}}
 }
-\makeatother
-\begin{texexp}[listing]
-% \usepackage{xparse,tikz}
-% \usetikzlibrary{decorations.pathreplacing,calligraphy}
-\makeatletter
-\NewDocumentCommand \pseudoanchor { m } {%
-    \tikz[baseline, overlay, remember picture]
-        \node[anchor=base, inner sep=0] (#1) {\@arstrut};%
-    \ignorespaces
 }
-\makeatother
-\end{texexp}
+
+\begingroup
 
 \noindent
-You can then use the resulting nodes to draw braces or lines or whatever. First
-some example setup:
+For each \refe{pseudo} environment, we now get
+\pkg[https://ctan.org/pkg/pgf]{tikz} anchors like \code{L1.north}, etc., which
+can be used for drawing. We can define a custom command for drawing the indent
+marks, relying on the \pkg[https://ctan.org/pkg/pgf]{tikz} \cs{foreach} syntax,
+supplying the line number intervals as \code{2/5}, etc.
+\begin{note}
+    The \code{overlay} and \code*{remember picture} options to the cs{tikz}
+    command below are needed. To shift the line to the left, \code{xshift} is
+    convenient, but because we are using named points, it must be combined with
+    \code*{transform canvas}.
+\end{note}
+\ExecutedListing{
+\tikzset{indent mark/.style = {semithick, lightgray}}
 
-% ! Duplicated
-\begin{texexp}[listing]
-\pseudoset{
-    kw,
-    indent-length = 3.5em,
-    setup-append = {\pseudoanchor{L-\arabic*}}
+\NewDocumentCommand \DrawIndentMarks { m m } {
+    \tikz [
+        overlay, remember picture,
+        transform canvas={xshift=-1.25em}
+    ] {
+        \foreach \i/\j in {#1} \draw[indent mark]
+            (L\i.north) -- (L\i.north |- L\j.south);
+        \foreach \i/\j in {#2} \draw[indent mark]
+            (L\i.north) -- (L\i.north |- L\j.west) -- +(.5em,0);
+    }
 }
-\tikzset{
-    braces/.style =
-    {thick, decoration = {calligraphic brace, raise=.2em}},
-    label/.style =
-    {midway, left=3em, anchor=west, font=\strut\kwfont}
 }
-\end{texexp}
-You would then get something like the following:
-{
-\pseudoset{
-    kw,
-    indent-length = 3.5em,
-    setup-append = {\pseudoanchor{L-\arabic*}}
-}
-\tikzset{
-    braces/.style =
-    {thick, decoration = {calligraphic brace, raise=.2em}},
-    label/.style =
-    {midway, left=3em, anchor=west, font=\strut\kwfont}
-}
+
+\noindent
+This command takes two arguments, where the first is a list of intervals that
+end with some ``continuing'' keyword, such as \kw{else}, while the second is a
+list of intervals that terminate with the end of a statement. These latter ones
+loosely emulate the terminating ``hook'' used in, e.g.,
+\pkg{algorithm2e}.
+
+\begin{note}
+I've centered the hook on the final line to illustrate the use of different
+anchors. If you'd rather have it lower, you could replace \code{L\cs{j}.west} by
+\code{L\cs{j}.south}.
+\end{note}
+
+\noindent
+To not mess up the
+spacing around the \refe{pseudo} environment, we can put the drawing command
+inside it, at the end.
+
 \begin{texexp}
-\begin{pseudo}
-if $x < y$                                      \\+
-    $x = y$                                     \\
-    $y = 0$
+\begin{pseudo}[kw, indent-length=1.5em]
+$p = 1$                                                       \\
+while $n > 1$                                                 \\+
+    if $n \bmod 2 \== 0$                                      \\+
+        $x = x \cdot x$                                       \\
+        $n = x/2$                                             \\-
+    else                                                      \\+
+        $p = p \cdot x$                                       \\
+        $n = n - 1$                                           \\--
+$p = p \cdot x$
+\DrawIndentMarks{4/5}{3/8, 7/8}
 \end{pseudo}
-\tikz[overlay, remember picture, braces] {
-    \draw[decorate] (L-3.south) -- (L-2.north) node[label] {then};
-}
 \end{texexp}
+
+\endgroup
+
+\noindent
+Braces somewhat similar to those used by the \pkg{pseudocode} package could be
+drawn by altering our definitions slightly:
+
+\ExecutedListing{
+% In document preamble:
+% \usetikzlibrary{decorations.pathreplacing,calligraphy}
+
+\tikzset{
+    indent mark/.style = {
+        thick, decorate,
+        decoration = {calligraphic brace, mirror, raise=.3em},
+    },
+    mark label/.style = {
+        midway, font=\shortstrut, left=.5em, anchor=east
+    }
+}
+}
+
+I've also added a format for labels (like ``then'' or ``else'', etc.), which can
+be added to the list being iterated over. These are drawn to the left of the
+braces:
+
+\ExecutedListing{
+\NewDocumentCommand \DrawIndentMarks { m } {
+    \tikz [overlay, remember picture] {
+        \foreach \i/\j/\label in {#1} \draw[indent mark]
+            (L\i.north) -- (L\i.north |- L\j.south)
+            node[mark label] {\label};
+    }
+}
+
+% For left-alignment with "then":
+\NewDocumentCommand \Else { } {\rlap{else}\phantom{then}}
 }
 
 \noindent
-If multiple blocks are closed at the same time, the bottom coordinates could be
-things like \code*{(L-2.north |- L-3.south)} instead. To adjust the end
-points, you could also use things like \code{(\$(L-3.south)+(0,.2em)\$)}.
+With this style, we might not want line numbers. However, if we use the
+\refe{pseudo*} environment (or the \refk{starred} style), we'll lose the line
+number counter required to name our \pkg[https://ctan.org/pkg/pgf]{tikz} nodes!
+Instead, we can simply \emph{hide} the line numbers, using \refk{label} and
+\refk{hsep}:
 
-The actual drawing of the brace (or line or whatever) isn't automated here, of
-course. This could be done by some hook triggered by the \code{-} flags in
-\refc{\bslash}. If it turns out there's a demand for something like that, I
-might add it in a future version.
+\begin{texexp}
+\begin{pseudo}[
+    line-height=1.1, indent-length=3.5em, label={}, hsep=0pt]
+$p = 1$                                                       \\
+while $n > 1$                                                 \\+
+    if $n \bmod 2 \== 0$                                      \\+
+        $x = x \cdot x$                                       \\
+        $n = x/2$                                             \\
+        $p = p \cdot x$                                       \\
+        $n = n - 1$                                           \\--
+$p = p \cdot x$
+\DrawIndentMarks{3/7/do, 4/5/then, 6/7/\Else}
+\end{pseudo}
+\end{texexp}
+
+\endgroup
+
+In these examples, the actual drawing of the brace or line (or whatever) isn't
+automated, of course. This could be done by some hook triggered by the \code{-}
+flags in \refc{\bslash}. If it turns out there's a demand for something like
+that, I might add something like that in a future version.
 
 \section{\dots\,use \pkg{pseudo} with older \TeX\ distributions?}
 \label{sec:older}
@@ -3812,11 +3907,9 @@ In the simplest case, maybe you just want to place two of them side by side in
 the text (i.e., not as floats). Let's say you've defined an environment as
 follows:
 
-% Duplicated:
+\ExecutedListing{
 \newtcbtheorem{procedure}{Procedure}{pseudo/filled}{}
-\begin{texexp}[listing]
-\newtcbtheorem{procedure}{Procedure}{pseudo/filled}{}
-\end{texexp}
+}
 
 Two of these cannot directly be placed side by side, because each will insert
 paragraph breaks and spacing before and after itself. However, this code can be
@@ -3965,11 +4058,9 @@ documentation (and, perhaps, the source of the \pkg{pseudo} box styles, in
 might want to adjust. First, let's define a rather unstyled environment which we
 can modify locally.
 
-% Duplicated:
+\ExecutedListing{
 \newtcbtheorem{example}{Example}{}{}
-\begin{texexp}[listing]
-\newtcbtheorem{example}{Example}{}{}
-\end{texexp}
+}
 
 \begin{note}
 If you want the styling to apply to the environment in general, simply insert it
@@ -5480,11 +5571,11 @@ The starred version of the environment is just a wrapper that uses the custom
 \begin{source}
 \pseudodefinestyle{ starred }{
     preamble = {
-        >{\pseudohpad\pseudoindent\pseudofont}
+        >{ \pseudohpad \pseudoindent \pseudofont }
         l
-        <{\pseudohpad}
+        <{ \pseudohpad }
     },
-    prefix = {\pseudobol},
+    prefix = { \pseudobol },
 }
 
 \NewDocumentEnvironment { pseudo* } { +O{} } {
