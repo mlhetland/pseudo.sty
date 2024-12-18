@@ -663,7 +663,7 @@ The running time is quadratic in the number of bits in the input.
 
 \section*{Microtutorial: How to produce \cref{alg:euclid}}
 
-The pseudocode in \cref{alg:euclid} is typeset in the same way as on
+The pseudocode in \cref{alg:euclid} is typeset in the same way as
 \vpageref{p:intro-euclid}. The line numbers are styled using the \refk{label}
 key, the vertical lines are produced by the \refk{indent-mark} option, and the
 comments are just a separate column of a \code{tabularx}, which is used instead
@@ -857,7 +857,7 @@ indented text (a stylistic choice from \pkg{clrscode3e}):
 %
 \label{p:indent-mark}%
 The indentation may also be configured with \refk{indent-mark}, which inserts a
-mark at every indenation step:
+mark at every indentation step:
 \begin{texexp}
 \begin{pseudo}[indent-mark]
     while $x\leq n$                             \\+
@@ -914,17 +914,17 @@ carries over in shortcuts, so if you define \verb|\Euclid| to mean
 \pr{Euclid}(a,b).\footnote{Note that \code*{\cs{Euclid} (a, b)}, with a space
 before the parenthetical, yields \pr{Euclid} (a, b).}
 
-These commands are not used in the internals of the package, so they may be
-freely redefined for different styling, such as \verb|\let\id\textsf|. They
-generally do some extra work, though, such as wrapping the styled text in
-\cs{textnormal} to avoid having the styles blend, adding quotes (\cs{st}) and
-handling parenthesized arguments (\cs{pr}). To let you hook into their
-appearance without messing with their definitions, each command has a
-corresponding font command (\cs{kwfont}, \cs{cnfont}, \cs{idfont}, etc.),
-which you may redefine. These fonts may even be set using correspondingly
-named options, either with \refc{pseudoset} or via optional keyword arguments
-to the \refe{pseudo} environment:\footnote{Because of \LaTeX\ expansion
-behavior, they can \emph{not} be set globally when importing \pkg{pseudo}.}
+The basic formatting commands are not used in the internals of the package, so
+they may be freely redefined for different styling, such as
+\verb|\let\id\textsf|. They generally do some extra work, though, such as
+wrapping the styled text in \cs{textnormal} to avoid having the styles blend,
+adding quotes (\cs{st}) and handling parenthesized arguments (\cs{pr}). To let
+you hook into their appearance without messing with their definitions, each
+command has a corresponding font command (\cs{kwfont}, \cs{cnfont}, \cs{idfont},
+etc.), which you may redefine. These fonts may even be set using correspondingly
+named options, either with \refc{pseudoset} or via optional keyword arguments to
+the \refe{pseudo} environment:\footnote{Because of \LaTeX\ expansion behavior,
+they can \emph{not} be set globally when importing \pkg{pseudo}.}
 \begin{texexp}
 \pseudoset{prfont=\textsf}
 Euclid's algorithm is initiated with the call \pr{Euclid}(a, b).
@@ -1032,7 +1032,7 @@ discussion.
 \end{note}
 
 \noindent
-This star also works after \code{\cs{begin}\braces{pseudo}}. Note that in
+This star also works after \code{\cs{begin}\braces{pseudo}}. As mentioned, in
 order to prevent your code from ending up in the numbering column, you must
 insert a column separator manually. A version of the \refc{pr} command, called
 \refc{hd} (or \cs{pseudohd}, where \refc{hd} stands for \emph{header}) instead
@@ -1331,15 +1331,12 @@ unnumbered version of the \refe{pseudo} environment:
 \label{sec:floats}
 
 \begin{sidebar}{The short story}
-First import \pkg{tcolorbox}, with
-libraries \code{skins} and \code{theorems} (see nearby sidebar), and then put
-the following in your preamble:
+Add the following to your preamble to define an \code{algorithm} float:
 \begin{texexp}[listing]
+\usepackage{tcolorbox}          % possibly with options
+\tcbuselibrary{skins,theorems}  % remember these
 \newtcbtheorem{algorithm}{Algorithm}{pseudo/ruled, float}{alg}
 \end{texexp}
-You now have an \code{algorithm} float with the \code{pseudo/ruled} style. The
-environment takes two arguments: the title and a label name, which can be left
-empty.
 \end{sidebar}
 
 There are (at least) two different ways of viewing a block of pseudocode: as
@@ -1350,27 +1347,27 @@ them in floats, and refer to them by number (e.g., ``Algorithm~3.1'').%
 \footnote{A third option that is sometimes used is to use a theorem-like
 environment for your algorithms. There are many packages to help with this;
 just search \href{https://ctan.org}{\textsc{ctan}} for
-``\href{https://ctan.org/search/?phrase=theorem}{theorem}''.}
+``\href{https://ctan.org/search/?phrase=theorem}{theorem}''. The \pkg{tcolorbox}
+approach of \pkg{pseudo} can also be adapted to this style.}
 
-Just using the \refe{pseudo} environment is sufficient for typesetting
-pseudocode as part of the body text. If you wish to place your pseudocode in a
-float, you can easily use a package such as
-\pkg[https://ctan.org/tex-archive/macros/latex/contrib/float]{float}.\footnote{Or
-you could do a quick \href{https://ctan.org}{\textsc{ctan}} search for
-``\href{https://ctan.org/search/?phrase=float}{float}'', or take a look at the
-\href{https://ctan.org/recommendations/float}{recommendations} related to
+Using the \refe{pseudo} environment is sufficient for typesetting pseudocode as
+part of the body text. If you wish to place your pseudocode in a float, you can
+easily use a package such as
+\pkg[https://ctan.org/tex-archive/macros/latex/contrib/float]{float}. or the
+float environments from packages like \pkg{algorithms}, \pkg{algorithmicx} and
+\pkg{algorithm2e}.
+\footnote{Or you could do a quick \href{https://ctan.org}{\textsc{ctan}} search
+for ``\href{https://ctan.org/search/?phrase=float}{float}'', or take a look at
+the \href{https://ctan.org/recommendations/float}{recommendations} related to
 the \pkg[https://ctan.org/tex-archive/macros/latex/contrib/float]{float}
-package, which will give you many options, with varying functionality.} You
-could also use the float environments supplied with packages such as
-\pkg{algorithms}, \pkg{algorithmicx} and \pkg{algorithm2e}.
+package, which will give you many options, with varying functionality.}
 
 \begin{note}
 The definition of \refc{==} doesn't properly carry over into floats. It's
-properly redefined inside \refe{pseudo}, so you probably won't notice, but if
-you wish to use the symbol outside the \refe{pseudo} environment, but in a float
-(e.g., inside \cs{caption}), you'll need to either call \refc{RestorePseudoEq}
-to re-establish \pkg{pseudo}'s redefinition of \cs{=} or simply use \refc{eqs}
-instead of \refc{==}.
+redefined inside \refe{pseudo}, but if you wish to use it outside the
+\refe{pseudo} environment, but in a float (e.g., inside \cs{caption}), you'll
+need to call \refc{RestorePseudoEq} to re-establish \pkg{pseudo}'s redefinition
+of \cs{=} or simply use \refc{eqs}.
 \end{note}
 
 \noindent
@@ -1379,28 +1376,16 @@ however, using \pkg{tcolorbox}. This also lets you typeset non-float pseudocode
 with a colored background, for example, like \citeauthor{Cormen:2022} do in the
 most recent version of their textbook~\citep{Cormen:2022}.
 %
-\begin{sidebar}{Importing \pkg{tcolorbox}}
-For performance reasons, \pkg{pseudo} does \emph{not} automatically import
-\pkg{tcolorbox}; if you want to use the box functionality, you will need to
-import it yourself:
-\begin{texexp}[listing]
-\usepackage{pseudo}
-% ...
-\usepackage{tcolorbox}          % possibly with options
-\tcbuselibrary{skins,theorems}  % remember these
-\end{texexp}
-It does not matter whether you import
-\pkg{tcolorbox} before or after \pkg{pseudo}, but make sure you also import the
-two libraries \code{skins} and \code{theorems}, as in the example above.
-\end{sidebar}
-%
 The styles defined by \pkg{pseudo} are versions of the commonly used
 \emph{boxed} and \emph{ruled} styles, as found in, e.g.,
 \pkg[https://ctan.org/tex-archive/macros/latex/contrib/float]{float}, as well as
-the \emph{boxruled} and \emph{tworuled} styles found in \pkg{algorithm2e}. In
-addition, there's a \emph{filled} style, with a colored background. If you wish
-to customize and extend the box style, \refk{pseudo/boxruled} is probably the
-best starting point, as the other styles disable the default frame drawing.
+the \emph{boxruled} and \emph{tworuled} styles found in \pkg{algorithm2e}
+In addition, there's a \emph{filled} style, with a colored background. (Examples
+of the styles are found
+\vpageref{alg:gnome,pbx:booktabs,pbx:boxed,pbx:boxruled,pbx:tworuled,pbx:filled}.)
+If you wish to customize and extend the box style, \refk{pseudo/boxruled} is
+probably the best starting point, as the other styles disable the default frame
+drawing.
 
 The ruled style is one of the more common ones in  use in publications. This is
 a style originally used for (non-floating) tables in \emph{Concrete
@@ -1415,18 +1400,20 @@ thick lines as \pkg{booktabs} tables, while \refk{pseudo/ruled} uses a thin line
 at the bottom, as in the \emph{Concrete Mathematics} style.
 
 The \pkg{pseudo} box styles can be used used directly to style \code{tcolorbox}
-environments, possiby with additional \pkg{tcolorbox} options for customization:
+environments, possiby with additional \pkg{tcolorbox} options for
+customization:\footnote{The actual \pkg{clrscode4e} background is
+\code{\cs{color}[cmyk]\braces{0,0.05,0.17,0}}.}
+
 {
 % \pseudoset{kw}
 \label{ex:clrscode4ish}
 \begin{texexp}
 % In document preamble:
-% \usepackage[cmyk]{xcolor}
+% \usepackage[prefix=s]{xcolor-solarized}
 % Partial clrscode4e.sty emulation:
-\definecolor{lighttan}{cmyk}{0,0.05,0.17,0}
 \pseudoset{label=\small\arabic*, hd-space}
 
-\begin{tcolorbox}[pseudo/filled, colback=lighttan]
+\begin{tcolorbox}[pseudo/filled, colback=sbase3]
     \begin{pseudo}*
         \hd{Bor\r{u}vka}(V, E, w, T)            \\
         \kw{while} $E$ is not empty             \\+
@@ -1438,6 +1425,14 @@ environments, possiby with additional \pkg{tcolorbox} options for customization:
 \end{tcolorbox}
 \end{texexp}
 }%
+% \begin{note}
+% Here I've used \code{base3} from \pkg{xcolor-solarized} as the background. The
+% actual \pkg{clrscode4e} color is defined as follows:
+% \begin{texexp}[listing]
+% \usepackage[cmyk]{xcolor}
+% \definecolor{lighttan}{cmyk}{0,0.05,0.17,0}
+% \end{texexp}
+% \end{note}
 Beyond the boxes themselves, you can customize the pseudocode inside them
 (separately from pseudocode elsewhere) by defining the \refk{in-float} style
 with \refc{pseudodefinestyle}.
@@ -2810,7 +2805,7 @@ See also \refk{compact}.
     Equivalent to \code*{\refk{eol-append} = \cs{pause}} (see \cref{p:pause}).
 \end{docKey}
 
-\begin{docKey}{pos}{\,=\,\meta{depth}}{\initialkeyvalue{\code{t}}}
+\begin{docKey}{pos}{\,=\,\meta{position}}{\initialkeyvalue{\code{t}}}
     Specifies the vertical position of the \refe{pseudo} environment, i.e.,
     whether it should be vertically aligned on the top (\code{t}) or bottom
     (\code{b}) row, or be vertically centered (no value).
@@ -5554,7 +5549,7 @@ just end the current group:
         \addvspace{ \l_tmpa_skip }
 \end{source}
 To ensure any local changes to \refk{prevdepth} are used, we expand its local
-value before setting cs{prevdepth} \emph{outside} the group.\footnote{See,
+value before setting \cs{prevdepth} \emph{outside} the group.\footnote{See,
 e.g., \url{https://tex.stackexchange.com/questions/56294}.}
 \begin{source}
         \exp_args:NNNV
