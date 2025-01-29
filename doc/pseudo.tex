@@ -7,6 +7,8 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 
+\raggedbottom % All the boxes lead to a lot of stretching ...
+
 \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 \renewcommand{\sectionmark}[1]{\markright{\thesection\enskip#1}}
 \fancyhf{}
@@ -274,14 +276,6 @@
 \end{docKey}
 }
 
-\pgfqkeys {/tcb} {
-    listing/.style = {
-        listing only,
-        before skip balanced=8pt plus 2pt minus 2pt,
-        after app=\noindent
-    }
-}
-
 \lstdefinestyle{tcblatex}{language={[LaTeX]TeX},
     columns=fullflexible,
     keepspaces=true,
@@ -298,49 +292,60 @@
 
 \let\braces\brackets
 
-\DeclareTCBListing{texexp}{ !O{} }{
-    empty,
-    arc=0pt,
-    boxsep=0pt,
-    overlay unbroken={
-        \draw[black!50, xshift=0.5\pgflinewidth, semithick]
-            ($(frame.north west)+(3pt,0)$) --
-            +(-3pt,0) -- (frame.south west) -- +(3pt,0);
-        \draw[black!50, xshift=-0.5\pgflinewidth, semithick]
-            ($(frame.north east)+(-3pt,0)$) --
-            +(3pt,0) -- (frame.south east) -- +(-3pt,0);
+\pgfqkeys {/tcb} {
+    texexp/.style = {
+        empty,
+        arc=0pt,
+        boxsep=0pt,
+        overlay unbroken={
+            \draw[black!50, xshift=0.5\pgflinewidth, semithick]
+                ($(frame.north west)+(3pt,0)$) --
+                +(-3pt,0) -- (frame.south west) -- +(3pt,0);
+            \draw[black!50, xshift=-0.5\pgflinewidth, semithick]
+                ($(frame.north east)+(-3pt,0)$) --
+                +(3pt,0) -- (frame.south east) -- +(-3pt,0);
+        },
+        left=1.5em, % \parindent -- but that changes inside doc
+        text above listing,
+        before skip balanced=6pt plus 2pt minus 2pt,
+        after skip balanced=8pt plus 2pt minus 2pt,
+        after app=\noindent,
+        % Because listings messes with the equals sign:
+        before lower app={
+            \RestorePseudoEq
+        }
     },
-    left=1.5em, % \parindent -- but that changes inside doc
-    text above listing,
-    before skip balanced=6pt plus 2pt minus 2pt,
-    after skip balanced=8pt plus 2pt minus 2pt,
-    after app=\noindent,
-    % Because listings messes with the equals sign:
-    before lower app={
-        \RestorePseudoEq
+    listing/.style = {
+        listing only,
+        before skip balanced=8pt plus 2pt minus 2pt,
+        after app=\noindent
     },
-    #1
 }
 
-\ExplSyntaxOn
-\NewDocumentCommand \ExecutedListing { +v } {
-    \group_begin:
-    \obeylines
-    \exp_args:Nx \scantokens {
-        \string\begin{texexp}[listing]
-            #1
-        \string\end{texexp}
-    }
-    \group_end:
+\DeclareTCBListing{texexp}{ !O{} }{ texexp, #1 }
 
-    \int_set_eq:NN \l_tmpa_int \newlinechar
-    \int_set_eq:NN \newlinechar \endlinechar
-    \exp_args:Nx \scantokens {
-        #1
-    }
-    \int_set_eq:NN \newlinechar \l_tmpa_int
-}
-\ExplSyntaxOff
+% Broken by this:
+% https://tug.org/pipermail/latex3-commits/2023-September/031580.html
+% For now (2025-01-29), at least, switching to `tcboutputlisting' and friends.
+% \ExplSyntaxOn
+% \NewDocumentCommand \ExecutedListing { +v } {
+%     \group_begin:
+%     \obeylines
+%     \exp_args:Nx \scantokens {
+%         \string\begin{texexp}[listing]
+%             #1
+%         \string\end{texexp}
+%     }
+%     \group_end:
+
+%     \int_set_eq:NN \l_tmpa_int \newlinechar
+%     \int_set_eq:NN \newlinechar \endlinechar
+%     \exp_args:Nx \scantokens {
+%         #1
+%     }
+%     \int_set_eq:NN \newlinechar \l_tmpa_int
+% }
+% \ExplSyntaxOff
 
 \tcbset{
     infobox/.style = {
@@ -3668,7 +3673,7 @@ text (such as \code{\cs{vphantom}\braces{fg}}). The nodes can be given names
 like \code{line-1}, etc., using \code{\cs{arabic}\braces{\refk{*}}} for the
 numbering:
 
-\ExecutedListing{
+\begin{tcboutputlisting}
 % In document preamble:
 % \usepackage{tikz}
 % \usetikzlibrary{tikzmarks}
@@ -3678,7 +3683,9 @@ numbering:
 \pseudoset{
     setup-append = {\tikzmarknode{L\arabic*}{\shortstrut}}
 }
-}
+\end{tcboutputlisting}
+\tcbinputlisting{texexp, listing}
+\tcbuselistingtext
 
 \begingroup
 
@@ -3689,12 +3696,13 @@ can be used for drawing. We can define a custom command for drawing the indent
 marks, relying on the \pkg[https://ctan.org/pkg/pgf]{tikz} \cs{foreach} syntax,
 supplying the line number intervals as \code{2/5}, etc.
 \begin{note}
-    The \code{overlay} and \code*{remember picture} options to the cs{tikz}
+    The \code{overlay} and \code*{remember picture} options to the \cs{tikz}
     command below are needed. To shift the line to the left, \code{xshift} is
     convenient, but because we are using named points, it must be combined with
     \code*{transform canvas}.
 \end{note}
-\ExecutedListing{
+
+\begin{tcboutputlisting}
 \tikzset{indent mark/.style = {semithick, lightgray}}
 
 \NewDocumentCommand \DrawIndentMarks { m m } {
@@ -3708,7 +3716,9 @@ supplying the line number intervals as \code{2/5}, etc.
             (L\i.north) -- (L\i.north |- L\j.west) -- +(.5em,0);
     }
 }
-}
+\end{tcboutputlisting}
+\tcbinputlisting{texexp, listing}
+\tcbuselistingtext
 
 \noindent
 This command takes two arguments, where the first is a list of intervals that
@@ -3749,7 +3759,7 @@ $p = p \cdot x$
 Braces somewhat similar to those used by the \pkg{pseudocode} package could be
 drawn by altering our definitions slightly:
 
-\ExecutedListing{
+\begin{tcboutputlisting}
 % In document preamble:
 % \usetikzlibrary{decorations.pathreplacing,calligraphy}
 
@@ -3762,13 +3772,15 @@ drawn by altering our definitions slightly:
         midway, font=\shortstrut, left=.5em, anchor=east
     }
 }
-}
+\end{tcboutputlisting}
+\tcbinputlisting{texexp, listing}
+\tcbuselistingtext
 
 I've also added a format for labels (like ``then'' or ``else'', etc.), which can
 be added to the list being iterated over. These are drawn to the left of the
 braces:
 
-\ExecutedListing{
+\begin{tcboutputlisting}
 \NewDocumentCommand \DrawIndentMarks { m } {
     \tikz [overlay, remember picture] {
         \foreach \i/\j/\label in {#1} \draw[indent mark]
@@ -3779,7 +3791,9 @@ braces:
 
 % For left-alignment with "then":
 \NewDocumentCommand \Else { } {\rlap{else}\phantom{then}}
-}
+\end{tcboutputlisting}
+\tcbinputlisting{texexp, listing}
+\tcbuselistingtext
 
 \noindent
 With this style, we might not want line numbers. However, if we use the
@@ -3902,9 +3916,11 @@ In the simplest case, maybe you just want to place two of them side by side in
 the text (i.e., not as floats). Let's say you've defined an environment as
 follows:
 
-\ExecutedListing{
+\begin{tcboutputlisting}
 \newtcbtheorem{procedure}{Procedure}{pseudo/filled}{}
-}
+\end{tcboutputlisting}
+\tcbinputlisting{texexp, listing}
+\tcbuselistingtext
 
 Two of these cannot directly be placed side by side, because each will insert
 paragraph breaks and spacing before and after itself. However, this code can be
@@ -4053,9 +4069,11 @@ documentation (and, perhaps, the source of the \pkg{pseudo} box styles, in
 might want to adjust. First, let's define a rather unstyled environment which we
 can modify locally.
 
-\ExecutedListing{
+\begin{tcboutputlisting}
 \newtcbtheorem{example}{Example}{}{}
-}
+\end{tcboutputlisting}
+\tcbinputlisting{texexp, listing}
+\tcbuselistingtext
 
 \begin{note}
 If you want the styling to apply to the environment in general, simply insert it
