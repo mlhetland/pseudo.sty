@@ -4435,6 +4435,7 @@ negative \cs{hspace} or the like).
     \tl_if_novalue:VTF \l_@@_indent_mark_tl {
         \skip_horizontal:n{ \pseudoindentlength * #1 }
     } {
+        \mode_leave_vertical:
         \group_begin:
         \color{\l_@@_indent_color_tl}
         \int_step_inline:nn { \g_@@_indent_level_int } {

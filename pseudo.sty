@@ -21,8 +21,8 @@
 % SOFTWARE.
 %
 \def \pseudoversion  {1.2.3}
-\def \pseudorevision {.17}
-\def \pseudodate     {2025/01/29}
+\def \pseudorevision {.18}
+\def \pseudodate     {2026/02/07}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -103,6 +103,7 @@
     \tl_if_novalue:VTF \l__pseudo_indent_mark_tl {
         \skip_horizontal:n{ \pseudoindentlength * #1 }
     } {
+        \mode_leave_vertical:
         \group_begin:
         \color{\l__pseudo_indent_color_tl}
         \int_step_inline:nn { \g__pseudo_indent_level_int } {

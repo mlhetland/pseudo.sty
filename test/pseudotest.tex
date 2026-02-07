@@ -4,6 +4,9 @@
 
 \def\rng{\text{ MY OWN RNG }}
 
+\usepackage{tabularx}
+\usepackage{hyperref}
+
 \usepackage{pseudo}
 
 \usepackage{tcolorbox}
@@ -401,6 +404,18 @@ Beta  \\+[1cm]
 Gamma
 \end{pseudo}
 
+\section*{Fixes}
+
+Using \texttt{indent-mark} with \texttt{tabularx}
+(\href{https://github.com/mlhetland/pseudo.sty/issues/33}{issue 33}):
+
+\begin{pseudo}[
+  begin-tabular=\tabularx{\linewidth}[t]{@{}r>{\pseudosetup}X@{}},
+  end-tabular=\endtabularx,
+  indent-mark,
+]
+  $x=1$
+\end{pseudo}
 
 % Should emit three warnings:
 % \pseudoslash
