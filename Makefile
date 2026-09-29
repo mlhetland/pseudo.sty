@@ -66,6 +66,7 @@ build/readmefig.pdf: doc/fig/readmefig.tex build/readmecode.tex
 
 doc/fig/readmefig.svg: build/readmefig.pdf
 	pdf2svg $< $@
+	sed -i.bak -E '/<svg /s/(width|height)="([0-9.]+)"/\1="\2pt"/g' $@ && rm $@.bak
 
 doc/fig/readmecode.tex: README.md
 	cat $< | sed -n -e "/\\begin{pseudo}\\*$$/,/\\end{pseudo}/p" > $@
