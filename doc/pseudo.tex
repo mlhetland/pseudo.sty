@@ -4246,9 +4246,10 @@ still use the mechanism:
 \RequirePackage{l3keys2e}
 \end{source}
 Inside the \refe{pseudo} environment, \refk{*} is an alias for
-\refk{pseudoline}. To perform the proper aliasing, we use \pkg{aliascnt}:
+\refk{pseudoline}. To perform the proper aliasing, we use \cs{newcounteralias}
+where available, with \pkg{aliascnt} as a fallback for older \LaTeX\ kernels:
 \begin{source}
-\RequirePackage{aliascnt}
+\cs_if_exist:NF \newcounteralias { \RequirePackage{aliascnt} }
 \end{source}
 As part of the initial setup, we also record whether we're part of a
 \pkg{beamer} presentation; this will affect the overlay functionality:
@@ -4450,8 +4451,9 @@ negative \cs{hspace} or the like).
 %
 \paragraph{Counter copying.} Inside the \refe{pseudo} environment, we want
 \code{*} to be a duplicate of \code{pseudoline}, for convenience. This requires
-a bit of work. We use the \pkg{aliascnt} package to deal with much of the
-book-keeping, but in order for \cs{newaliascnt} to work whenever a counter
+a bit of work. We use \cs{newcounteralias}, with the \pkg{aliascnt} package as
+a fallback for older \LaTeX\ kernels, to deal with much of the book-keeping, but
+in order for \cs{newcounteralias} (or \cs{newaliascnt}) to work whenever a counter
 already exists, we need to undefine it first. (Here we're relying on the
 internal \LaTeX\ convention of using \verb|c@| as a prefix to counter names.)
 
@@ -4462,7 +4464,9 @@ internal \LaTeX\ convention of using \verb|c@| as a prefix to counter names.)
 
 \cs_new:Npn \@@_copy_ctr:nn #1 #2 {
     \@@_drop_ctr:n { #1 }
-    \newaliascnt   { #1 } { #2 }
+    \cs_if_exist:NTF \newcounteralias
+        { \newcounteralias { #1 } { #2 } }
+        { \newaliascnt     { #1 } { #2 } }
 }
 
 \cs_new:Npn \@@_star_setup: {

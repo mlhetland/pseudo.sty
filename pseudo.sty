@@ -21,8 +21,8 @@
 % SOFTWARE.
 %
 \def \pseudoversion  {1.2.3}
-\def \pseudorevision {.18}
-\def \pseudodate     {2026/02/07}
+\def \pseudorevision {.19}
+\def \pseudodate     {2026/09/29}
 \RequirePackage{expl3}
 \ProvidesExplPackage
     {pseudo}
@@ -33,7 +33,7 @@
 \RequirePackage{pgfkeys}
 \RequirePackage{array, xcolor, colortbl}
 \RequirePackage{l3keys2e}
-\RequirePackage{aliascnt}
+\cs_if_exist:NF \newcounteralias { \RequirePackage{aliascnt} }
 \bool_new:N \c__pseudo_beamer_bool
 \@ifclassloaded{beamer}
     {\bool_set_true:N  \c__pseudo_beamer_bool}
@@ -119,7 +119,9 @@
 }
 \cs_new:Npn \__pseudo_copy_ctr:nn #1 #2 {
     \__pseudo_drop_ctr:n { #1 }
-    \newaliascnt   { #1 } { #2 }
+    \cs_if_exist:NTF \newcounteralias
+        { \newcounteralias { #1 } { #2 } }
+        { \newaliascnt     { #1 } { #2 } }
 }
 \cs_new:Npn \__pseudo_star_setup: {
     \cs_if_exist:cT { c@ * } {
