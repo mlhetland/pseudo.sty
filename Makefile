@@ -38,7 +38,7 @@ pseudo.sty:	VERSION LICENSE doc/pseudo.tex
 	COMMITS="$$(git rev-list --count master ^$$PREVTAG)"; \
 	COMMITS="$$(expr $$COMMITS + 1)"; \
 	REVISION=""; \
-	if git diff --quiet VERSION || git diff --cached --quiet VERSION; then \
+	if git diff --quiet VERSION && git diff --cached --quiet VERSION; then \
 	    REVISION=".$$COMMITS"; \
 	fi; \
 	A="1"; \
